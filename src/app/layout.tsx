@@ -3,6 +3,12 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
+/* ---------------------------------------------------------------------------
+   Root Layout — Global wrapper applied to every page.
+   - <Header /> is fixed/sticky, so <main> gets a top padding offset.
+   - <Footer /> sits below the main content.
+   --------------------------------------------------------------------------- */
+
 export const metadata: Metadata = {
   title: {
     default: "Koleex International Group",
@@ -19,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="font-sans antialiased">
+      <body className="font-sans antialiased bg-black text-white">
         <Header />
         <main className="min-h-screen">{children}</main>
         <Footer />

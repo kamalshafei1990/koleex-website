@@ -1,57 +1,62 @@
+"use client";
+
 import Link from "next/link";
-import { Section } from "@/components/ui/Section";
-import { Container } from "@/components/ui/Container";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { Card } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
-import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import Image from "next/image";
+import { useScrollReveal, revealStyle } from "@/lib/useScrollReveal";
 import { stories } from "@/data/stories";
 
-const latestStories = stories.slice(0, 3);
+/* ---------------------------------------------------------------------------
+   StoriesPreview — 3-column story cards with photo hover zoom.
+   --------------------------------------------------------------------------- */
+
+const storyImages = ["/images/materials-lab.jpg", "/images/factory-floor.jpg", "/images/digital-globe.jpg"];
 
 export function StoriesPreview() {
-  return (
-    <Section background="white">
-      <Container>
-        <AnimatedSection>
-          <SectionHeading
-            eyebrow="STORIES"
-            title="Insights and Impact"
-          />
-        </AnimatedSection>
+  const { ref, visible } = useScrollReveal(0.06);
 
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {latestStories.map((story) => (
-            <AnimatedSection key={story.slug}>
-              <Card
-                image={story.image}
-                imageAlt={story.title}
-                href={`/stories/${story.slug}`}
-              >
-                <div className="flex items-center gap-3">
-                  <Badge variant="accent">{story.category}</Badge>
-                  <time className="text-xs text-text-secondary">
-                    {new Date(story.date).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </time>
-                </div>
-                <h3 className="mt-3 text-lg font-semibold text-text-primary">
-                  {story.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-                  {story.excerpt}
-                </p>
-                <span className="mt-4 inline-block text-sm font-medium text-accent">
-                  Read More &rarr;
-                </span>
-              </Card>
-            </AnimatedSection>
+  return (
+    <section className="bg-black py-32 md:py-44 overflow-hidden section-accent-top">
+      <div ref={ref} className="max-w-[1100px] mx-auto px-5">
+        <div className="flex items-end justify-between mb-16">
+          <h2 className="text-display-sm text-gradient-silver" style={revealStyle(visible, 0)}>
+            Latest Stories
+          </h2>
+          <div style={revealStyle(visible, 120)}>
+            <Link href="/stories" className="link-cta link-cta-dark hidden sm:inline-block pb-2">View all →</Link>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {stories.slice(0, 3).map((story, i) => (
+            <Link
+              key={story.slug}
+              href={`/stories/${story.slug}`}
+              className="card-image group block"
+              style={{
+                opacity: visible ? 1 : 0,
+                transform: visible ? "translateY(0)" : "translateY(32px)",
+                transition: `opacity 0.9s cubic-bezier(0.16,1,0.3,1) ${250 + i * 140}ms, transform 0.9s cubic-bezier(0.16,1,0.3,1) ${250 + i * 140}ms`,
+              }}
+            >
+              <div className="aspect-[16/10] overflow-hidden">
+                <Image
+                  src={storyImages[i]}
+                  alt={story.title}
+                  width={1200}
+                  height={750}
+                  className="w-full h-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05]"
+                />
+              </div>
+              <div className="p-7">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/25 mb-3">{story.category}</p>
+                <h3 className="text-[18px] font-semibold leading-[1.25] tracking-[-0.016em] text-white">{story.title}</h3>
+                <p className="text-[14px] leading-[1.55] text-white/35 mt-3 line-clamp-2">{story.excerpt}</p>
+                <p className="text-[12px] text-white/15 mt-5">{story.date}</p>
+              </div>
+            </Link>
           ))}
         </div>
-      </Container>
-    </Section>
+      </div>
+    </section>
   );
 }

@@ -1,45 +1,43 @@
+"use client";
+
 import Link from "next/link";
-import { Section } from "@/components/ui/Section";
-import { Container } from "@/components/ui/Container";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { AnimatedSection } from "@/components/ui/AnimatedSection";
-import { divisions } from "@/data/products";
+import Image from "next/image";
+import { useScrollReveal, revealStyle, revealScaleStyle } from "@/lib/useScrollReveal";
+
+/* ---------------------------------------------------------------------------
+   DivisionsPreview — Product showcase: IoT Hub Pro.
+   --------------------------------------------------------------------------- */
 
 export function DivisionsPreview() {
-  return (
-    <Section background="light">
-      <Container>
-        <AnimatedSection>
-          <SectionHeading
-            eyebrow="OUR DIVISIONS"
-            title="Four Pillars of Innovation"
-          />
-        </AnimatedSection>
+  const { ref, visible } = useScrollReveal(0.1);
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {divisions.map((division) => (
-            <AnimatedSection key={division.slug}>
-              <Link
-                href={`/products/${division.slug}`}
-                className="group block rounded-2xl border border-border-light bg-white p-8 transition-premium hover:-translate-y-1 hover:shadow-lg"
-              >
-                <p className="text-xs font-semibold uppercase tracking-widest text-accent">
-                  {division.tagline}
-                </p>
-                <h3 className="mt-3 text-lg font-semibold text-text-primary">
-                  {division.name}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-                  {division.description}
-                </p>
-                <span className="mt-4 inline-block text-sm font-medium text-accent transition-premium group-hover:translate-x-1">
-                  Learn more &rarr;
-                </span>
-              </Link>
-            </AnimatedSection>
-          ))}
+  return (
+    <section ref={ref} className="relative bg-black text-center overflow-hidden section-accent-top hero-gradient">
+      <div className="orb orb-white w-[500px] h-[500px] top-20 left-1/4" style={{ animationDelay: "4s" }} />
+      <div className="orb orb-silver w-[350px] h-[350px] bottom-32 right-1/5" style={{ animationDelay: "7s" }} />
+
+      <div className="relative z-10 pt-32 md:pt-44 px-6 max-w-[720px] mx-auto">
+        <div style={revealStyle(visible, 0)}>
+          <span className="text-overline">Digital Solutions</span>
         </div>
-      </Container>
-    </Section>
+        <h2 className="text-display text-gradient-silver mt-5" style={revealStyle(visible, 120)}>
+          IoT Hub Pro
+        </h2>
+        <p className="text-subtitle mt-7 !leading-[1.8]" style={revealStyle(visible, 240)}>
+          Connected intelligence. Everywhere.
+          50,000 devices. One platform. Zero compromise.
+        </p>
+        <div className="flex items-center justify-center gap-10 mt-8" style={revealStyle(visible, 360)}>
+          <Link href="/products/digital-solutions" className="link-cta link-cta-dark">Learn more →</Link>
+          <Link href="/contact" className="link-cta link-cta-dark">Contact sales →</Link>
+        </div>
+      </div>
+
+      <div className="relative z-[5] mt-16 md:mt-20 w-full max-w-[1100px] mx-auto" style={revealScaleStyle(visible, 500)}>
+        <div className="img-hero img-glow">
+          <Image src="/images/digital-globe.jpg" alt="IoT Hub Pro" width={1920} height={1080} className="w-full h-auto object-cover" />
+        </div>
+      </div>
+    </section>
   );
 }

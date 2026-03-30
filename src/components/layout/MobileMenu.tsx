@@ -2,9 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { X, ChevronDown, Search, Globe, MapPin } from "lucide-react";
+import { X, ChevronRight, Search, Globe, MapPin, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { mainNav, productsMegaMenu } from "@/data/navigation";
+import { KoleexLogo } from "@/components/ui/KoleexLogo";
+
+/* ---------------------------------------------------------------------------
+   MobileMenu — Apple.com-style dark full-screen mobile navigation.
+   --------------------------------------------------------------------------- */
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -21,90 +26,86 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
       document.body.style.overflow = "";
       setProductsExpanded(false);
     }
-    return () => {
-      document.body.style.overflow = "";
-    };
+    return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
 
   return (
     <div
       className={cn(
-        "fixed inset-0 z-[55] lg:hidden",
-        "transition-opacity duration-300",
-        isOpen
-          ? "opacity-100 pointer-events-auto"
-          : "opacity-0 pointer-events-none"
+        "fixed inset-0 z-50 lg:hidden",
+        "transition-opacity duration-400",
+        isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
       )}
     >
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/30" onClick={onClose} />
+      {/* Dark overlay background */}
+      <div
+        className="absolute inset-0 nav-glass"
+        style={{ background: "rgba(22, 22, 23, 0.97)" }}
+      />
 
-      {/* Panel */}
+      {/* Content */}
       <div
         className={cn(
-          "absolute top-0 right-0 h-full w-full max-w-sm bg-white",
-          "shadow-2xl overflow-y-auto",
-          "transition-transform duration-300 ease-out",
-          isOpen ? "translate-x-0" : "translate-x-full"
+          "relative z-10 h-full overflow-y-auto",
+          "transition-transform duration-400 ease-out",
+          isOpen ? "translate-y-0" : "-translate-y-4"
         )}
       >
-        {/* Close button */}
-        <div className="flex items-center justify-between px-6 h-12 border-b border-border-light">
-          <span className="text-sm font-bold tracking-wide text-text-primary">
-            KOLEEX
-          </span>
+        {/* Top bar */}
+        <div className="flex items-center justify-between px-5 h-[44px]">
+          <KoleexLogo color="white" height={10} />
           <button
             onClick={onClose}
-            className="p-1 rounded-full hover:bg-surface-secondary transition-colors"
+            className="text-white/80 hover:text-white transition-opacity duration-300"
             aria-label="Close menu"
           >
-            <X className="h-5 w-5 text-text-primary" />
+            <X className="h-5 w-5" strokeWidth={1.5} />
           </button>
         </div>
 
-        {/* Nav items */}
-        <nav className="px-6 py-4">
-          <ul className="space-y-1">
+        {/* Nav links */}
+        <nav className="px-5 mt-2">
+          <div className="border-t border-white/[0.08]">
             {mainNav.map((item) => {
               if (item.label === "Products") {
                 return (
-                  <li key={item.href}>
+                  <div key={item.href} className="border-b border-white/[0.08]">
                     <button
                       onClick={() => setProductsExpanded(!productsExpanded)}
-                      className="flex items-center justify-between w-full py-3 text-base font-medium text-text-primary"
+                      className="flex items-center justify-between w-full py-3 text-[17px] font-semibold text-white/90"
                     >
                       {item.label}
-                      <ChevronDown
+                      <ChevronRight
                         className={cn(
-                          "h-4 w-4 text-text-tertiary transition-transform duration-200",
-                          productsExpanded && "rotate-180"
+                          "h-4 w-4 text-white/40 transition-transform duration-300",
+                          productsExpanded && "rotate-90"
                         )}
+                        strokeWidth={1.5}
                       />
                     </button>
 
-                    {/* Products accordion */}
                     <div
                       className={cn(
-                        "overflow-hidden transition-all duration-300",
-                        productsExpanded ? "max-h-[800px]" : "max-h-0"
+                        "overflow-hidden transition-all duration-400",
+                        productsExpanded ? "max-h-[800px] pb-3" : "max-h-0"
                       )}
                     >
-                      <div className="pb-3 pl-4 space-y-4">
+                      <div className="pl-4 space-y-4">
                         {productsMegaMenu.map((division) => (
                           <div key={division.slug}>
                             <Link
                               href={`/products/${division.slug}`}
-                              className="text-xs font-semibold uppercase tracking-wider text-text-tertiary"
+                              className="text-[12px] font-medium uppercase tracking-wider text-white/30"
                               onClick={onClose}
                             >
                               {division.division}
                             </Link>
-                            <ul className="mt-2 space-y-1.5">
+                            <ul className="mt-1.5 space-y-1">
                               {division.categories.map((cat) => (
                                 <li key={cat.slug}>
                                   <Link
                                     href={cat.href}
-                                    className="block text-sm text-text-secondary hover:text-accent transition-colors"
+                                    className="block text-[15px] text-white/70 hover:text-white transition-opacity duration-300 py-0.5"
                                     onClick={onClose}
                                   >
                                     {cat.name}
@@ -114,47 +115,44 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                             </ul>
                           </div>
                         ))}
-                        <Link
-                          href="/products"
-                          className="block text-sm font-medium text-accent"
-                          onClick={onClose}
-                        >
-                          View All Products
-                        </Link>
                       </div>
                     </div>
-                  </li>
+                  </div>
                 );
               }
 
               return (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className="block py-3 text-base font-medium text-text-primary hover:text-accent transition-colors"
-                    onClick={onClose}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center justify-between py-3 text-[17px] font-semibold text-white/90 border-b border-white/[0.08]"
+                  onClick={onClose}
+                >
+                  {item.label}
+                  <ChevronRight className="h-4 w-4 text-white/30" strokeWidth={1.5} />
+                </Link>
               );
             })}
-          </ul>
+          </div>
         </nav>
 
-        {/* Bottom utilities */}
-        <div className="mt-auto px-6 py-6 border-t border-border-light space-y-3">
-          <button className="flex items-center gap-3 w-full py-2 text-sm text-text-secondary hover:text-text-primary transition-colors">
-            <Search className="h-4 w-4" />
-            Search
+        {/* Utility links */}
+        <div className="px-5 mt-6 space-y-4">
+          <button className="flex items-center gap-3 text-[14px] text-white/50 hover:text-white/80 transition-opacity duration-300">
+            <Search className="h-4 w-4" strokeWidth={1.5} />
+            Search koleex.com
           </button>
-          <button className="flex items-center gap-3 w-full py-2 text-sm text-text-secondary hover:text-text-primary transition-colors">
-            <Globe className="h-4 w-4" />
-            Language
+          <button className="flex items-center gap-3 text-[14px] text-white/50 hover:text-white/80 transition-opacity duration-300">
+            <Globe className="h-4 w-4" strokeWidth={1.5} />
+            English
           </button>
-          <button className="flex items-center gap-3 w-full py-2 text-sm text-text-secondary hover:text-text-primary transition-colors">
-            <MapPin className="h-4 w-4" />
-            Region
+          <button className="flex items-center gap-3 text-[14px] text-white/50 hover:text-white/80 transition-opacity duration-300">
+            <MapPin className="h-4 w-4" strokeWidth={1.5} />
+            Global
+          </button>
+          <button className="flex items-center gap-3 text-[14px] text-[#2997ff] hover:text-[#2997ff]/80 transition-opacity duration-300">
+            <Sparkles className="h-4 w-4" strokeWidth={1.5} />
+            AI Assistant
           </button>
         </div>
       </div>
