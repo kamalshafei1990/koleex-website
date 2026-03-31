@@ -2,56 +2,77 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useScrollReveal } from "@/lib/useScrollReveal";
+import { useScrollReveal, revealStyle } from "@/lib/useScrollReveal";
 
 /* ---------------------------------------------------------------------------
-   FeaturedProducts — 2×2 tile grid with premium dark glass cards.
-   Staggered reveal, hover lift + image zoom, generous spacing.
+   2. Featured Products — 3 product cards with images, hover zoom + lift.
    --------------------------------------------------------------------------- */
 
-const tiles = [
-  { label: "Advanced Materials", title: "CarbonX Pro", subtitle: "Strength without compromise.", href: "/products/advanced-materials", image: "/images/composites.jpg" },
-  { label: "Energy Systems", title: "GridVault", subtitle: "Store. Distribute. Scale.", href: "/products/energy-systems", image: "/images/wind-turbines.jpg" },
-  { label: "Digital Solutions", title: "CyberShield", subtitle: "Enterprise-grade protection.", href: "/products/digital-solutions", image: "/images/server-room.jpg" },
-  { label: "Industrial Technology", title: "VisionX", subtitle: "See what others can't.", href: "/products/industrial-technology", image: "/images/factory-floor.jpg" },
+const products = [
+  {
+    name: "KX-9000 Robotic Arm",
+    description: "Six-axis precision robotic system with AI-driven path planning and sub-micron repeatability.",
+    image: "/images/hero-robot.jpg",
+    href: "/products/industrial-technology/automation-robotics",
+    division: "Industrial Technology",
+  },
+  {
+    name: "SolarMax Ultra Panel",
+    description: "Next-generation photovoltaic module delivering 24.5% cell efficiency for commercial installations.",
+    image: "/images/solar-panels.jpg",
+    href: "/products/energy-systems/renewable-generation",
+    division: "Energy Systems",
+  },
+  {
+    name: "KX-IoT Hub Pro",
+    description: "Enterprise-grade IoT gateway connecting up to 50,000 devices with real-time analytics.",
+    image: "/images/digital-globe.jpg",
+    href: "/products/digital-solutions/iot-platforms",
+    division: "Digital Solutions",
+  },
 ];
 
 export function FeaturedProducts() {
-  const { ref, visible } = useScrollReveal(0.05);
+  const { ref, visible } = useScrollReveal(0.08);
 
   return (
-    <section ref={ref} className="bg-black py-4 section-accent-top">
-      <div className="max-w-[1100px] mx-auto px-4 sm:px-5">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {tiles.map((tile, i) => (
+    <section className="bg-black py-32 md:py-44 section-accent-top">
+      <div ref={ref} className="max-w-[1100px] mx-auto px-5">
+        <div className="text-center mb-16 md:mb-20">
+          <p className="text-overline mb-4" style={revealStyle(visible, 0)}>Featured Products</p>
+          <h2 className="text-display-sm text-gradient-silver" style={revealStyle(visible, 100)}>
+            Built for performance.
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {products.map((p, i) => (
             <Link
-              key={tile.title}
-              href={tile.href}
-              className="card-image group block text-center"
+              key={p.name}
+              href={p.href}
+              className="card-image group block"
               style={{
                 opacity: visible ? 1 : 0,
-                transform: visible ? "translateY(0) scale(1)" : "translateY(24px) scale(0.97)",
-                transition: `opacity 0.9s cubic-bezier(0.16,1,0.3,1) ${i * 120}ms, transform 0.9s cubic-bezier(0.16,1,0.3,1) ${i * 120}ms`,
+                transform: visible ? "translateY(0)" : "translateY(32px)",
+                transition: `opacity 0.9s cubic-bezier(0.16,1,0.3,1) ${250 + i * 120}ms, transform 0.9s cubic-bezier(0.16,1,0.3,1) ${250 + i * 120}ms`,
               }}
             >
-              <div className="pt-14 md:pt-16 px-8 pb-0">
-                <p className="text-overline mb-3">{tile.label}</p>
-                <h3 className="text-[34px] md:text-[42px] font-bold leading-[1.06] tracking-[-0.038em] text-white">
-                  {tile.title}
-                </h3>
-                <p className="text-[16px] font-light text-white/35 mt-3 tracking-[-0.01em]">{tile.subtitle}</p>
-                <p className="text-[15px] font-medium text-white/30 mt-6 group-hover:text-white/55 transition-colors duration-500">
-                  Learn more →
-                </p>
-              </div>
-              <div className="mt-8 md:mt-10 overflow-hidden">
+              <div className="aspect-[4/3] overflow-hidden">
                 <Image
-                  src={tile.image}
-                  alt={tile.title}
-                  width={1200}
-                  height={800}
-                  className="w-full h-[260px] md:h-[320px] object-cover transition-transform duration-[800ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+                  src={p.image}
+                  alt={p.name}
+                  width={800}
+                  height={600}
+                  className="w-full h-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05]"
                 />
+              </div>
+              <div className="p-6 md:p-7">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/25 mb-2">{p.division}</p>
+                <h3 className="text-[18px] font-semibold leading-[1.25] tracking-[-0.016em] text-white">{p.name}</h3>
+                <p className="text-[14px] leading-[1.55] text-white/35 mt-2.5 line-clamp-2">{p.description}</p>
+                <p className="text-[14px] font-medium text-white/30 mt-5 group-hover:text-white/60 transition-colors duration-500">
+                  View product →
+                </p>
               </div>
             </Link>
           ))}
