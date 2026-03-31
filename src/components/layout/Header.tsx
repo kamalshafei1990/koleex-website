@@ -86,7 +86,7 @@ export default function Header() {
     <>
       <header
         className={cn(
-          "fixed top-0 left-0 right-0 z-40 h-[48px]",
+          "fixed top-0 left-0 right-0 z-40 h-[52px]",
           "transition-[background-color,border-color,backdrop-filter] duration-[600ms] ease-[cubic-bezier(0.4,0,0.2,1)]",
           scrolled
             ? "bg-black/90 backdrop-blur-xl backdrop-saturate-[1.8] border-b border-white/[0.08]"
@@ -100,11 +100,11 @@ export default function Header() {
             href="/"
             className="shrink-0 mr-6 opacity-80 hover:opacity-100 transition-opacity duration-[400ms]"
           >
-            <KoleexLogo color="white" height={13} />
+            <KoleexLogo color="white" height={19} />
           </Link>
 
-          {/* ── Desktop Navigation ── */}
-          <div className="hidden lg:flex items-center flex-1 gap-0.5">
+          {/* ── Desktop Navigation (centered) ── */}
+          <div className="hidden lg:flex items-center absolute left-1/2 -translate-x-1/2 gap-1">
             {mainNav.map((item) => {
               const active = isActive(item.href);
 
@@ -118,7 +118,7 @@ export default function Header() {
                     <button
                       onClick={() => setMegaMenuOpen(!megaMenuOpen)}
                       className={cn(
-                        "group relative px-2.5 h-[48px] flex items-center",
+                        "group relative px-3 h-[52px] flex items-center",
                         "text-[11.5px] font-normal tracking-[0.02em]",
                         "transition-colors duration-[400ms]",
                         megaMenuOpen || active
@@ -128,10 +128,10 @@ export default function Header() {
                     >
                       {item.label}
                       {active && (
-                        <span className="absolute bottom-[9px] left-2.5 right-2.5 h-px bg-white/40 rounded-full" />
+                        <span className="absolute bottom-[11px] left-3 right-3 h-px bg-white/40 rounded-full" />
                       )}
                       {!active && (
-                        <span className="absolute bottom-[9px] left-2.5 right-2.5 h-px bg-white/25 rounded-full origin-center scale-x-0 group-hover:scale-x-100 transition-transform duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]" />
+                        <span className="absolute bottom-[11px] left-3 right-3 h-px bg-white/25 rounded-full origin-center scale-x-0 group-hover:scale-x-100 transition-transform duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]" />
                       )}
                     </button>
                   </div>
@@ -143,7 +143,7 @@ export default function Header() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "group relative px-2.5 h-[48px] flex items-center",
+                    "group relative px-3 h-[52px] flex items-center",
                     "text-[11.5px] font-normal tracking-[0.02em]",
                     "transition-colors duration-[400ms]",
                     active
@@ -153,10 +153,10 @@ export default function Header() {
                 >
                   {item.label}
                   {active && (
-                    <span className="absolute bottom-[9px] left-2.5 right-2.5 h-px bg-white/40 rounded-full" />
+                    <span className="absolute bottom-[11px] left-3 right-3 h-px bg-white/40 rounded-full" />
                   )}
                   {!active && (
-                    <span className="absolute bottom-[9px] left-2.5 right-2.5 h-px bg-white/25 rounded-full origin-center scale-x-0 group-hover:scale-x-100 transition-transform duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]" />
+                    <span className="absolute bottom-[11px] left-3 right-3 h-px bg-white/25 rounded-full origin-center scale-x-0 group-hover:scale-x-100 transition-transform duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]" />
                   )}
                 </Link>
               );
