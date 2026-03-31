@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 /* ---------------------------------------------------------------------------
-   Section 1: Hero — White bg. Centered text. Hand image cropped to
-   show only the hand (bottom 55% of the image) on white background.
+   Section 1: Hero — White bg, centered text, hand image full width uncropped.
+   Light #fafafa background behind image area for subtle contrast.
    --------------------------------------------------------------------------- */
 
 export function Hero() {
@@ -20,7 +20,7 @@ export function Hero() {
   });
 
   return (
-    <section className="bg-white text-center overflow-hidden">
+    <section className="bg-[#f5f5f7] text-center overflow-hidden">
       <div className="pt-14 md:pt-20 px-6">
         <h2 className="text-[56px] md:text-[80px] font-semibold leading-[1.03] tracking-[-0.045em] text-[#1d1d1f]" style={s(50)}>
           KX-9000 Series
@@ -34,16 +34,14 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Hand image — cropped to show only the hand (bottom portion) */}
-      <div
-        className="mt-6 md:mt-10 mx-auto w-[360px] sm:w-[450px] md:w-[540px] lg:w-[600px] h-[280px] sm:h-[340px] md:h-[400px] lg:h-[440px] relative overflow-hidden"
-        style={s(350)}
-      >
+      {/* Hand image — full width, not cropped */}
+      <div className="mt-2" style={s(350)}>
         <Image
-          src="/images/hero-hand-white.jpg"
+          src="/images/hero-hand-trimmed.jpg"
           alt="KX-9000 Series — Precision Engineering"
-          fill
-          className="object-cover object-bottom"
+          width={735}
+          height={674}
+          className="w-full h-auto block max-w-[980px] mx-auto"
           priority
         />
       </div>
