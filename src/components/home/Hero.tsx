@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 /* ---------------------------------------------------------------------------
-   Section 1: Hero — Full-viewport. White bg. Centered text. Full-bleed image.
-   Exactly like iPhone hero on Apple.com.
+   Section 1: Hero — White bg. Centered text. Hand image cropped to
+   show only the hand (bottom 55% of the image) on white background.
    --------------------------------------------------------------------------- */
 
 export function Hero() {
@@ -33,8 +33,19 @@ export function Hero() {
           <Link href="/contact" className="text-[17px] text-[#0066cc] hover:underline underline-offset-[3px]">Contact sales {">"}</Link>
         </div>
       </div>
-      <div className="mt-4" style={s(350)}>
-        <Image src="/images/hero-robot.jpg" alt="KX-9000 Series" width={2560} height={1440} className="w-full h-auto block" priority />
+
+      {/* Hand image — cropped to show only the hand (bottom portion) */}
+      <div
+        className="mt-6 md:mt-10 mx-auto w-[360px] sm:w-[450px] md:w-[540px] lg:w-[600px] h-[280px] sm:h-[340px] md:h-[400px] lg:h-[440px] relative overflow-hidden"
+        style={s(350)}
+      >
+        <Image
+          src="/images/hero-hand-white.jpg"
+          alt="KX-9000 Series — Precision Engineering"
+          fill
+          className="object-cover object-bottom"
+          priority
+        />
       </div>
     </section>
   );
