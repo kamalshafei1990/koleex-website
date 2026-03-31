@@ -41,20 +41,20 @@ export default async function StoryPage({ params }: Props) {
   return (
     <>
       {/* Article header */}
-      <section className="bg-surface-dark py-24 md:py-32">
+      <section className="bg-[#0a0a0a] py-24 md:py-32">
         <Container>
           <div className="mx-auto max-w-3xl">
             <div className="mb-6 flex items-center gap-4">
               <Badge variant="accent">{story.category}</Badge>
-              <span className="text-sm text-text-inverse/60">
+              <span className="text-sm text-white/50">
                 {story.readTime} min read
               </span>
             </div>
-            <h1 className="text-display text-text-inverse">{story.title}</h1>
-            <p className="mt-6 text-subtitle text-text-inverse/70">
+            <h1 className="text-display text-white">{story.title}</h1>
+            <p className="mt-6 text-subtitle !text-white/50">
               {story.excerpt}
             </p>
-            <p className="mt-6 text-sm text-text-inverse/50">
+            <p className="mt-6 text-sm text-white/35">
               {formatDate(story.date)}
             </p>
           </div>
@@ -62,11 +62,11 @@ export default async function StoryPage({ params }: Props) {
       </section>
 
       {/* Article body */}
-      <section className="py-20 md:py-28">
+      <section className="bg-black py-20 md:py-28">
         <Container>
           <article className="mx-auto max-w-3xl">
-            <div className="prose prose-lg max-w-none">
-              <p className="text-body-large leading-relaxed">
+            <div className="prose prose-lg prose-invert max-w-none">
+              <p className="text-body-large leading-relaxed !text-white/80">
                 The convergence of advanced engineering and digital intelligence
                 is reshaping how industries operate at every level. From the
                 factory floor to the executive suite, organisations are
@@ -75,7 +75,7 @@ export default async function StoryPage({ params }: Props) {
                 modern enterprise.
               </p>
 
-              <p className="mt-6 text-base leading-relaxed text-text-secondary">
+              <p className="mt-6 text-base leading-relaxed text-white/50">
                 At Koleex International Group, this philosophy informs every
                 product we design and every solution we deliver. Our teams work
                 across disciplines to ensure that the technologies of today are
@@ -86,7 +86,7 @@ export default async function StoryPage({ params }: Props) {
                 data, engineer for resilience, and iterate relentlessly.
               </p>
 
-              <p className="mt-6 text-base leading-relaxed text-text-secondary">
+              <p className="mt-6 text-base leading-relaxed text-white/50">
                 This commitment to continuous improvement is reflected in our
                 latest initiatives. Over the past twelve months, our research
                 centres in Zurich, Singapore, and Austin have filed more than
@@ -96,7 +96,7 @@ export default async function StoryPage({ params }: Props) {
                 our customers and partners across six continents.
               </p>
 
-              <p className="mt-6 text-base leading-relaxed text-text-secondary">
+              <p className="mt-6 text-base leading-relaxed text-white/50">
                 As the global landscape continues to evolve, we remain focused
                 on what matters most: delivering measurable outcomes for the
                 people and organisations that depend on our technology. The
@@ -105,13 +105,13 @@ export default async function StoryPage({ params }: Props) {
               </p>
             </div>
 
-            <hr className="my-12 border-border-light" />
+            <hr className="my-12 border-white/10" />
 
             <div className="flex items-center justify-between">
               <Button href="/stories" variant="secondary">
                 &larr; Back to Stories
               </Button>
-              <Button href="/contact" variant="link">
+              <Button href="/contact" variant="secondary">
                 Get in touch
               </Button>
             </div>

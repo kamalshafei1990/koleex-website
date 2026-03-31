@@ -81,11 +81,11 @@ export default function AboutPage() {
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             <AnimatedSection>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-accent">
+              <p className="text-overline mb-3">
                 Our Story
               </p>
-              <h2 className="text-headline">Built on Decades of Innovation</h2>
-              <p className="mt-6 text-body-large leading-relaxed">
+              <h2 className="text-headline text-white">Built on Decades of Innovation</h2>
+              <p className="mt-6 text-body-large leading-relaxed !text-white/50">
                 Founded with a singular vision to bridge the gap between
                 cutting-edge research and real-world industrial application,
                 Koleex International Group has grown into one of the world's
@@ -94,7 +94,7 @@ export default function AboutPage() {
                 manufacturing, energy, healthcare, aerospace, and digital
                 infrastructure.
               </p>
-              <p className="mt-6 text-base leading-relaxed text-text-secondary">
+              <p className="mt-6 text-base leading-relaxed text-white/35">
                 From our headquarters in Zurich, Switzerland, we coordinate
                 research centres, manufacturing facilities, and service
                 operations spanning six continents. Our 28,000 employees share
@@ -107,19 +107,19 @@ export default function AboutPage() {
       </Section>
 
       {/* Mission & Vision */}
-      <Section background="light">
+      <Section>
         <Container>
           <div className="grid gap-12 md:grid-cols-2">
             <AnimatedSection>
               <div>
-                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-accent">
+                <p className="text-overline mb-3">
                   Mission
                 </p>
-                <h2 className="text-title">
+                <h2 className="text-title text-white">
                   Deliver precision-engineered technology that empowers
                   industries and improves lives.
                 </h2>
-                <p className="mt-4 text-base leading-relaxed text-text-secondary">
+                <p className="mt-4 text-base leading-relaxed text-white/50">
                   We combine deep domain expertise with relentless innovation to
                   create products and solutions that solve the most complex
                   challenges facing our customers today.
@@ -128,14 +128,14 @@ export default function AboutPage() {
             </AnimatedSection>
             <AnimatedSection>
               <div>
-                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-accent">
+                <p className="text-overline mb-3">
                   Vision
                 </p>
-                <h2 className="text-title">
+                <h2 className="text-title text-white">
                   To be the global standard for industrial innovation and
                   sustainable progress.
                 </h2>
-                <p className="mt-4 text-base leading-relaxed text-text-secondary">
+                <p className="mt-4 text-base leading-relaxed text-white/50">
                   We envision a world where technology and sustainability
                   reinforce each other, where every factory, grid, and supply
                   chain operates at its full potential with minimal environmental
@@ -159,16 +159,16 @@ export default function AboutPage() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {leaders.map((leader) => (
               <AnimatedSection key={leader.name}>
-                <Card className="h-full">
-                  <div className="aspect-[4/3] bg-surface-secondary" />
+                <Card variant="dark" className="h-full">
+                  <div className="aspect-[4/3] bg-white/5" />
                   <div className="p-6">
-                    <h3 className="text-lg font-semibold text-text-primary">
+                    <h3 className="text-lg font-semibold text-white">
                       {leader.name}
                     </h3>
-                    <p className="mt-1 text-sm font-medium text-accent">
+                    <p className="mt-1 text-sm font-medium text-white/80">
                       {leader.role}
                     </p>
-                    <p className="mt-3 text-sm leading-relaxed text-text-secondary">
+                    <p className="mt-3 text-sm leading-relaxed text-white/50">
                       {leader.bio}
                     </p>
                   </div>
@@ -180,17 +180,17 @@ export default function AboutPage() {
       </Section>
 
       {/* Global Presence */}
-      <Section background="dark">
+      <Section>
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             <AnimatedSection>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-accent">
+              <p className="text-overline mb-3">
                 Global Presence
               </p>
-              <h2 className="text-headline text-text-inverse">
+              <h2 className="text-headline text-white">
                 Engineering on Every Continent
               </h2>
-              <p className="mt-4 text-subtitle text-text-inverse/70">
+              <p className="mt-4 text-subtitle !text-white/50">
                 With operations in over 80 countries, we combine global scale
                 with local expertise to serve our customers wherever they
                 operate.
@@ -204,8 +204,8 @@ export default function AboutPage() {
                   { stat: "45", label: "Manufacturing Sites" },
                 ].map((item) => (
                   <div key={item.label}>
-                    <p className="text-display text-accent">{item.stat}</p>
-                    <p className="mt-2 text-sm text-text-inverse/60">
+                    <p className="text-display text-white">{item.stat}</p>
+                    <p className="mt-2 text-sm text-white/50">
                       {item.label}
                     </p>
                   </div>
@@ -228,11 +228,11 @@ export default function AboutPage() {
           <div className="grid gap-8 sm:grid-cols-2">
             {values.map((value) => (
               <AnimatedSection key={value.title}>
-                <div className="rounded-2xl border border-border-light p-8">
-                  <h3 className="text-xl font-semibold text-text-primary">
+                <div className="rounded-2xl border border-white/10 p-8">
+                  <h3 className="text-xl font-semibold text-white">
                     {value.title}
                   </h3>
-                  <p className="mt-3 text-base leading-relaxed text-text-secondary">
+                  <p className="mt-3 text-base leading-relaxed text-white/50">
                     {value.description}
                   </p>
                 </div>

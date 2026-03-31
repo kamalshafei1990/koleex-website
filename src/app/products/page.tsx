@@ -35,20 +35,21 @@ export default function ProductsPage() {
               <AnimatedSection key={division.slug}>
                 <Card
                   href={`/products/${division.slug}`}
+                  variant="dark"
                   className="h-full"
                 >
                   <div className="p-8 md:p-10">
-                    <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-accent">
+                    <p className="text-overline mb-3">
                       {division.tagline}
                     </p>
-                    <h3 className="text-title text-text-primary">
+                    <h3 className="text-title text-white">
                       {division.name}
                     </h3>
-                    <p className="mt-4 text-body-large leading-relaxed">
+                    <p className="mt-4 text-body-large leading-relaxed !text-white/50">
                       {division.description}
                     </p>
                     <div className="mt-6">
-                      <span className="text-sm font-medium text-accent">
+                      <span className="text-sm font-medium text-white/80">
                         Explore {division.categories.length} categories &rarr;
                       </span>
                     </div>
@@ -60,16 +61,16 @@ export default function ProductsPage() {
         </Container>
       </Section>
 
-      <Section background="light">
+      <Section>
         <Container>
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-headline">Find the Right Product</h2>
-            <p className="text-subtitle mt-4">
+            <h2 className="text-headline text-white">Find the Right Product</h2>
+            <p className="text-subtitle mt-4 !text-white/50">
               With thousands of configurations across our portfolio, our team can
               help you identify the ideal solution for your application.
             </p>
             <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Button href="/contact" size="lg">
+              <Button href="/contact" variant="primary" size="lg">
                 Contact Sales
               </Button>
               <Button href="/solutions" variant="secondary" size="lg">

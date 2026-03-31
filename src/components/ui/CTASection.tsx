@@ -1,10 +1,8 @@
-import { Container } from "@/components/ui/Container";
-import { Button } from "@/components/ui/Button";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /* ---------------------------------------------------------------------------
-   CTASection — Call-to-action section with dark/light variants.
-   Used as a conversion block between or at the end of page sections.
+   CTASection — Dark-first CTA section matching brand guidelines.
    --------------------------------------------------------------------------- */
 
 interface CTASectionProps {
@@ -13,8 +11,6 @@ interface CTASectionProps {
   subtitle?: string;
   cta: { label: string; href: string };
   secondaryCta?: { label: string; href: string };
-  background?: "dark" | "black" | "accent" | "light";
-  align?: "center" | "left";
   className?: string;
 }
 
@@ -24,70 +20,29 @@ export function CTASection({
   subtitle,
   cta,
   secondaryCta,
-  background = "dark",
-  align = "center",
   className,
 }: CTASectionProps) {
-  const isDark = background === "dark" || background === "black" || background === "accent";
-
-  const bgMap = {
-    dark: "bg-surface-dark",
-    black: "bg-black",
-    accent: "bg-accent",
-    light: "bg-surface-secondary",
-  };
-
   return (
-    <section className={cn(bgMap[background], "py-20 md:py-32", className)}>
-      <Container>
-        <div
-          className={cn(
-            align === "center" && "text-center mx-auto max-w-3xl",
-            align === "left" && "max-w-2xl"
+    <section className={cn("bg-black py-24 md:py-36 text-center section-accent-top", className)}>
+      <div className="max-w-[680px] mx-auto px-6">
+        {eyebrow && (
+          <p className="text-overline mb-4">{eyebrow}</p>
+        )}
+        <h2 className="text-headline text-gradient-hero">{title}</h2>
+        {subtitle && (
+          <p className="text-subtitle mt-5 !leading-[1.8]">{subtitle}</p>
+        )}
+        <div className="flex items-center justify-center gap-10 mt-8">
+          <Link href={cta.href} className="link-cta link-cta-dark">
+            {cta.label} →
+          </Link>
+          {secondaryCta && (
+            <Link href={secondaryCta.href} className="link-cta link-cta-dark">
+              {secondaryCta.label} →
+            </Link>
           )}
-        >
-          {eyebrow && (
-            <p className={cn("text-overline mb-4", isDark ? "text-accent-light" : "text-accent")}>
-              {eyebrow}
-            </p>
-          )}
-
-          <h2 className={cn("text-headline", isDark ? "text-white" : "text-text-primary")}>
-            {title}
-          </h2>
-
-          {subtitle && (
-            <p className={cn("text-subtitle mt-4", isDark ? "text-white/60" : "text-text-secondary")}>
-              {subtitle}
-            </p>
-          )}
-
-          <div
-            className={cn(
-              "mt-8 md:mt-10 flex flex-wrap gap-4",
-              align === "center" && "justify-center"
-            )}
-          >
-            <Button
-              href={cta.href}
-              variant={isDark ? "primary" : "primary"}
-              size="lg"
-              arrow
-            >
-              {cta.label}
-            </Button>
-            {secondaryCta && (
-              <Button
-                href={secondaryCta.href}
-                variant={isDark ? "dark-outline" : "outline"}
-                size="lg"
-              >
-                {secondaryCta.label}
-              </Button>
-            )}
-          </div>
         </div>
-      </Container>
+      </div>
     </section>
   );
 }

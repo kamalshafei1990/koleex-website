@@ -122,13 +122,13 @@ export default async function ModelPage({ params }: Props) {
               <Badge>{division.name}</Badge>
             </div>
 
-            <h2 className="text-headline mb-4">Technical Specifications</h2>
-            <p className="text-subtitle mb-10">
+            <h2 className="text-2xl font-semibold text-white sm:text-3xl mb-4">Technical Specifications</h2>
+            <p className="text-white/50 mb-10">
               Complete specifications for the {model.name}. Contact our
               engineering team for application-specific configuration details.
             </p>
 
-            <div className="overflow-hidden rounded-2xl border border-border-light">
+            <div className="overflow-hidden rounded-2xl border border-white/10">
               <table className="w-full text-left text-sm">
                 <tbody>
                   {[
@@ -148,13 +148,13 @@ export default async function ModelPage({ params }: Props) {
                     <tr
                       key={label}
                       className={
-                        i % 2 === 0 ? "bg-surface-secondary" : "bg-white"
+                        i % 2 === 0 ? "bg-white/5" : "bg-black"
                       }
                     >
-                      <td className="px-6 py-4 font-medium text-text-primary w-1/3">
+                      <td className="px-6 py-4 font-medium text-white w-1/3">
                         {label}
                       </td>
-                      <td className="px-6 py-4 text-text-secondary">{value}</td>
+                      <td className="px-6 py-4 text-white/50">{value}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -162,7 +162,7 @@ export default async function ModelPage({ params }: Props) {
             </div>
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <Button href="/contact" size="lg">
+              <Button href="/contact" variant="primary" size="lg">
                 Request Quote
               </Button>
               <Button href={productPath} variant="secondary" size="lg">
@@ -175,7 +175,7 @@ export default async function ModelPage({ params }: Props) {
 
       {/* Related models */}
       {relatedModels.length > 0 && (
-        <Section background="light">
+        <Section>
           <Container>
             <SectionHeading
               eyebrow="Also Available"
@@ -188,20 +188,21 @@ export default async function ModelPage({ params }: Props) {
                 <AnimatedSection key={related.slug}>
                   <Card
                     href={`${productPath}/${related.slug}`}
+                    variant="dark"
                     className="h-full"
                   >
                     <div className="p-6">
-                      <p className="text-xs font-mono text-text-tertiary">
+                      <p className="text-overline">
                         {related.sku}
                       </p>
-                      <h3 className="mt-2 text-lg font-semibold text-text-primary">
+                      <h3 className="mt-2 text-lg font-semibold text-white">
                         {related.name}
                       </h3>
-                      <p className="mt-1 text-sm text-text-secondary">
+                      <p className="mt-1 text-sm text-white/50">
                         {related.tagline}
                       </p>
                       <div className="mt-4">
-                        <span className="text-sm font-medium text-accent">
+                        <span className="link-cta link-cta-dark">
                           View details &rarr;
                         </span>
                       </div>

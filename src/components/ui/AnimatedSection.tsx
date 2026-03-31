@@ -1,71 +1,37 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useScrollReveal } from "@/lib/useScrollReveal";
 import { cn } from "@/lib/utils";
 
 /* ---------------------------------------------------------------------------
-   AnimatedSection — Intersection observer-based scroll animation wrapper.
-   Elements fade in when they enter the viewport. One-shot by default.
+   AnimatedSection — Scroll-triggered reveal wrapper.
+   Uses the brand guidelines animation timing.
    --------------------------------------------------------------------------- */
-
-type AnimationType = "fade-up" | "fade-in" | "fade-down" | "scale-in";
-
-const animationClasses: Record<AnimationType, string> = {
-  "fade-up": "animate-fade-in-up",
-  "fade-in": "animate-fade-in",
-  "fade-down": "animate-fade-in-down",
-  "scale-in": "animate-scale-in",
-};
 
 interface AnimatedSectionProps {
   children: React.ReactNode;
-  animation?: AnimationType;
   delay?: number;
-  threshold?: number;
   className?: string;
-  as?: React.ElementType;
 }
 
 export function AnimatedSection({
   children,
-  animation = "fade-up",
   delay = 0,
-  threshold = 0.12,
   className,
-  as: Component = "div",
 }: AnimatedSectionProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(el);
-        }
-      },
-      { threshold }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [threshold]);
+  const { ref, visible } = useScrollReveal(0.1);
 
   return (
-    <Component
+    <div
       ref={ref}
-      className={cn(
-        "opacity-0",
-        isVisible && animationClasses[animation],
-        className
-      )}
-      style={delay > 0 && isVisible ? { animationDelay: `${delay}ms` } : undefined}
+      className={cn(className)}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(32px)",
+        transition: `opacity 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}ms, transform 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
+      }}
     >
       {children}
-    </Component>
+    </div>
   );
 }

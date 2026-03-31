@@ -90,11 +90,11 @@ export default function CareersPage() {
           <div className="grid gap-8 sm:grid-cols-2">
             {whyKoleex.map((item) => (
               <AnimatedSection key={item.title}>
-                <div className="rounded-2xl border border-border-light p-8 h-full">
-                  <h3 className="text-xl font-semibold text-text-primary">
+                <div className="rounded-2xl border border-white/10 p-8 h-full">
+                  <h3 className="text-xl font-semibold text-white">
                     {item.title}
                   </h3>
-                  <p className="mt-3 text-base leading-relaxed text-text-secondary">
+                  <p className="mt-3 text-base leading-relaxed text-white/50">
                     {item.description}
                   </p>
                 </div>
@@ -105,7 +105,7 @@ export default function CareersPage() {
       </Section>
 
       {/* Open Positions */}
-      <Section background="light">
+      <Section>
         <Container>
           <SectionHeading
             eyebrow="Open Positions"
@@ -116,10 +116,10 @@ export default function CareersPage() {
           <div className="mx-auto max-w-3xl space-y-4">
             {openPositions.map((job) => (
               <AnimatedSection key={job.title}>
-                <Card className="h-full">
+                <Card variant="dark" className="h-full">
                   <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <h3 className="text-lg font-semibold text-text-primary">
+                      <h3 className="text-lg font-semibold text-white">
                         {job.title}
                       </h3>
                       <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -129,7 +129,7 @@ export default function CareersPage() {
                       </div>
                     </div>
                     <div className="shrink-0">
-                      <span className="text-sm font-medium text-accent">
+                      <span className="text-sm font-medium text-white/80">
                         View Role &rarr;
                       </span>
                     </div>
@@ -140,7 +140,7 @@ export default function CareersPage() {
           </div>
 
           <div className="mt-12 text-center">
-            <p className="text-text-secondary">
+            <p className="text-white/50">
               Don&apos;t see the right role?
             </p>
             <Button href="/contact" variant="secondary" className="mt-4">
@@ -155,20 +155,20 @@ export default function CareersPage() {
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             <AnimatedSection>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-accent">
+              <p className="text-overline mb-3">
                 Our Culture
               </p>
-              <h2 className="text-headline">
+              <h2 className="text-headline text-white">
                 Built on Respect, Driven by Curiosity
               </h2>
-              <p className="mt-6 text-body-large leading-relaxed">
+              <p className="mt-6 text-body-large leading-relaxed !text-white/50">
                 At Koleex, we believe the best ideas emerge when diverse
                 perspectives come together in an environment of mutual respect.
                 We foster a culture of intellectual curiosity, rigorous debate,
                 and shared ownership, where every team member has the agency to
                 make meaningful contributions.
               </p>
-              <p className="mt-6 text-base leading-relaxed text-text-secondary">
+              <p className="mt-6 text-base leading-relaxed text-white/35">
                 From our annual innovation summit to local community initiatives,
                 we create spaces for our people to connect, learn, and grow both
                 professionally and personally.

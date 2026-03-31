@@ -1,22 +1,21 @@
 import { cn } from "@/lib/utils";
 
 /* ---------------------------------------------------------------------------
-   Badge — Small pill labels for tags, categories, and status indicators.
+   Badge — Dark-first pill labels for tags, categories, status.
    --------------------------------------------------------------------------- */
 
 const variants = {
-  default: "bg-surface-secondary text-text-secondary",
-  accent: "bg-accent-light text-accent-dark",
-  dark: "bg-gray-800 text-gray-200",
-  outline: "border border-border text-text-secondary",
-  success: "bg-green-50 text-green-700",
-  warning: "bg-yellow-50 text-yellow-700",
+  default: "bg-white/[0.06] text-white/60 border border-white/[0.08]",
+  accent: "bg-white/[0.10] text-white/80 border border-white/[0.12]",
+  outline: "border border-white/[0.10] text-white/50",
+  success: "bg-green-500/10 text-green-400 border border-green-500/20",
+  warning: "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20",
 } as const;
 
 const sizes = {
-  sm: "px-2 py-0.5 text-[10px]",
-  md: "px-3 py-1 text-xs",
-  lg: "px-4 py-1.5 text-sm",
+  sm: "px-2.5 py-0.5 text-[10px]",
+  md: "px-3 py-1 text-[11px]",
+  lg: "px-4 py-1.5 text-[12px]",
 } as const;
 
 interface BadgeProps {

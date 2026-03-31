@@ -1,26 +1,23 @@
 import { cn } from "@/lib/utils";
 
 /* ---------------------------------------------------------------------------
-   Section — Full-width page section with background & spacing variants.
-   Wraps content in a semantic <section> element with generous vertical
-   padding that collapses gracefully on smaller screens.
+   Section — Full-width section wrapper.
+   Dark-first: defaults to black background.
    --------------------------------------------------------------------------- */
 
 const backgrounds = {
+  black: "bg-black",
+  dark: "bg-[#0a0a0a]",
   white: "bg-white",
-  light: "bg-surface-secondary",
-  dark: "bg-surface-dark text-text-inverse",
-  black: "bg-black text-text-inverse",
-  accent: "bg-accent text-white",
+  light: "bg-[#f5f5f7]",
 } as const;
 
 const spacings = {
   none: "",
-  sm: "py-12 md:py-16",
-  md: "py-16 md:py-24",
-  lg: "py-20 md:py-32",
-  xl: "py-24 md:py-40",
-  hero: "py-28 md:py-44",
+  sm: "py-16 md:py-20",
+  md: "py-20 md:py-28",
+  lg: "py-24 md:py-36",
+  xl: "py-32 md:py-44",
 } as const;
 
 interface SectionProps {
@@ -29,23 +26,26 @@ interface SectionProps {
   spacing?: keyof typeof spacings;
   id?: string;
   className?: string;
-  as?: React.ElementType;
 }
 
 export function Section({
   children,
-  background = "white",
+  background = "black",
   spacing = "lg",
   id,
   className,
-  as: Component = "section",
 }: SectionProps) {
   return (
-    <Component
+    <section
       id={id}
-      className={cn(backgrounds[background], spacings[spacing], className)}
+      className={cn(
+        backgrounds[background],
+        spacings[spacing],
+        "section-accent-top",
+        className
+      )}
     >
       {children}
-    </Component>
+    </section>
   );
 }

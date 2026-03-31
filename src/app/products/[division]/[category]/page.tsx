@@ -73,14 +73,22 @@ export default async function CategoryPage({ params }: Props) {
               <AnimatedSection key={sub.slug}>
                 <Card
                   href={`/products/${division.slug}/${category.slug}/${sub.slug}`}
-                  title={sub.name}
-                  description={sub.description}
+                  variant="dark"
                   className="h-full"
                 >
-                  <div className="mt-4 px-6 pb-6">
-                    <span className="text-sm font-medium text-accent">
-                      {sub.products.length} product{sub.products.length !== 1 ? "s" : ""} &rarr;
-                    </span>
+                  <div className="p-6">
+                    <p className="text-overline">{category.name}</p>
+                    <h3 className="mt-2 text-lg font-semibold text-white">
+                      {sub.name}
+                    </h3>
+                    <p className="mt-1 text-sm text-white/50">
+                      {sub.description}
+                    </p>
+                    <div className="mt-4">
+                      <span className="link-cta link-cta-dark">
+                        {sub.products.length} product{sub.products.length !== 1 ? "s" : ""} &rarr;
+                      </span>
+                    </div>
                   </div>
                 </Card>
               </AnimatedSection>

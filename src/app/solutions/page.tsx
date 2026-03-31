@@ -23,7 +23,7 @@ export default function SolutionsPage() {
       {solutions.map((solution, index) => (
         <Section
           key={solution.slug}
-          background={index % 2 === 0 ? "white" : "light"}
+          background={index % 2 === 0 ? "black" : undefined}
         >
           <Container>
             <AnimatedSection>
@@ -34,14 +34,14 @@ export default function SolutionsPage() {
                   }`}
                 >
                   <div className={index % 2 !== 0 ? "lg:order-2" : ""}>
-                    <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-accent">
+                    <p className="text-overline mb-3">
                       Solution
                     </p>
-                    <h2 className="text-headline">{solution.title}</h2>
-                    <p className="mt-4 text-body-large leading-relaxed">
+                    <h2 className="text-headline text-white">{solution.title}</h2>
+                    <p className="mt-4 text-body-large leading-relaxed !text-white/50">
                       {solution.description}
                     </p>
-                    <p className="mt-6 text-sm leading-relaxed text-text-secondary">
+                    <p className="mt-6 text-sm leading-relaxed text-white/35">
                       {solution.overview}
                     </p>
                     <div className="mt-8">
@@ -52,11 +52,11 @@ export default function SolutionsPage() {
                   </div>
 
                   <div
-                    className={`aspect-[4/3] rounded-2xl bg-surface-secondary ${
+                    className={`aspect-[4/3] rounded-2xl bg-white/5 ${
                       index % 2 !== 0 ? "lg:order-1" : ""
                     }`}
                   >
-                    <div className="flex h-full items-center justify-center text-text-tertiary">
+                    <div className="flex h-full items-center justify-center text-white/20">
                       <svg
                         width="64"
                         height="64"
@@ -80,18 +80,18 @@ export default function SolutionsPage() {
         </Section>
       ))}
 
-      <Section background="dark">
+      <Section>
         <Container>
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-headline text-text-inverse">
+            <h2 className="text-headline text-white">
               Ready to Transform Your Operations?
             </h2>
-            <p className="mt-4 text-subtitle text-text-inverse/70">
+            <p className="mt-4 text-subtitle !text-white/50">
               Our solutions team works with you to design integrated systems
               tailored to your unique challenges.
             </p>
             <div className="mt-8">
-              <Button href="/contact" size="lg">
+              <Button href="/contact" variant="primary" size="lg">
                 Talk to an Expert
               </Button>
             </div>

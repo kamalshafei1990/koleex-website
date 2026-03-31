@@ -38,8 +38,8 @@ export default function StoriesPage() {
                 key={tab}
                 className={`inline-flex items-center rounded-full px-5 py-2 text-sm font-medium transition-premium ${
                   i === 0
-                    ? "bg-text-primary text-white"
-                    : "bg-surface-secondary text-text-secondary hover:bg-border-light"
+                    ? "bg-white text-black"
+                    : "bg-white/5 text-white/50 hover:bg-white/10"
                 }`}
               >
                 {tab}
@@ -52,23 +52,24 @@ export default function StoriesPage() {
               <AnimatedSection key={story.slug}>
                 <Card
                   href={`/stories/${story.slug}`}
+                  variant="dark"
                   className="h-full"
                 >
-                  <div className="aspect-[16/10] bg-surface-secondary" />
+                  <div className="aspect-[16/10] bg-white/5" />
                   <div className="p-6">
                     <div className="mb-3 flex items-center gap-3">
                       <Badge variant="accent">{story.category}</Badge>
-                      <span className="text-xs text-text-tertiary">
+                      <span className="text-xs text-white/35">
                         {story.readTime} min read
                       </span>
                     </div>
-                    <h3 className="text-lg font-semibold leading-snug text-text-primary">
+                    <h3 className="text-lg font-semibold leading-snug text-white">
                       {story.title}
                     </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-text-secondary line-clamp-3">
+                    <p className="mt-2 text-sm leading-relaxed text-white/50 line-clamp-3">
                       {story.excerpt}
                     </p>
-                    <p className="mt-4 text-xs text-text-tertiary">
+                    <p className="mt-4 text-xs text-white/35">
                       {formatDate(story.date)}
                     </p>
                   </div>

@@ -103,7 +103,7 @@ export default async function ProductPage({ params }: Props) {
         breadcrumb={breadcrumb}
       />
 
-      {/* Specifications placeholder */}
+      {/* Specifications */}
       <Section>
         <Container>
           <SectionHeading
@@ -113,7 +113,7 @@ export default async function ProductPage({ params }: Props) {
           />
 
           <div className="mx-auto max-w-3xl">
-            <div className="overflow-hidden rounded-2xl border border-border-light">
+            <div className="overflow-hidden rounded-2xl border border-white/10">
               <table className="w-full text-left text-sm">
                 <tbody>
                   {[
@@ -126,12 +126,12 @@ export default async function ProductPage({ params }: Props) {
                   ].map(([label, value], i) => (
                     <tr
                       key={label}
-                      className={i % 2 === 0 ? "bg-surface-secondary" : "bg-white"}
+                      className={i % 2 === 0 ? "bg-white/5" : "bg-black"}
                     >
-                      <td className="px-6 py-4 font-medium text-text-primary">
+                      <td className="px-6 py-4 font-medium text-white">
                         {label}
                       </td>
-                      <td className="px-6 py-4 text-text-secondary">{value}</td>
+                      <td className="px-6 py-4 text-white/50">{value}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -142,7 +142,7 @@ export default async function ProductPage({ params }: Props) {
       </Section>
 
       {/* Models grid */}
-      <Section background="light">
+      <Section>
         <Container>
           <SectionHeading
             eyebrow="Configurations"
@@ -155,20 +155,21 @@ export default async function ProductPage({ params }: Props) {
               <AnimatedSection key={model.slug}>
                 <Card
                   href={`${basePath}/${product.slug}/${model.slug}`}
+                  variant="dark"
                   className="h-full"
                 >
                   <div className="p-6">
-                    <p className="text-xs font-mono text-text-tertiary">
+                    <p className="text-overline">
                       {model.sku}
                     </p>
-                    <h3 className="mt-2 text-lg font-semibold text-text-primary">
+                    <h3 className="mt-2 text-lg font-semibold text-white">
                       {model.name}
                     </h3>
-                    <p className="mt-1 text-sm text-text-secondary">
+                    <p className="mt-1 text-sm text-white/50">
                       {model.tagline}
                     </p>
                     <div className="mt-4">
-                      <span className="text-sm font-medium text-accent">
+                      <span className="link-cta link-cta-dark">
                         View details &rarr;
                       </span>
                     </div>
@@ -184,13 +185,13 @@ export default async function ProductPage({ params }: Props) {
       <Section>
         <Container>
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-headline">Need Help Choosing?</h2>
-            <p className="text-subtitle mt-4">
+            <h2 className="text-2xl font-semibold text-white sm:text-3xl">Need Help Choosing?</h2>
+            <p className="mt-4 text-white/50">
               Our engineering team is ready to help you select the right
               configuration for your application.
             </p>
             <div className="mt-8">
-              <Button href="/contact" size="lg">
+              <Button href="/contact" variant="primary" size="lg">
                 Contact Sales
               </Button>
             </div>

@@ -1,20 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { Container } from "@/components/ui/Container";
-import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
 /* ---------------------------------------------------------------------------
-   PageHero — Full-width hero banner used at the top of every page.
-   Supports breadcrumbs, title, subtitle, CTA buttons, and background variants.
+   PageHero — Dark-first page header with breadcrumbs.
+   Used on all inner pages (Products, About, Careers, etc.).
+   Always black background with silver gradient text.
    --------------------------------------------------------------------------- */
-
-const bgVariants = {
-  dark: "bg-surface-dark",
-  black: "bg-black",
-  light: "bg-surface-secondary",
-  accent: "bg-accent",
-} as const;
 
 interface BreadcrumbItem {
   label: string;
@@ -25,141 +19,61 @@ interface PageHeroProps {
   title: string;
   subtitle?: string;
   breadcrumb?: BreadcrumbItem[];
-  background?: keyof typeof bgVariants;
-  size?: "sm" | "md" | "lg" | "xl";
-  align?: "left" | "center";
-  cta?: { label: string; href: string; variant?: "primary" | "dark-outline" };
-  secondaryCta?: { label: string; href: string };
-  children?: React.ReactNode;
+  size?: "sm" | "md" | "lg";
   className?: string;
 }
 
 const sizes = {
-  sm: "pt-28 pb-12 md:pt-32 md:pb-16",
-  md: "pt-28 pb-16 md:pt-36 md:pb-24",
-  lg: "pt-32 pb-20 md:pt-40 md:pb-32",
-  xl: "pt-36 pb-24 md:pt-48 md:pb-40",
-} as const;
+  sm: "pt-[calc(var(--header-height)+48px)] pb-12 md:pt-[calc(var(--header-height)+64px)] md:pb-16",
+  md: "pt-[calc(var(--header-height)+64px)] pb-16 md:pt-[calc(var(--header-height)+96px)] md:pb-24",
+  lg: "pt-[calc(var(--header-height)+80px)] pb-20 md:pt-[calc(var(--header-height)+120px)] md:pb-32",
+};
 
 export function PageHero({
   title,
   subtitle,
   breadcrumb,
-  background = "dark",
   size = "md",
-  align = "left",
-  cta,
-  secondaryCta,
-  children,
   className,
 }: PageHeroProps) {
-  const isDark = background === "dark" || background === "black" || background === "accent";
-
   return (
-    <section className={cn(bgVariants[background], sizes[size], className)}>
-      <Container>
-        <div className={cn(align === "center" && "text-center mx-auto max-w-4xl")}>
-          {/* Breadcrumb */}
-          {breadcrumb && breadcrumb.length > 0 && (
-            <nav aria-label="Breadcrumb" className="mb-6 md:mb-8">
-              <ol className="flex flex-wrap items-center gap-1.5 text-sm">
-                {breadcrumb.map((item, index) => {
-                  const isLast = index === breadcrumb.length - 1;
-                  return (
-                    <li key={item.href} className="flex items-center gap-1.5">
-                      {index > 0 && (
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          className="shrink-0"
-                        >
-                          <path
-                            d="M6 4l4 4-4 4"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className={isDark ? "text-white/30" : "text-gray-400"}
-                          />
-                        </svg>
-                      )}
-                      {isLast ? (
-                        <span className={cn("font-medium", isDark ? "text-white" : "text-text-primary")}>
-                          {item.label}
-                        </span>
-                      ) : (
-                        <a
-                          href={item.href}
-                          className={cn(
-                            "transition-premium",
-                            isDark
-                              ? "text-white/50 hover:text-white/80"
-                              : "text-text-tertiary hover:text-text-primary"
-                          )}
-                        >
-                          {item.label}
-                        </a>
-                      )}
-                    </li>
-                  );
-                })}
-              </ol>
-            </nav>
-          )}
+    <section className={cn("relative bg-black overflow-hidden hero-gradient-alt", sizes[size], className)}>
+      {/* Ambient orb */}
+      <div className="orb orb-silver w-[500px] h-[500px] -top-32 left-1/2 -translate-x-1/2 opacity-50" />
 
-          {/* Title */}
-          <h1
-            className={cn(
-              "text-display",
-              isDark ? "text-white" : "text-text-primary"
-            )}
-          >
-            {title}
-          </h1>
+      <Container className="relative z-10">
+        {/* Breadcrumb */}
+        {breadcrumb && breadcrumb.length > 0 && (
+          <nav aria-label="Breadcrumb" className="mb-8">
+            <ol className="flex flex-wrap items-center gap-1.5 text-[13px]">
+              {breadcrumb.map((item, index) => {
+                const isLast = index === breadcrumb.length - 1;
+                return (
+                  <li key={item.href} className="flex items-center gap-1.5">
+                    {index > 0 && (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="shrink-0">
+                        <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-white/20" />
+                      </svg>
+                    )}
+                    {isLast ? (
+                      <span className="font-medium text-white/80">{item.label}</span>
+                    ) : (
+                      <Link href={item.href} className="text-white/35 hover:text-white/60 transition-colors duration-300">
+                        {item.label}
+                      </Link>
+                    )}
+                  </li>
+                );
+              })}
+            </ol>
+          </nav>
+        )}
 
-          {/* Subtitle */}
-          {subtitle && (
-            <p
-              className={cn(
-                "mt-5 md:mt-6 text-subtitle max-w-2xl",
-                isDark ? "text-white/60" : "text-text-secondary",
-                align === "center" && "mx-auto"
-              )}
-            >
-              {subtitle}
-            </p>
-          )}
+        <h1 className="text-display text-gradient-hero">{title}</h1>
 
-          {/* CTA Buttons */}
-          {(cta || secondaryCta) && (
-            <div className={cn("mt-8 md:mt-10 flex flex-wrap gap-4", align === "center" && "justify-center")}>
-              {cta && (
-                <Button
-                  href={cta.href}
-                  variant={cta.variant || (isDark ? "primary" : "primary")}
-                  size="lg"
-                  arrow
-                >
-                  {cta.label}
-                </Button>
-              )}
-              {secondaryCta && (
-                <Button
-                  href={secondaryCta.href}
-                  variant={isDark ? "dark-outline" : "outline"}
-                  size="lg"
-                >
-                  {secondaryCta.label}
-                </Button>
-              )}
-            </div>
-          )}
-
-          {/* Custom content slot */}
-          {children}
-        </div>
+        {subtitle && (
+          <p className="mt-6 max-w-2xl text-subtitle !leading-[1.75]">{subtitle}</p>
+        )}
       </Container>
     </section>
   );

@@ -21,16 +21,16 @@ export default function SearchPage() {
               <input
                 type="text"
                 placeholder="Search products, solutions, stories..."
-                className="w-full rounded-xl border border-border bg-white px-6 py-4 text-base text-text-primary outline-none transition-premium placeholder:text-text-tertiary focus:border-accent focus:ring-1 focus:ring-accent"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-6 py-4 text-base text-white outline-none transition-premium placeholder:text-white/35 focus:border-white/30 focus:ring-1 focus:ring-white/30"
               />
             </div>
 
-            <div className="rounded-2xl border border-border-light bg-surface-secondary p-12">
-              <p className="text-text-secondary">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-12">
+              <p className="text-white/50">
                 Enter a search term above to find products, solutions, stories,
                 and more across the Koleex website.
               </p>
-              <p className="mt-4 text-sm text-text-tertiary">
+              <p className="mt-4 text-sm text-white/35">
                 Search functionality will be available in a future update.
               </p>
             </div>

@@ -54,8 +54,8 @@ export default function ContactPage() {
             {/* Contact form */}
             <AnimatedSection>
               <div>
-                <h2 className="text-title mb-2">Send Us a Message</h2>
-                <p className="text-text-secondary mb-8">
+                <h2 className="text-title text-white mb-2">Send Us a Message</h2>
+                <p className="text-white/50 mb-8">
                   Fill out the form below and a member of our team will respond
                   within one business day.
                 </p>
@@ -65,7 +65,7 @@ export default function ContactPage() {
                     <div>
                       <label
                         htmlFor="name"
-                        className="mb-2 block text-sm font-medium text-text-primary"
+                        className="mb-2 block text-sm font-medium text-white/80"
                       >
                         Full Name
                       </label>
@@ -73,13 +73,13 @@ export default function ContactPage() {
                         type="text"
                         id="name"
                         placeholder="John Smith"
-                        className="w-full rounded-xl border border-border bg-white px-4 py-3 text-sm text-text-primary outline-none transition-premium placeholder:text-text-tertiary focus:border-accent focus:ring-1 focus:ring-accent"
+                        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-premium placeholder:text-white/35 focus:border-white/30 focus:ring-1 focus:ring-white/30"
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="email"
-                        className="mb-2 block text-sm font-medium text-text-primary"
+                        className="mb-2 block text-sm font-medium text-white/80"
                       >
                         Email Address
                       </label>
@@ -87,7 +87,7 @@ export default function ContactPage() {
                         type="email"
                         id="email"
                         placeholder="john@company.com"
-                        className="w-full rounded-xl border border-border bg-white px-4 py-3 text-sm text-text-primary outline-none transition-premium placeholder:text-text-tertiary focus:border-accent focus:ring-1 focus:ring-accent"
+                        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-premium placeholder:text-white/35 focus:border-white/30 focus:ring-1 focus:ring-white/30"
                       />
                     </div>
                   </div>
@@ -95,7 +95,7 @@ export default function ContactPage() {
                   <div>
                     <label
                       htmlFor="company"
-                      className="mb-2 block text-sm font-medium text-text-primary"
+                      className="mb-2 block text-sm font-medium text-white/80"
                     >
                       Company
                     </label>
@@ -103,20 +103,20 @@ export default function ContactPage() {
                       type="text"
                       id="company"
                       placeholder="Acme Corporation"
-                      className="w-full rounded-xl border border-border bg-white px-4 py-3 text-sm text-text-primary outline-none transition-premium placeholder:text-text-tertiary focus:border-accent focus:ring-1 focus:ring-accent"
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-premium placeholder:text-white/35 focus:border-white/30 focus:ring-1 focus:ring-white/30"
                     />
                   </div>
 
                   <div>
                     <label
                       htmlFor="subject"
-                      className="mb-2 block text-sm font-medium text-text-primary"
+                      className="mb-2 block text-sm font-medium text-white/80"
                     >
                       Subject
                     </label>
                     <select
                       id="subject"
-                      className="w-full rounded-xl border border-border bg-white px-4 py-3 text-sm text-text-primary outline-none transition-premium focus:border-accent focus:ring-1 focus:ring-accent"
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-premium focus:border-white/30 focus:ring-1 focus:ring-white/30"
                     >
                       <option value="">Select a subject</option>
                       <option value="sales">Sales Enquiry</option>
@@ -131,7 +131,7 @@ export default function ContactPage() {
                   <div>
                     <label
                       htmlFor="message"
-                      className="mb-2 block text-sm font-medium text-text-primary"
+                      className="mb-2 block text-sm font-medium text-white/80"
                     >
                       Message
                     </label>
@@ -139,11 +139,11 @@ export default function ContactPage() {
                       id="message"
                       rows={5}
                       placeholder="Tell us how we can help..."
-                      className="w-full resize-none rounded-xl border border-border bg-white px-4 py-3 text-sm text-text-primary outline-none transition-premium placeholder:text-text-tertiary focus:border-accent focus:ring-1 focus:ring-accent"
+                      className="w-full resize-none rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-premium placeholder:text-white/35 focus:border-white/30 focus:ring-1 focus:ring-white/30"
                     />
                   </div>
 
-                  <Button type="submit" size="lg" className="w-full sm:w-auto">
+                  <Button type="submit" variant="primary" size="lg" className="w-full sm:w-auto">
                     Send Message
                   </Button>
                 </form>
@@ -153,35 +153,35 @@ export default function ContactPage() {
             {/* Contact information */}
             <AnimatedSection>
               <div>
-                <h2 className="text-title mb-2">Contact Information</h2>
-                <p className="text-text-secondary mb-8">
+                <h2 className="text-title text-white mb-2">Contact Information</h2>
+                <p className="text-white/50 mb-8">
                   Reach us directly through any of the channels below.
                 </p>
 
                 <div className="space-y-8">
                   <div>
-                    <h3 className="text-sm font-semibold uppercase tracking-widest text-text-tertiary">
+                    <h3 className="text-overline">
                       Email
                     </h3>
-                    <p className="mt-2 text-lg text-text-primary">
+                    <p className="mt-2 text-lg text-white">
                       {siteConfig.contact.email}
                     </p>
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-semibold uppercase tracking-widest text-text-tertiary">
+                    <h3 className="text-overline">
                       Phone
                     </h3>
-                    <p className="mt-2 text-lg text-text-primary">
+                    <p className="mt-2 text-lg text-white">
                       {siteConfig.contact.phone}
                     </p>
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-semibold uppercase tracking-widest text-text-tertiary">
+                    <h3 className="text-overline">
                       Headquarters
                     </h3>
-                    <div className="mt-2 text-base text-text-secondary">
+                    <div className="mt-2 text-base text-white/50">
                       {siteConfig.contact.address.map((line) => (
                         <p key={line}>{line}</p>
                       ))}
@@ -195,7 +195,7 @@ export default function ContactPage() {
       </Section>
 
       {/* Office locations */}
-      <Section background="light">
+      <Section>
         <Container>
           <SectionHeading
             eyebrow="Our Offices"
@@ -206,17 +206,17 @@ export default function ContactPage() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {offices.map((office) => (
               <AnimatedSection key={office.city}>
-                <div className="rounded-2xl border border-border-light bg-white p-6 h-full">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-accent">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-6 h-full">
+                  <p className="text-overline">
                     {office.label}
                   </p>
-                  <h3 className="mt-3 text-xl font-semibold text-text-primary">
+                  <h3 className="mt-3 text-xl font-semibold text-white">
                     {office.city}
                   </h3>
-                  <p className="mt-1 text-sm text-text-secondary">
+                  <p className="mt-1 text-sm text-white/50">
                     {office.country}
                   </p>
-                  <p className="mt-3 text-sm leading-relaxed text-text-tertiary">
+                  <p className="mt-3 text-sm leading-relaxed text-white/35">
                     {office.address}
                   </p>
                 </div>

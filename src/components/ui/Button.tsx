@@ -1,36 +1,33 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { ArrowRight } from "lucide-react";
 import { type ButtonHTMLAttributes, type AnchorHTMLAttributes } from "react";
 
 /* ---------------------------------------------------------------------------
-   Button — Polymorphic button / link component with variants and sizes.
-   Renders <button> by default; pass `href` to render a Next.js <Link>.
+   Button — Dark-first polymorphic button/link.
+   Default: silver outline style matching brand guidelines.
    --------------------------------------------------------------------------- */
 
 const variants = {
   primary:
-    "bg-accent text-white hover:bg-accent-hover active:scale-[0.97] shadow-sm hover:shadow-md",
+    "bg-white text-black hover:bg-white/90 active:scale-[0.97]",
   secondary:
-    "bg-white border border-border text-text-primary hover:bg-surface-secondary active:scale-[0.97]",
+    "border border-white/15 text-white/70 hover:border-white/25 hover:text-white active:scale-[0.97]",
   outline:
-    "border border-border text-text-primary hover:bg-surface-secondary active:scale-[0.97]",
+    "border border-white/10 text-white/50 hover:border-white/20 hover:text-white/80 active:scale-[0.97]",
   ghost:
-    "text-text-primary hover:bg-surface-secondary active:scale-[0.97]",
+    "text-white/60 hover:text-white hover:bg-white/[0.05] active:scale-[0.97]",
   dark:
-    "bg-surface-dark text-white hover:bg-gray-800 active:scale-[0.97]",
-  "dark-outline":
-    "border border-white/20 text-white hover:bg-white/10 active:scale-[0.97]",
+    "bg-white/[0.06] text-white/70 hover:bg-white/[0.10] hover:text-white active:scale-[0.97]",
   link:
-    "text-accent hover:text-accent-hover underline-offset-4 hover:underline p-0 h-auto",
+    "text-white/50 hover:text-white/80 hover:underline underline-offset-4 p-0 h-auto",
 } as const;
 
 const sizes = {
-  xs: "h-8 px-3 text-xs rounded-full gap-1.5",
-  sm: "h-9 px-4 text-sm rounded-full gap-2",
-  md: "h-11 px-6 text-sm rounded-full gap-2",
-  lg: "h-[52px] px-8 text-base rounded-full gap-2.5",
-  xl: "h-14 px-10 text-base rounded-full gap-3",
+  xs: "h-8 px-3.5 text-[12px] rounded-full gap-1.5",
+  sm: "h-9 px-4 text-[13px] rounded-full gap-2",
+  md: "h-11 px-6 text-[13px] rounded-full gap-2",
+  lg: "h-[48px] px-8 text-[14px] rounded-full gap-2.5",
+  xl: "h-[52px] px-10 text-[15px] rounded-full gap-3",
 } as const;
 
 type Variant = keyof typeof variants;
@@ -39,58 +36,38 @@ type Size = keyof typeof sizes;
 interface ButtonBaseProps {
   variant?: Variant;
   size?: Size;
-  arrow?: boolean;
   className?: string;
   children?: React.ReactNode;
 }
 
 type ButtonAsButton = ButtonBaseProps &
-  ButtonHTMLAttributes<HTMLButtonElement> & {
-    href?: never;
-  };
+  ButtonHTMLAttributes<HTMLButtonElement> & { href?: never };
 
 type ButtonAsLink = ButtonBaseProps &
-  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & {
-    href: string;
-  };
+  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & { href: string };
 
 type ButtonProps = ButtonAsButton | ButtonAsLink;
 
 export function Button({
-  variant = "primary",
+  variant = "secondary",
   size = "md",
-  arrow = false,
   className,
   children,
   ...props
 }: ButtonProps) {
   const classes = cn(
-    "inline-flex items-center justify-center font-medium transition-premium cursor-pointer select-none whitespace-nowrap focus-ring",
+    "inline-flex items-center justify-center font-medium cursor-pointer select-none whitespace-nowrap focus-ring",
+    "transition-all duration-[350ms] ease-[cubic-bezier(0.4,0,0.2,1)]",
     variants[variant],
     variant !== "link" && sizes[size],
     className
   );
 
-  const content = (
-    <>
-      {children}
-      {arrow && <ArrowRight className="h-4 w-4 shrink-0" />}
-    </>
-  );
-
   if ("href" in props && props.href) {
     const { href, ...rest } = props as ButtonAsLink;
-    return (
-      <Link href={href} className={classes} {...rest}>
-        {content}
-      </Link>
-    );
+    return <Link href={href} className={classes} {...rest}>{children}</Link>;
   }
 
   const { type = "button", ...rest } = props as ButtonAsButton;
-  return (
-    <button type={type} className={classes} {...rest}>
-      {content}
-    </button>
-  );
+  return <button type={type} className={classes} {...rest}>{children}</button>;
 }

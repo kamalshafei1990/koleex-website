@@ -58,14 +58,22 @@ export default async function DivisionPage({ params }: Props) {
               <AnimatedSection key={category.slug}>
                 <Card
                   href={`/products/${division.slug}/${category.slug}`}
-                  title={category.name}
-                  description={category.description}
+                  variant="dark"
                   className="h-full"
                 >
-                  <div className="mt-4 px-6 pb-6">
-                    <span className="text-sm font-medium text-accent">
-                      {category.subcategories.length} subcategories &rarr;
-                    </span>
+                  <div className="p-6">
+                    <p className="text-overline">{division.name}</p>
+                    <h3 className="mt-2 text-lg font-semibold text-white">
+                      {category.name}
+                    </h3>
+                    <p className="mt-1 text-sm text-white/50">
+                      {category.description}
+                    </p>
+                    <div className="mt-4">
+                      <span className="link-cta link-cta-dark">
+                        {category.subcategories.length} subcategories &rarr;
+                      </span>
+                    </div>
                   </div>
                 </Card>
               </AnimatedSection>
