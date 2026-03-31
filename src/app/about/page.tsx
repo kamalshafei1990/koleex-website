@@ -1,246 +1,72 @@
-import { PageHero } from "@/components/ui/PageHero";
-import { Section } from "@/components/ui/Section";
-import { Container } from "@/components/ui/Container";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { Card } from "@/components/ui/Card";
-import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { AboutHero } from "@/components/about/AboutHero";
+import { SplitSection } from "@/components/about/SplitSection";
+import { StatsRow } from "@/components/about/StatsRow";
+import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "About Us",
-  description:
-    "Learn about Koleex International Group, a global technology and industrial conglomerate with operations in over 80 countries.",
+  description: "Koleex International Group — a global technology and industrial leader with operations in over 80 countries.",
 };
-
-const leaders = [
-  {
-    name: "Elena Richter",
-    role: "Chief Executive Officer",
-    bio: "25 years in industrial technology. Previously led global operations at a Fortune 100 conglomerate.",
-  },
-  {
-    name: "David Chen",
-    role: "Chief Technology Officer",
-    bio: "Former VP of Engineering at a leading robotics firm. PhD in Mechanical Engineering from MIT.",
-  },
-  {
-    name: "Amara Osei",
-    role: "Chief Financial Officer",
-    bio: "Two decades of financial leadership across energy and advanced manufacturing sectors.",
-  },
-  {
-    name: "Marcus Johansson",
-    role: "President, Industrial Technology",
-    bio: "Pioneered the adoption of collaborative robotics in European automotive manufacturing.",
-  },
-  {
-    name: "Priya Sharma",
-    role: "President, Digital Solutions",
-    bio: "Built enterprise IoT platforms serving over 10 million connected devices worldwide.",
-  },
-  {
-    name: "Thomas Keller",
-    role: "President, Energy Systems",
-    bio: "Led the development of grid-scale battery storage systems deployed across three continents.",
-  },
-];
-
-const values = [
-  {
-    title: "Engineering Excellence",
-    description:
-      "We hold ourselves to the highest standards of precision, reliability, and innovation in everything we design and deliver.",
-  },
-  {
-    title: "Customer Partnership",
-    description:
-      "We succeed when our customers succeed. Every solution starts with a deep understanding of the challenges they face.",
-  },
-  {
-    title: "Sustainable Progress",
-    description:
-      "We engineer for the long term, creating technologies that advance industry while protecting the planet.",
-  },
-  {
-    title: "Global Perspective",
-    description:
-      "With operations on six continents, we bring diverse expertise and local insight to every engagement.",
-  },
-];
 
 export default function AboutPage() {
   return (
     <>
-      <PageHero
-        title="About Koleex International Group"
-        subtitle="A global technology and industrial conglomerate engineering what matters for a better world."
+      <AboutHero title="Company Overview" subtitle="A global technology and industrial leader shaping the future through innovation and precision." />
+
+      <StatsRow stats={[
+        { number: "80+", label: "Countries" },
+        { number: "12,000+", label: "Enterprise Clients" },
+        { number: "50+", label: "Years of Heritage" },
+        { number: "15,000+", label: "Product Configurations" },
+      ]} />
+
+      <SplitSection
+        image="/images/factory-floor.jpg"
+        eyebrow="Who We Are"
+        title="Engineering excellence at global scale."
+        description="Koleex International Group is a multinational technology and industrial conglomerate delivering precision-engineered products, intelligent digital solutions, and advanced materials to customers across six continents. From factory floors to energy grids, our technology powers the systems that matter most."
       />
 
-      {/* Our Story */}
-      <Section>
-        <Container>
-          <div className="mx-auto max-w-3xl text-center">
-            <AnimatedSection>
-              <p className="text-overline mb-3">
-                Our Story
-              </p>
-              <h2 className="text-headline text-white">Built on Decades of Innovation</h2>
-              <p className="mt-6 text-body-large leading-relaxed !text-white/50">
-                Founded with a singular vision to bridge the gap between
-                cutting-edge research and real-world industrial application,
-                Koleex International Group has grown into one of the world's
-                most diversified technology conglomerates. Today, our products
-                and platforms serve customers in over 80 countries across
-                manufacturing, energy, healthcare, aerospace, and digital
-                infrastructure.
-              </p>
-              <p className="mt-6 text-base leading-relaxed text-white/35">
-                From our headquarters in Zurich, Switzerland, we coordinate
-                research centres, manufacturing facilities, and service
-                operations spanning six continents. Our 28,000 employees share
-                a common purpose: to engineer technologies that make industries
-                safer, more efficient, and more sustainable.
-              </p>
-            </AnimatedSection>
-          </div>
-        </Container>
-      </Section>
+      <SplitSection
+        image="/images/team-office.jpg"
+        eyebrow="Our People"
+        title="Built by engineers, scientists, and visionaries."
+        description="Our strength lies in our people — a diverse team of over 25,000 professionals across engineering, research, manufacturing, and commercial operations. We attract the best minds in the industry and empower them to solve problems that matter."
+        flip
+        dark={false}
+      />
 
-      {/* Mission & Vision */}
-      <Section>
-        <Container>
-          <div className="grid gap-12 md:grid-cols-2">
-            <AnimatedSection>
-              <div>
-                <p className="text-overline mb-3">
-                  Mission
-                </p>
-                <h2 className="text-title text-white">
-                  Deliver precision-engineered technology that empowers
-                  industries and improves lives.
-                </h2>
-                <p className="mt-4 text-base leading-relaxed text-white/50">
-                  We combine deep domain expertise with relentless innovation to
-                  create products and solutions that solve the most complex
-                  challenges facing our customers today.
-                </p>
-              </div>
-            </AnimatedSection>
-            <AnimatedSection>
-              <div>
-                <p className="text-overline mb-3">
-                  Vision
-                </p>
-                <h2 className="text-title text-white">
-                  To be the global standard for industrial innovation and
-                  sustainable progress.
-                </h2>
-                <p className="mt-4 text-base leading-relaxed text-white/50">
-                  We envision a world where technology and sustainability
-                  reinforce each other, where every factory, grid, and supply
-                  chain operates at its full potential with minimal environmental
-                  impact.
-                </p>
-              </div>
-            </AnimatedSection>
-          </div>
-        </Container>
-      </Section>
+      <SplitSection
+        image="/images/solar-panels.jpg"
+        eyebrow="Our Impact"
+        title="Technology that shapes industries."
+        description="From smart manufacturing and renewable energy to connected infrastructure and advanced materials, our solutions are deployed in some of the world's most demanding environments. We don't just build products — we engineer outcomes."
+      />
 
-      {/* Leadership */}
-      <Section>
-        <Container>
-          <SectionHeading
-            eyebrow="Leadership"
-            title="Guided by Experience"
-            subtitle="Our executive team brings together decades of expertise across technology, manufacturing, energy, and global operations."
-          />
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {leaders.map((leader) => (
-              <AnimatedSection key={leader.name}>
-                <Card variant="dark" className="h-full">
-                  <div className="aspect-[4/3] bg-white/5" />
-                  <div className="p-6">
-                    <h3 className="text-lg font-semibold text-white">
-                      {leader.name}
-                    </h3>
-                    <p className="mt-1 text-sm font-medium text-white/80">
-                      {leader.role}
-                    </p>
-                    <p className="mt-3 text-sm leading-relaxed text-white/50">
-                      {leader.bio}
-                    </p>
-                  </div>
-                </Card>
-              </AnimatedSection>
+      {/* Navigation to sub-pages */}
+      <section className="bg-black py-20 md:py-28 border-t border-white/[0.06]">
+        <div className="max-w-[980px] mx-auto px-6 text-center">
+          <h2 className="text-[36px] md:text-[48px] font-semibold leading-[1.08] tracking-[-0.035em] text-white">
+            Learn more about Koleex.
+          </h2>
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 mt-8">
+            {[
+              { label: "History & Heritage", href: "/about/history" },
+              { label: "Vision & Mission", href: "/about/vision-mission" },
+              { label: "Core Values", href: "/about/values" },
+              { label: "Business Segments", href: "/about/business-segments" },
+              { label: "Global Presence", href: "/about/global-presence" },
+              { label: "Sustainability", href: "/about/sustainability" },
+              { label: "CEO Message", href: "/about/ceo-message" },
+            ].map((link) => (
+              <Link key={link.href} href={link.href} className="text-[17px] text-[#2997ff] hover:underline underline-offset-[3px]">
+                {link.label} {">"}
+              </Link>
             ))}
           </div>
-        </Container>
-      </Section>
-
-      {/* Global Presence */}
-      <Section>
-        <Container>
-          <div className="mx-auto max-w-3xl text-center">
-            <AnimatedSection>
-              <p className="text-overline mb-3">
-                Global Presence
-              </p>
-              <h2 className="text-headline text-white">
-                Engineering on Every Continent
-              </h2>
-              <p className="mt-4 text-subtitle !text-white/50">
-                With operations in over 80 countries, we combine global scale
-                with local expertise to serve our customers wherever they
-                operate.
-              </p>
-
-              <div className="mt-16 grid grid-cols-2 gap-8 sm:grid-cols-4">
-                {[
-                  { stat: "80+", label: "Countries" },
-                  { stat: "28,000", label: "Employees" },
-                  { stat: "12", label: "R&D Centres" },
-                  { stat: "45", label: "Manufacturing Sites" },
-                ].map((item) => (
-                  <div key={item.label}>
-                    <p className="text-display text-white">{item.stat}</p>
-                    <p className="mt-2 text-sm text-white/50">
-                      {item.label}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </AnimatedSection>
-          </div>
-        </Container>
-      </Section>
-
-      {/* Values */}
-      <Section>
-        <Container>
-          <SectionHeading
-            eyebrow="Our Values"
-            title="What Drives Us"
-            subtitle="The principles that guide every decision, product, and partnership."
-          />
-
-          <div className="grid gap-8 sm:grid-cols-2">
-            {values.map((value) => (
-              <AnimatedSection key={value.title}>
-                <div className="rounded-2xl border border-white/10 p-8">
-                  <h3 className="text-xl font-semibold text-white">
-                    {value.title}
-                  </h3>
-                  <p className="mt-3 text-base leading-relaxed text-white/50">
-                    {value.description}
-                  </p>
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
-        </Container>
-      </Section>
+        </div>
+      </section>
     </>
   );
 }
