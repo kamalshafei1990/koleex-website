@@ -5,8 +5,9 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 
 /* ---------------------------------------------------------------------------
-   Hero — Apple-style: centered text above a full-width edge-to-edge image.
-   No crop, no max-width constraint on the image.
+   Hero — Apple-style: white background, centered text,
+   full-width product image on white/clean background.
+   Buttons: black primary + black outline (no blue).
    --------------------------------------------------------------------------- */
 
 export function Hero() {
@@ -24,7 +25,7 @@ export function Hero() {
   });
 
   return (
-    <section className="bg-[#f5f5f7] overflow-hidden">
+    <section className="bg-white overflow-hidden">
       {/* Text */}
       <div className="text-center pt-16 md:pt-24 pb-6 md:pb-8 px-6 max-w-[980px] mx-auto">
         <h1
@@ -44,7 +45,7 @@ export function Hero() {
             href="/products/industrial-technology"
             variant="primary"
             size="lg"
-            className="!bg-[#0066cc] !text-white hover:!bg-[#0077ed] !h-[44px] !px-7 !text-[17px] !font-normal !rounded-full"
+            className="!bg-[#1d1d1f] !text-white hover:!bg-[#000000] !h-[44px] !px-7 !text-[17px] !font-normal !rounded-full"
           >
             Learn more
           </Button>
@@ -52,17 +53,17 @@ export function Hero() {
             href="/contact"
             variant="outline"
             size="lg"
-            className="!border-[#0066cc] !text-[#0066cc] hover:!bg-[#0066cc]/[0.06] !h-[44px] !px-7 !text-[17px] !font-normal !rounded-full"
+            className="!border-[#1d1d1f] !text-[#1d1d1f] hover:!bg-[#1d1d1f]/[0.05] !h-[44px] !px-7 !text-[17px] !font-normal !rounded-full"
           >
             Contact sales
           </Button>
         </div>
       </div>
 
-      {/* Full-width image — edge to edge, no crop */}
-      <div className="w-full" style={s(550)}>
+      {/* Full-width product image on white background */}
+      <div className="w-full bg-white" style={s(550)}>
         <Image
-          src="/images/hero-wide-2.jpg"
+          src="/images/drone-white.jpg"
           alt="KX-9000 Series — Precision Robotic System"
           width={2560}
           height={1440}
