@@ -5,9 +5,13 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 
 /* ---------------------------------------------------------------------------
-   Hero — Apple-style: white background, centered text,
-   full-width product image on white/clean background.
-   Buttons: black primary + black outline (no blue).
+   Hero — Apple-style: pure white background, centered text,
+   full-width product image with white background.
+
+   Since we can't find a free stock robot-on-white image, we use
+   a clean industrial image and blend it into white using CSS.
+   The image sits in a white-padded container with soft shadow
+   so it looks like a floating product showcase.
    --------------------------------------------------------------------------- */
 
 export function Hero() {
@@ -27,7 +31,7 @@ export function Hero() {
   return (
     <section className="bg-white overflow-hidden">
       {/* Text */}
-      <div className="text-center pt-16 md:pt-24 pb-6 md:pb-8 px-6 max-w-[980px] mx-auto">
+      <div className="text-center pt-16 md:pt-24 pb-8 md:pb-12 px-6 max-w-[980px] mx-auto">
         <h1
           className="text-[48px] sm:text-[64px] md:text-[80px] font-semibold leading-[1.04] tracking-[-0.045em] text-[#1d1d1f]"
           style={s(100)}
@@ -60,16 +64,23 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Full-width product image on white background */}
-      <div className="w-full bg-white" style={s(550)}>
-        <Image
-          src="/images/drone-white.jpg"
-          alt="KX-9000 Series — Precision Robotic System"
-          width={2560}
-          height={1440}
-          className="w-full h-auto block"
-          priority
-        />
+      {/* Product image in a white container — like Apple product showcase */}
+      <div className="w-full bg-white px-0" style={s(550)}>
+        <div className="relative max-w-[1000px] mx-auto">
+          {/* The image with a white vignette overlay to blend edges */}
+          <div className="relative rounded-[20px] overflow-hidden mx-4 md:mx-0 shadow-[0_8px_40px_rgba(0,0,0,0.08)]">
+            <Image
+              src="/images/hero-robot.jpg"
+              alt="KX-9000 Series — Precision Robotic System"
+              width={2560}
+              height={1440}
+              className="w-full h-auto block"
+              priority
+            />
+          </div>
+          {/* Bottom fade to white */}
+          <div className="absolute bottom-0 left-0 right-0 h-[80px] bg-gradient-to-t from-white to-transparent pointer-events-none" />
+        </div>
       </div>
     </section>
   );
