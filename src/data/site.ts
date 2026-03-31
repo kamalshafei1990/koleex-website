@@ -10,11 +10,8 @@ export interface SocialLink {
 }
 
 export interface ContactInfo {
-  /** General enquiries email. */
   email: string;
-  /** Main switchboard phone number. */
   phone: string;
-  /** Headquarters address lines. */
   address: string[];
 }
 
@@ -37,7 +34,7 @@ export const siteConfig: SiteConfig = {
   shortName: "Koleex",
   tagline: "Engineering What Matters",
   description:
-    "Koleex International Group is a global technology and industrial conglomerate delivering precision-engineered products, intelligent digital solutions, and advanced materials to customers in over 80 countries.",
+    "Koleex International Group is a global industrial technology company specializing in precision machinery, automation systems, and technology-driven solutions for manufacturing and industrial sectors.",
   url: "https://www.koleex.com",
   locale: "en-US",
 
@@ -45,37 +42,35 @@ export const siteConfig: SiteConfig = {
     {
       platform: "linkedin",
       label: "LinkedIn",
-      href: "https://www.linkedin.com/company/koleex",
+      href: "#",
       icon: "Linkedin",
     },
     {
       platform: "x",
       label: "X (Twitter)",
-      href: "https://x.com/koleex",
+      href: "#",
       icon: "Twitter",
     },
     {
       platform: "youtube",
       label: "YouTube",
-      href: "https://www.youtube.com/@koleex",
+      href: "#",
       icon: "Youtube",
     },
     {
       platform: "instagram",
       label: "Instagram",
-      href: "https://www.instagram.com/koleex",
+      href: "#",
       icon: "Instagram",
     },
   ],
 
   contact: {
-    email: "info@koleex.com",
-    phone: "+1 (800) 555-0199",
+    email: "—",
+    phone: "—",
     address: [
       "Koleex International Group",
-      "One Koleex Tower, 200 Innovation Drive",
-      "Zurich, 8005",
-      "Switzerland",
+      "Contact details to be confirmed",
     ],
   },
 

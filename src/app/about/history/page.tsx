@@ -10,34 +10,34 @@ export const metadata: Metadata = {
 
 const milestones = [
   {
-    year: "1970s",
+    year: "Early Years",
     title: "Founded",
     description:
-      "Koleex was established as a precision engineering workshop, rooted in a family tradition of craftsmanship and an uncompromising commitment to quality.",
+      "Koleex began as a focused industrial trading and engineering business, growing steadily through decades of commitment to quality and customer partnership.",
   },
   {
-    year: "1990s",
-    title: "Expansion",
+    year: "Growth Phase",
+    title: "Regional Expansion",
     description:
-      "Rapid growth across the Middle East and Europe, opening regional offices and forming strategic partnerships with leading industrial enterprises.",
+      "Established a strong regional footprint by building trusted relationships with manufacturers and industrial clients across key markets.",
   },
   {
-    year: "2000s",
+    year: "Expansion Era",
+    title: "Technology Integration",
+    description:
+      "Invested in automation and digital capabilities, expanding the product portfolio to include precision machinery and technology-driven solutions.",
+  },
+  {
+    year: "Modern Era",
+    title: "Global Growth",
+    description:
+      "Extended operations into new international markets, strengthening partnerships with industrial customers and broadening the range of equipment and services offered.",
+  },
+  {
+    year: "Present Day",
     title: "Digital Transformation",
     description:
-      "Embraced digital engineering and automation, launching our first integrated technology platform and doubling our R&D investment.",
-  },
-  {
-    year: "2010s",
-    title: "Global Reach",
-    description:
-      "Expanded operations to over 60 countries, acquired key technology firms, and established innovation labs on four continents.",
-  },
-  {
-    year: "2020s",
-    title: "Innovation Era",
-    description:
-      "Pioneering AI-driven industrial solutions, sustainable energy systems, and next-generation materials that define the future of engineering.",
+      "Embracing smart manufacturing, industrial IoT, and digital tools to help customers modernize their operations and compete more effectively.",
   },
 ];
 
@@ -46,20 +46,20 @@ export default function HistoryPage() {
     <>
       <AboutHero
         title="History & Heritage"
-        subtitle="From a family tradition into a global name."
+        subtitle="A legacy of industrial expertise and steady growth."
       />
 
       <SplitSection
         image="/images/factory-floor.jpg"
         eyebrow="Our Roots"
         title="Where it all began."
-        description="What started as a modest workshop driven by a passion for precision has evolved into one of the most respected names in global engineering. Our founders believed that extraordinary outcomes begin with meticulous attention to detail, a philosophy that still runs through everything we build today."
+        description="Koleex began as a focused industrial trading and engineering business, growing steadily through decades of commitment to quality and customer partnership. From the start, the company was built on a belief that reliable products and honest service create lasting value."
       />
 
       <section className="bg-black py-20 md:py-28 border-t border-white/[0.06]">
         <div className="max-w-[1120px] mx-auto px-6">
           <h2 className="text-[36px] md:text-[48px] font-semibold leading-[1.08] tracking-[-0.035em] text-white text-center mb-14">
-            Five Decades of Progress
+            Our Journey
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {milestones.map((milestone) => (
@@ -86,9 +86,9 @@ export default function HistoryPage() {
         image="/images/team-office.jpg"
         flip
         dark={false}
-        eyebrow="Legacy of Innovation"
-        title="Five decades of engineering."
-        description="From analogue instruments to artificial intelligence, Koleex has continually reinvented itself while staying true to its founding principles. Every generation has built on the last, ensuring that our heritage is not just preserved but propelled forward into new frontiers of possibility."
+        eyebrow="Legacy of Commitment"
+        title="Built on trust and expertise."
+        description="Throughout every phase of growth, Koleex has remained focused on what matters most: delivering reliable industrial products and services that help customers succeed. Each step forward has been guided by the same principles of quality, integrity, and long-term partnership."
       />
     </>
   );

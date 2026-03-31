@@ -5,15 +5,15 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "CEO Message",
+  title: "A Message from Our Leadership",
 };
 
 export default function CeoMessagePage() {
   return (
     <>
       <AboutHero
-        title="CEO Message"
-        subtitle="A letter from our leadership."
+        title="A Message from Our Leadership"
+        subtitle="Our commitment to customers and the path ahead."
       />
 
       <section className="relative bg-black">
@@ -28,34 +28,32 @@ export default function CeoMessagePage() {
       <section className="bg-black py-20 md:py-28 text-center">
         <div className="max-w-[700px] mx-auto px-6">
           <p className="text-[17px] leading-[1.65] text-white/60">
-            When my grandfather founded this company over five decades ago, he
-            believed that precision engineering could change the way industries
-            operate and communities prosper. That belief has guided every
-            generation of leadership since, and it remains the foundation of
-            everything we do today.
+            At Koleex, we have always believed that a company earns its
+            reputation through the quality of its products, the reliability of
+            its service, and the strength of its relationships. These principles
+            have guided us from our earliest days and continue to shape every
+            decision we make.
           </p>
           <p className="text-[17px] leading-[1.65] text-white/60 mt-6">
-            The world is changing faster than ever. The convergence of
-            artificial intelligence, sustainable energy, and advanced materials
-            is creating opportunities that would have been unimaginable a decade
-            ago. At Koleex, we are not simply responding to these shifts. We are
-            helping to shape them. Our investments in R&D, our commitment to
-            carbon neutrality, and our expansion into new markets all reflect a
-            singular conviction: that the companies that lead with purpose will
-            be the ones that endure.
+            The industrial landscape is evolving rapidly. Manufacturers are
+            looking for partners who can help them adopt new technologies,
+            improve efficiency, and compete in a global market. We are investing
+            in our capabilities, expanding our reach, and deepening our
+            expertise so that we can be that partner for our customers, today
+            and in the years ahead.
           </p>
           <p className="text-[17px] leading-[1.65] text-white/60 mt-6">
-            To our clients, partners, and the 25,000 people who make this
-            organization what it is, I offer both my gratitude and my
-            commitment. The best of Koleex is still ahead of us.
+            To our clients, partners, and team members: thank you for your
+            trust and commitment. We are focused on building something lasting,
+            and the best of Koleex is still ahead of us.
           </p>
 
           <div className="mt-12 border-t border-white/[0.06] pt-8">
             <p className="text-[20px] font-semibold text-white">
-              Marcus Koleex
+              The Leadership Team
             </p>
             <p className="text-[14px] text-white/40 mt-1">
-              Chief Executive Officer, Koleex International Group
+              Koleex International Group
             </p>
           </div>
 

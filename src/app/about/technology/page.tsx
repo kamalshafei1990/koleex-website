@@ -10,24 +10,24 @@ export const metadata: Metadata = {
 
 const capabilities = [
   {
-    title: "AI & Machine Learning",
+    title: "Smart Automation",
     description:
-      "Proprietary machine learning models trained on decades of industrial data, enabling predictive maintenance, autonomous quality control, and intelligent process optimization across our client base.",
+      "Integrated automation systems that streamline manufacturing workflows, improve production consistency, and reduce manual intervention across industrial operations.",
   },
   {
-    title: "IoT Platforms",
+    title: "Industrial IoT",
     description:
-      "A scalable, secure IoT infrastructure connecting millions of industrial sensors and devices, delivering real-time visibility and control over complex operations worldwide.",
+      "Connected sensor networks and monitoring platforms that give manufacturers real-time visibility into equipment performance, enabling proactive maintenance and operational optimization.",
   },
   {
-    title: "Robotics",
+    title: "Precision Engineering",
     description:
-      "Next-generation industrial robotics designed for precision assembly, hazardous environment inspection, and collaborative human-machine workflows in advanced manufacturing.",
+      "High-precision machinery and components engineered for demanding manufacturing environments, delivering the accuracy and durability that industrial customers require.",
   },
   {
-    title: "Advanced Materials Science",
+    title: "Digital Solutions",
     description:
-      "Breakthrough composites and engineered alloys developed in our materials laboratories, designed for extreme temperature, pressure, and corrosion resistance in critical applications.",
+      "Software tools and digital platforms that help industrial businesses manage operations, track assets, and make data-informed decisions to improve efficiency and output.",
   },
 ];
 
@@ -36,14 +36,14 @@ export default function TechnologyPage() {
     <>
       <AboutHero
         title="Technology & Innovation"
-        subtitle="Engineering the future."
+        subtitle="Engineering smarter industrial solutions."
       />
 
       <SplitSection
         image="/images/circuit-board.jpg"
-        eyebrow="R&D Excellence"
-        title="Where breakthroughs begin."
-        description="Our global network of research and development centres brings together over 3,000 engineers and scientists working at the frontier of industrial technology. With annual R&D investment exceeding $380 million, we maintain the pace of innovation that our clients and the world demand."
+        eyebrow="Technical Expertise"
+        title="Where capability meets application."
+        description="Our engineering and technical teams work closely with customers to develop solutions that address real operational challenges. By combining deep industry knowledge with modern technology, we help manufacturers improve productivity, reduce downtime, and stay competitive."
       />
 
       <section className="bg-black py-20 md:py-28 border-t border-white/[0.06]">
@@ -72,17 +72,17 @@ export default function TechnologyPage() {
       <SplitSection
         image="/images/code-screen.jpg"
         flip
-        eyebrow="Innovation Pipeline"
-        title="From concept to commercialization."
-        description="Our structured innovation pipeline moves ideas from early-stage research through prototyping, validation, and commercial deployment in as little as 18 months. Cross-functional teams from engineering, data science, and product management collaborate at every stage to ensure that new technologies solve real-world problems at industrial scale."
+        eyebrow="Continuous Improvement"
+        title="From concept to implementation."
+        description="We follow a disciplined approach to technology development, moving from customer needs analysis through prototyping, testing, and deployment. Cross-functional teams collaborate at every stage to ensure that new solutions address real-world challenges and deliver measurable results."
       />
 
       <StatsRow
         stats={[
-          { number: "$380M+", label: "Annual R&D Spend" },
-          { number: "3,000+", label: "R&D Engineers" },
-          { number: "1,200+", label: "Patents Filed" },
-          { number: "7", label: "Innovation Labs" },
+          { number: "\u2014", label: "Ongoing R&D Investment" },
+          { number: "\u2014", label: "Engineering Team" },
+          { number: "\u2014", label: "Technology Partners" },
+          { number: "\u2014", label: "Capability Areas" },
         ]}
       />
     </>

@@ -10,34 +10,34 @@ export const metadata: Metadata = {
 
 const leaders = [
   {
-    name: "Marcus Koleex",
-    role: "Chief Executive Officer",
-    bio: "A third-generation leader who has guided the group through its most transformative decade, expanding operations to over 80 countries while maintaining the engineering-first culture the company was built on.",
+    name: "Chief Executive Officer",
+    role: "CEO",
+    bio: "Profile to be announced.",
   },
   {
-    name: "Dr. Elena Voss",
-    role: "Chief Technology Officer",
-    bio: "A former MIT research fellow who oversees the company's global R&D strategy, driving breakthroughs in AI, robotics, and advanced materials that keep Koleex at the forefront of industrial technology.",
+    name: "Chief Technology Officer",
+    role: "CTO",
+    bio: "Profile to be announced.",
   },
   {
-    name: "James Harrington",
-    role: "Chief Financial Officer",
-    bio: "With two decades of experience in global industrial finance, James ensures disciplined capital allocation and sustainable growth across all four business segments.",
+    name: "Chief Financial Officer",
+    role: "CFO",
+    bio: "Profile to be announced.",
   },
   {
-    name: "Aisha Rahman",
-    role: "President, Industrial Technology",
-    bio: "Leads the flagship division delivering precision automation and smart manufacturing solutions to heavy industry, aerospace, and defense clients worldwide.",
+    name: "Chief Operating Officer",
+    role: "COO",
+    bio: "Profile to be announced.",
   },
   {
-    name: "Henrik Lindqvist",
-    role: "President, Energy Systems",
-    bio: "Oversees the energy portfolio spanning renewables, grid infrastructure, and next-generation storage, serving utility and enterprise clients across 40 markets.",
+    name: "Chief Commercial Officer",
+    role: "CCO",
+    bio: "Profile to be announced.",
   },
   {
-    name: "Sarah Chen",
-    role: "President, Digital Solutions",
-    bio: "Directs the fast-growing digital arm, building IoT platforms, data analytics suites, and enterprise software that power connected industrial operations.",
+    name: "Chief Strategy Officer",
+    role: "CSO",
+    bio: "Profile to be announced.",
   },
 ];
 
@@ -53,7 +53,7 @@ export default function CorporateStructurePage() {
         image="/images/modern-office.jpg"
         eyebrow="Governance"
         title="Built for accountability."
-        description="Koleex International Group operates under a governance framework designed for transparency and decisive action. Our board of directors brings together industry veterans, independent advisors, and technology leaders who collectively ensure that strategic decisions serve both shareholders and the communities we work within."
+        description="Koleex International Group operates under a governance framework designed for transparency and responsible decision-making. Our organizational structure ensures that strategic priorities are aligned across all business units, with clear accountability at every level."
       />
 
       <section className="bg-black py-20 md:py-28 border-t border-white/[0.06]">
@@ -87,7 +87,7 @@ export default function CorporateStructurePage() {
         flip
         eyebrow="Global Operations"
         title="Structured for scale."
-        description="Our operational architecture is organized around four geographic hubs covering the Americas, Europe, Asia-Pacific, and the Middle East and Africa. Each hub operates with the autonomy to respond to local market dynamics while maintaining alignment with group-wide standards, ensuring consistent quality no matter where we deliver."
+        description="Our operational architecture is organized around regional hubs that serve key industrial markets. Each hub operates with the autonomy to respond to local market dynamics while maintaining alignment with group-wide standards, ensuring consistent quality and service wherever we operate."
       />
     </>
   );

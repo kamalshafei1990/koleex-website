@@ -10,19 +10,19 @@ export const metadata: Metadata = {
 
 const pillars = [
   {
-    title: "Carbon Neutrality",
+    title: "Environmental Responsibility",
     description:
-      "We are committed to achieving net-zero carbon emissions across all operations by 2035. Through renewable energy adoption, process electrification, and verified carbon offset programmes, we are systematically decarbonizing every link in our value chain.",
+      "We are committed to reducing our environmental footprint across all operations. This includes improving energy efficiency, minimizing waste, and exploring cleaner ways to manufacture and deliver our products.",
   },
   {
-    title: "Circular Economy",
+    title: "Operational Efficiency",
     description:
-      "Our design-for-disassembly principles and closed-loop material recovery systems ensure that over 85% of our industrial output is recyclable. We are building products that generate value at the end of their lifecycle, not waste.",
+      "We continuously seek ways to operate more efficiently, reducing resource consumption while maintaining the quality and reliability our customers depend on. Better processes mean less waste and a smaller environmental impact.",
   },
   {
-    title: "Community Investment",
+    title: "Community Engagement",
     description:
-      "We invest in the communities where we operate through STEM education programmes, local workforce development, and infrastructure partnerships. In the past five years, we have funded over 200 community initiatives across 40 countries.",
+      "We invest in the communities where we operate through workforce development, local partnerships, and initiatives that support economic opportunity and social well-being.",
   },
 ];
 
@@ -37,8 +37,8 @@ export default function SustainabilityPage() {
       <SplitSection
         image="/images/wind-turbines.jpg"
         eyebrow="Environmental Commitment"
-        title="Engineering a cleaner future."
-        description="Sustainability is not a separate initiative at Koleex. It is embedded in every design decision, procurement choice, and operational standard. We measure our impact rigorously, set ambitious targets publicly, and hold ourselves accountable to the highest environmental standards in every market we serve."
+        title="Operating responsibly as we grow."
+        description="Koleex is committed to operating responsibly and reducing our environmental impact as we grow. Sustainability considerations are integrated into our operational planning, procurement decisions, and product development processes. We aim to continuously improve our practices and set higher standards for ourselves."
       />
 
       <section className="bg-black py-20 md:py-28 border-t border-white/[0.06]">
@@ -66,10 +66,10 @@ export default function SustainabilityPage() {
 
       <StatsRow
         stats={[
-          { number: "42%", label: "Carbon Reduction Since 2018" },
-          { number: "85%", label: "Materials Recyclability" },
-          { number: "200+", label: "Community Initiatives" },
-          { number: "2035", label: "Net-Zero Target" },
+          { number: "\u2014", label: "Emissions Reduction Goals" },
+          { number: "\u2014", label: "Efficiency Improvements" },
+          { number: "\u2014", label: "Community Initiatives" },
+          { number: "\u2014", label: "Sustainability Targets" },
         ]}
       />
 
@@ -77,9 +77,9 @@ export default function SustainabilityPage() {
         image="/images/solar-panels.jpg"
         flip
         dark={false}
-        eyebrow="Clean Energy"
-        title="Powering progress responsibly."
-        description="Our energy division is at the forefront of the global transition to renewables. From utility-scale solar farms to offshore wind installations, we design, build, and operate clean energy infrastructure that delivers reliable power while dramatically reducing environmental impact for our clients and their communities."
+        eyebrow="Looking Ahead"
+        title="Building a more sustainable business."
+        description="As we grow, we are committed to raising the bar on environmental and social responsibility. We are investing in cleaner operational practices, working with suppliers who share our values, and exploring new ways to reduce the environmental impact of the industrial products and solutions we deliver."
       />
     </>
   );

@@ -22,10 +22,10 @@ export default function VisionMissionPage() {
             Our Vision
           </p>
           <h2 className="text-[36px] md:text-[48px] font-semibold leading-[1.08] tracking-[-0.035em] text-white">
-            To be the global standard for precision technology and sustainable industrial innovation.
+            To be a trusted global partner for industrial technology, delivering precision machinery and solutions that empower manufacturers worldwide.
           </h2>
           <p className="text-[17px] leading-[1.65] text-white/40 mt-5">
-            We envision a world where engineering excellence and environmental responsibility are inseparable, where every solution we deliver raises the bar for what industry can achieve.
+            We see a future where industrial businesses of every size have access to the technology, equipment, and expertise they need to operate at their best.
           </p>
         </div>
       </section>
@@ -34,15 +34,15 @@ export default function VisionMissionPage() {
         image="/images/digital-globe.jpg"
         eyebrow="Our Mission"
         title="Delivering technology that matters."
-        description="Our mission is to design, build, and deploy precision-engineered solutions that empower industries and communities worldwide. We combine deep technical expertise with a relentless focus on outcomes, ensuring every project delivers measurable value and lasting impact for the clients and societies we serve."
+        description="We provide reliable, high-quality industrial products and technology solutions that help our customers operate more efficiently, compete more effectively, and grow sustainably. By combining deep technical knowledge with a commitment to service, we ensure every engagement creates real value."
       />
 
       <StatsRow
         stats={[
-          { number: "80+", label: "Countries Served" },
-          { number: "99.7%", label: "Client Retention" },
-          { number: "$2.4B", label: "Annual Revenue" },
-          { number: "25,000+", label: "Team Members" },
+          { number: "\u2014", label: "Multiple Regions" },
+          { number: "\u2014", label: "Growing Portfolio" },
+          { number: "\u2014", label: "Expanding Network" },
+          { number: "\u2014", label: "Dedicated Team" },
         ]}
       />
     </>

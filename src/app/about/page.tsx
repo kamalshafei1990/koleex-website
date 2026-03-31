@@ -1,47 +1,42 @@
 import { AboutHero } from "@/components/about/AboutHero";
 import { SplitSection } from "@/components/about/SplitSection";
-import { StatsRow } from "@/components/about/StatsRow";
 import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "About Us",
-  description: "Koleex International Group — a global technology and industrial leader with operations in over 80 countries.",
+  description: "Koleex International Group — a global industrial technology company specializing in precision machinery, automation, and technology-driven solutions.",
 };
 
 export default function AboutPage() {
   return (
     <>
-      <AboutHero title="Company Overview" subtitle="A global technology and industrial leader shaping the future through innovation and precision." />
-
-      <StatsRow stats={[
-        { number: "80+", label: "Countries" },
-        { number: "12,000+", label: "Enterprise Clients" },
-        { number: "50+", label: "Years of Heritage" },
-        { number: "15,000+", label: "Product Configurations" },
-      ]} />
+      <AboutHero
+        title="Company Overview"
+        subtitle="A global industrial technology company built on precision, innovation, and long-term partnerships."
+      />
 
       <SplitSection
         image="/images/factory-floor.jpg"
         eyebrow="Who We Are"
-        title="Engineering excellence at global scale."
-        description="Koleex International Group is a multinational technology and industrial conglomerate delivering precision-engineered products, intelligent digital solutions, and advanced materials to customers across six continents. From factory floors to energy grids, our technology powers the systems that matter most."
+        title="Industrial technology with a global perspective."
+        description="Koleex International Group is a technology-driven industrial company with a focus on precision machinery, automation systems, and integrated solutions for manufacturing sectors worldwide. With roots in engineering and a commitment to quality, Koleex serves customers across multiple regions through a growing portfolio of products and services."
       />
 
       <SplitSection
         image="/images/team-office.jpg"
-        eyebrow="Our People"
-        title="Built by engineers, scientists, and visionaries."
-        description="Our strength lies in our people — a diverse team of over 25,000 professionals across engineering, research, manufacturing, and commercial operations. We attract the best minds in the industry and empower them to solve problems that matter."
+        eyebrow="Our Approach"
+        title="Built on engineering. Driven by partnership."
+        description="We work closely with manufacturers, factories, and industrial businesses to deliver machinery and systems that meet real operational needs. Our approach combines technical expertise with a deep understanding of the industries we serve — enabling us to provide solutions that are practical, reliable, and built to last."
         flip
         dark={false}
       />
 
       <SplitSection
-        image="/images/solar-panels.jpg"
-        eyebrow="Our Impact"
-        title="Technology that shapes industries."
-        description="From smart manufacturing and renewable energy to connected infrastructure and advanced materials, our solutions are deployed in some of the world's most demanding environments. We don't just build products — we engineer outcomes."
+        image="/images/hero-robot.jpg"
+        eyebrow="Our Commitment"
+        title="Quality and reliability at every level."
+        description="From product design to after-sales support, Koleex is committed to delivering consistent quality across everything we do. We invest in our people, our technology, and our partnerships to ensure that every product and service meets the standards our customers expect."
       />
 
       {/* Navigation to sub-pages */}

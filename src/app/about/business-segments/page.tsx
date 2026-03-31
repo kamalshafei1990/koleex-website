@@ -11,30 +11,30 @@ export const metadata: Metadata = {
 const segments = [
   {
     image: "/images/factory-floor.jpg",
-    title: "Industrial Technology",
+    title: "Industrial Machinery",
     description:
-      "Precision automation, smart manufacturing, and industrial robotics for aerospace, defense, and heavy industry. Our flagship division delivers the systems that keep the world's most demanding operations running.",
+      "Precision machinery and equipment for manufacturing. We supply and support the mechanical systems that power production lines, fabrication shops, and industrial facilities worldwide.",
     href: "/about/technology",
   },
   {
     image: "/images/wind-turbines.jpg",
-    title: "Energy Systems",
+    title: "Automation Systems",
     description:
-      "Renewable energy infrastructure, grid modernization, and next-generation storage solutions. We design and deploy the systems that power a cleaner, more resilient energy future across 40 markets.",
-    href: "/about/sustainability",
+      "Automation, robotics, and smart production solutions. We help manufacturers modernize their operations with integrated automation that improves throughput, consistency, and safety.",
+    href: "/about/technology",
   },
   {
     image: "/images/code-screen.jpg",
-    title: "Digital Solutions",
+    title: "Technology Solutions",
     description:
-      "IoT platforms, enterprise analytics, and connected operations software. Our digital arm transforms raw industrial data into actionable intelligence that drives efficiency and growth.",
+      "Software, IoT, and digital tools for industrial operations. Our technology solutions connect machines, processes, and people to enable smarter decision-making on the factory floor.",
     href: "/about/technology",
   },
   {
     image: "/images/composites.jpg",
-    title: "Advanced Materials",
+    title: "Parts & Service",
     description:
-      "High-performance composites, alloys, and engineered materials for extreme environments. From deep-sea to deep-space, our materials science division pushes the boundaries of what is physically possible.",
+      "Spare parts, maintenance, and after-sales support. We ensure our customers' equipment stays running at peak performance through responsive service and a comprehensive parts inventory.",
     href: "/about/technology",
   },
 ];
@@ -86,10 +86,10 @@ export default function BusinessSegmentsPage() {
 
       <StatsRow
         stats={[
-          { number: "$2.4B", label: "Combined Revenue" },
           { number: "4", label: "Divisions" },
-          { number: "340+", label: "Active Projects" },
-          { number: "12,000+", label: "Enterprise Clients" },
+          { number: "\u2014", label: "Growing Client Base" },
+          { number: "\u2014", label: "Active Projects" },
+          { number: "\u2014", label: "Regions Served" },
         ]}
       />
     </>

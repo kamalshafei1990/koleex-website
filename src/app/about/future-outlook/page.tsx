@@ -10,24 +10,24 @@ export const metadata: Metadata = {
 
 const focusAreas = [
   {
-    title: "Smart Manufacturing",
+    title: "Manufacturing Innovation",
     description:
-      "Fully autonomous production lines powered by AI, computer vision, and digital twins. We are building factories that learn, adapt, and optimize in real time, reducing waste and accelerating time to market.",
+      "Advancing the capabilities of our machinery and automation systems to help manufacturers produce higher-quality products more efficiently, with less waste and greater flexibility.",
   },
   {
-    title: "Clean Energy",
+    title: "Digital Integration",
     description:
-      "Next-generation renewable infrastructure including advanced photovoltaics, solid-state storage, and green hydrogen systems. Our energy roadmap targets 50 GW of installed clean capacity by 2030.",
+      "Connecting industrial equipment with software and IoT platforms to give customers real-time operational visibility, enabling smarter decisions and proactive maintenance.",
   },
   {
-    title: "Connected World",
+    title: "Regional Expansion",
     description:
-      "Industrial IoT platforms that unify operations across geographies and asset types. Our vision is a single, intelligent layer connecting every machine, sensor, and system in our clients' ecosystems.",
+      "Strengthening our presence in existing markets and entering new regions where growing industrial demand creates opportunities to serve more customers with local support.",
   },
   {
-    title: "Advanced Materials",
+    title: "Customer Excellence",
     description:
-      "Metamaterials, self-healing composites, and bio-inspired structures that unlock performance levels previously thought impossible. Our materials pipeline addresses challenges from hypersonic flight to deep-ocean exploration.",
+      "Deepening our relationships with customers through better service, faster response times, and a broader range of products and solutions tailored to their evolving needs.",
   },
 ];
 
@@ -41,9 +41,9 @@ export default function FutureOutlookPage() {
 
       <SplitSection
         image="/images/digital-globe.jpg"
-        eyebrow="2030 Strategy"
-        title="Building the next decade."
-        description="Our 2030 strategy is anchored in four strategic pillars: technology leadership, geographic expansion, sustainability integration, and talent development. We are investing over $1.5 billion across these priorities to ensure Koleex remains the partner of choice for the world's most ambitious industrial enterprises."
+        eyebrow="Strategic Direction"
+        title="Building for the future."
+        description="Our strategic direction is anchored in four priorities: manufacturing innovation, digital integration, regional expansion, and customer excellence. We are investing across these areas to ensure Koleex continues to grow as a trusted partner for industrial businesses worldwide."
       />
 
       <section className="bg-black py-20 md:py-28 border-t border-white/[0.06]">
@@ -73,8 +73,8 @@ export default function FutureOutlookPage() {
         image="/images/hero-robot.jpg"
         flip
         eyebrow="The Road Ahead"
-        title="Engineered for what's next."
-        description="The industries we serve are undergoing a once-in-a-generation transformation. Automation, decarbonization, and digitalization are reshaping every sector simultaneously. Koleex is uniquely positioned to lead this convergence, bringing together the engineering depth, technological breadth, and global scale required to turn ambitious visions into operational reality."
+        title="Positioned for growth."
+        description="The industries we serve are evolving as manufacturers adopt new technologies and expand into new markets. Koleex is well positioned to support this transformation, bringing together industrial expertise, a growing technology portfolio, and a commitment to long-term customer partnership."
       />
 
       <section className="bg-black py-20 md:py-28 text-center border-t border-white/[0.06]">

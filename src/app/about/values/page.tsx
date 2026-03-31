@@ -10,34 +10,34 @@ export const metadata: Metadata = {
 
 const values = [
   {
-    title: "Engineering Excellence",
+    title: "Quality First",
     description:
-      "We hold ourselves to the highest technical standards, because precision is not a preference but a responsibility. Every component, every system, every solution reflects our obsession with getting it right.",
+      "We deliver products and services that meet the highest standards of precision and reliability.",
   },
   {
     title: "Customer Partnership",
     description:
-      "We succeed only when our clients succeed. We listen deeply, collaborate openly, and treat every engagement as a long-term partnership built on trust and shared ambition.",
+      "We build long-term relationships based on trust, understanding, and shared success.",
   },
   {
-    title: "Sustainable Progress",
+    title: "Innovation",
     description:
-      "Growth without responsibility is not progress. We integrate environmental stewardship into every decision, designing solutions that serve both commerce and the communities we operate in.",
+      "We invest in technology and new approaches to continuously improve what we offer.",
   },
   {
-    title: "Innovation First",
+    title: "Integrity",
     description:
-      "We invest boldly in research and development, challenging conventional thinking and embracing emerging technologies to stay ahead of what the world needs next.",
+      "We operate with honesty, transparency, and accountability in every interaction.",
   },
   {
-    title: "Integrity Always",
+    title: "Global Perspective",
     description:
-      "Transparency, honesty, and accountability define how we operate. We earn trust through consistent action, not promises, and we hold every team member to this standard without exception.",
+      "We serve customers across regions with local understanding and global capability.",
   },
   {
-    title: "Global Responsibility",
+    title: "Sustainable Growth",
     description:
-      "Operating in over 80 countries means understanding that our impact extends far beyond the balance sheet. We invest in local talent, respect cultural contexts, and contribute to the economies we serve.",
+      "We grow responsibly, balancing business performance with environmental and social responsibility.",
   },
 ];
 

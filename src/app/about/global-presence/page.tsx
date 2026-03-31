@@ -12,32 +12,32 @@ const regions = [
   {
     title: "Americas",
     description:
-      "Headquartered in Houston with offices across North and South America, serving energy, aerospace, and advanced manufacturing clients from Canada to Brazil.",
+      "Growing presence in key industrial markets across North and South America, serving manufacturing and technology customers throughout the region.",
   },
   {
     title: "Europe",
     description:
-      "A strong presence across the UK, Germany, France, and the Nordics, delivering precision engineering and digital transformation to Europe's leading industrial enterprises.",
+      "Established operations serving industrial enterprises across major European markets, delivering precision engineering and technology solutions.",
   },
   {
     title: "Middle East",
     description:
-      "Our founding region and a cornerstone of operations, with major project hubs in the UAE, Saudi Arabia, and Qatar supporting the region's ambitious infrastructure and energy programmes.",
+      "A core region for Koleex with strong relationships across the Gulf states, supporting infrastructure and industrial development programmes.",
   },
   {
     title: "South Asia",
     description:
-      "Growing rapidly across India and Southeast Asia, providing technology solutions to emerging industrial economies with dedicated engineering centres in Bangalore and Singapore.",
+      "Expanding operations to serve the growing industrial economies of South and Southeast Asia with locally supported technology solutions.",
   },
   {
     title: "China",
     description:
-      "A dedicated China operation with offices in Shanghai and Shenzhen, serving the world's largest manufacturing base with localised solutions and technical support.",
+      "Dedicated presence serving one of the world's largest manufacturing markets with localised solutions and technical support.",
   },
   {
     title: "Africa",
     description:
-      "Expanding across sub-Saharan Africa with a focus on energy infrastructure, mining technology, and sustainable development partnerships that drive economic growth.",
+      "Growing presence across key African markets, supporting industrial development and manufacturing modernisation efforts.",
   },
 ];
 
@@ -46,15 +46,15 @@ export default function GlobalPresencePage() {
     <>
       <AboutHero
         title="Global Presence"
-        subtitle="Operating across 80+ countries."
+        subtitle="Serving customers in key industrial markets worldwide."
       />
 
       <StatsRow
         stats={[
-          { number: "80+", label: "Countries" },
-          { number: "12,000+", label: "Clients" },
-          { number: "340+", label: "Projects" },
-          { number: "25,000+", label: "Employees" },
+          { number: "\u2014", label: "Multiple Regions" },
+          { number: "\u2014", label: "Growing Client Base" },
+          { number: "\u2014", label: "Active Projects" },
+          { number: "\u2014", label: "Dedicated Team" },
         ]}
       />
 
@@ -85,7 +85,7 @@ export default function GlobalPresencePage() {
         image="/images/team-office.jpg"
         eyebrow="Local Expertise, Global Scale"
         title="Rooted where it matters."
-        description="Every region operates with local leadership, local talent, and deep understanding of market dynamics. This decentralized approach ensures that our clients receive solutions tailored to their specific context, backed by the full technical depth and resources of a global industrial group."
+        description="Koleex operates across multiple regions, serving customers in key industrial markets. Each regional team brings local knowledge and relationships, backed by the full technical depth and resources of the wider group, ensuring customers receive relevant, responsive support wherever they operate."
       />
     </>
   );

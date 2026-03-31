@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     template: "%s | Koleex International Group",
   },
   description:
-    "Koleex International Group is a global technology and industrial leader delivering precision-engineered products, intelligent digital solutions, and advanced materials to customers in over 80 countries.",
+    "Koleex International Group is a global industrial technology company specializing in precision machinery, automation systems, and technology-driven solutions for manufacturing and industrial sectors.",
 };
 
 export default function RootLayout({
