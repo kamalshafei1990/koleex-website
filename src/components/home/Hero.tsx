@@ -10,17 +10,25 @@ import { Button } from "@/components/ui/Button";
    parallax image, staggered text reveal, and scroll indicator.
    --------------------------------------------------------------------------- */
 
+/* Deterministic seed to avoid hydration mismatch */
+const PARTICLE_DATA = Array.from({ length: 20 }, (_, i) => ({
+  left: ((i * 37 + 13) % 100),
+  dur: 14 + ((i * 7 + 3) % 22),
+  delay: ((i * 11 + 5) % 18),
+  glow: i % 5 === 0,
+}));
+
 function Particles() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {Array.from({ length: 20 }).map((_, i) => (
+      {PARTICLE_DATA.map((p, i) => (
         <div
           key={i}
-          className={i % 5 === 0 ? "particle-glow" : "particle"}
+          className={p.glow ? "particle-glow" : "particle"}
           style={{
-            left: `${Math.random() * 100}%`,
-            animationDuration: `${14 + Math.random() * 22}s`,
-            animationDelay: `${Math.random() * 18}s`,
+            left: `${p.left}%`,
+            animationDuration: `${p.dur}s`,
+            animationDelay: `${p.delay}s`,
           }}
         />
       ))}
