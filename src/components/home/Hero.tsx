@@ -1,33 +1,20 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 
 /* ---------------------------------------------------------------------------
-   1. Hero — Apple-style: Light gray background, dark centered text,
-   product-showcase image below. Clean, minimal, confident.
-   Like iPhone/MacBook hero on Apple.com.
+   Hero — Apple-style: centered text above a full-width edge-to-edge image.
+   No crop, no max-width constraint on the image.
    --------------------------------------------------------------------------- */
 
 export function Hero() {
   const [loaded, setLoaded] = useState(false);
-  const imgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setLoaded(true), 150);
     return () => clearTimeout(t);
-  }, []);
-
-  /* Subtle parallax on the hero image */
-  useEffect(() => {
-    const onScroll = () => {
-      if (!imgRef.current) return;
-      const y = window.scrollY;
-      imgRef.current.style.transform = `translateY(${y * 0.08}px)`;
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const s = (delay: number) => ({
@@ -37,23 +24,21 @@ export function Hero() {
   });
 
   return (
-    <section className="relative bg-[#f5f5f7] overflow-hidden">
-      {/* Text content */}
-      <div className="text-center pt-16 md:pt-24 pb-8 px-6 max-w-[980px] mx-auto">
+    <section className="bg-[#f5f5f7] overflow-hidden">
+      {/* Text */}
+      <div className="text-center pt-16 md:pt-24 pb-6 md:pb-8 px-6 max-w-[980px] mx-auto">
         <h1
           className="text-[48px] sm:text-[64px] md:text-[80px] font-semibold leading-[1.04] tracking-[-0.045em] text-[#1d1d1f]"
           style={s(100)}
         >
           KX-9000 Series
         </h1>
-
         <p
           className="text-[21px] md:text-[28px] font-normal leading-[1.14] tracking-[-0.016em] text-[#6e6e73] mt-3"
           style={s(250)}
         >
           Precision in motion. Power in every axis.
         </p>
-
         <div className="flex items-center justify-center gap-4 mt-6" style={s(400)}>
           <Button
             href="/products/industrial-technology"
@@ -74,18 +59,14 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Hero product image — large, centered, Apple-style showcase */}
-      <div
-        ref={imgRef}
-        className="relative w-full max-w-[980px] mx-auto will-change-transform"
-        style={s(550)}
-      >
+      {/* Full-width image — edge to edge, no crop */}
+      <div className="w-full" style={s(550)}>
         <Image
-          src="/images/hero-robot.jpg"
+          src="/images/hero-wide-2.jpg"
           alt="KX-9000 Series — Precision Robotic System"
-          width={1960}
-          height={1100}
-          className="w-full h-auto object-cover"
+          width={2560}
+          height={1440}
+          className="w-full h-auto block"
           priority
         />
       </div>
