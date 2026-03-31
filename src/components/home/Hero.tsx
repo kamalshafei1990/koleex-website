@@ -62,7 +62,7 @@ export function Hero() {
   });
 
   return (
-    <section className="relative bg-black min-h-screen flex flex-col items-center justify-center overflow-hidden hero-gradient">
+    <section className="relative bg-black min-h-[calc(100vh-var(--header-height))] flex flex-col items-center justify-center overflow-hidden hero-gradient">
       <Particles />
       <div className="orb orb-silver w-[700px] h-[700px] -top-48 left-1/2 -translate-x-1/2" />
       <div className="orb orb-white w-[500px] h-[500px] bottom-10 -right-48" style={{ animationDelay: "3s" }} />

@@ -27,7 +27,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-sans antialiased bg-black text-white">
         <Header />
-        <main className="min-h-screen">{children}</main>
+        <main className="min-h-screen pt-[var(--header-height)]">{children}</main>
         <Footer />
       </body>
     </html>

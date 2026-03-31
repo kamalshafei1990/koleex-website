@@ -24,9 +24,9 @@ interface PageHeroProps {
 }
 
 const sizes = {
-  sm: "pt-[calc(var(--header-height)+48px)] pb-12 md:pt-[calc(var(--header-height)+64px)] md:pb-16",
-  md: "pt-[calc(var(--header-height)+64px)] pb-16 md:pt-[calc(var(--header-height)+96px)] md:pb-24",
-  lg: "pt-[calc(var(--header-height)+80px)] pb-20 md:pt-[calc(var(--header-height)+120px)] md:pb-32",
+  sm: "pt-12 pb-12 md:pt-16 md:pb-16",
+  md: "pt-16 pb-16 md:pt-24 md:pb-24",
+  lg: "pt-20 pb-20 md:pt-32 md:pb-32",
 };
 
 export function PageHero({
