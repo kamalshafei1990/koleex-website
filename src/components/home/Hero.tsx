@@ -1,86 +1,40 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/Button";
 
 /* ---------------------------------------------------------------------------
-   Hero — Apple-style: pure white background, centered text,
-   full-width product image with white background.
-
-   Since we can't find a free stock robot-on-white image, we use
-   a clean industrial image and blend it into white using CSS.
-   The image sits in a white-padded container with soft shadow
-   so it looks like a floating product showcase.
+   Section 1: Hero — Full-viewport. White bg. Centered text. Full-bleed image.
+   Exactly like iPhone hero on Apple.com.
    --------------------------------------------------------------------------- */
 
 export function Hero() {
   const [loaded, setLoaded] = useState(false);
+  useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
 
-  useEffect(() => {
-    const t = setTimeout(() => setLoaded(true), 150);
-    return () => clearTimeout(t);
-  }, []);
-
-  const s = (delay: number) => ({
+  const s = (d: number) => ({
     opacity: loaded ? 1 : 0,
-    transform: loaded ? "translateY(0)" : "translateY(30px)",
-    transition: `opacity 0.9s cubic-bezier(0.25,0.46,0.45,0.94) ${delay}ms, transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94) ${delay}ms`,
+    transform: loaded ? "translateY(0)" : "translateY(20px)",
+    transition: `opacity 0.8s cubic-bezier(0.25,0.46,0.45,0.94) ${d}ms, transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94) ${d}ms`,
   });
 
   return (
-    <section className="bg-white overflow-hidden">
-      {/* Text */}
-      <div className="text-center pt-16 md:pt-24 pb-8 md:pb-12 px-6 max-w-[980px] mx-auto">
-        <h1
-          className="text-[48px] sm:text-[64px] md:text-[80px] font-semibold leading-[1.04] tracking-[-0.045em] text-[#1d1d1f]"
-          style={s(100)}
-        >
+    <section className="bg-white text-center overflow-hidden">
+      <div className="pt-14 md:pt-20 px-6">
+        <h2 className="text-[56px] md:text-[80px] font-semibold leading-[1.03] tracking-[-0.045em] text-[#1d1d1f]" style={s(50)}>
           KX-9000 Series
-        </h1>
-        <p
-          className="text-[21px] md:text-[28px] font-normal leading-[1.14] tracking-[-0.016em] text-[#6e6e73] mt-3"
-          style={s(250)}
-        >
+        </h2>
+        <p className="text-[19px] md:text-[28px] font-normal leading-[1.14] tracking-[-0.016em] text-[#6e6e73] mt-1.5" style={s(150)}>
           Precision in motion. Power in every axis.
         </p>
-        <div className="flex items-center justify-center gap-4 mt-6" style={s(400)}>
-          <Button
-            href="/products/industrial-technology"
-            variant="primary"
-            size="lg"
-            className="!bg-[#1d1d1f] !text-white hover:!bg-[#000000] !h-[44px] !px-7 !text-[17px] !font-normal !rounded-full"
-          >
-            Learn more
-          </Button>
-          <Button
-            href="/contact"
-            variant="outline"
-            size="lg"
-            className="!border-[#1d1d1f] !text-[#1d1d1f] hover:!bg-[#1d1d1f]/[0.05] !h-[44px] !px-7 !text-[17px] !font-normal !rounded-full"
-          >
-            Contact sales
-          </Button>
+        <div className="flex items-center justify-center gap-5 mt-4" style={s(250)}>
+          <Link href="/products/industrial-technology" className="text-[17px] text-[#0066cc] hover:underline underline-offset-[3px]">Learn more {">"}</Link>
+          <Link href="/contact" className="text-[17px] text-[#0066cc] hover:underline underline-offset-[3px]">Contact sales {">"}</Link>
         </div>
       </div>
-
-      {/* Product image in a white container — like Apple product showcase */}
-      <div className="w-full bg-white px-0" style={s(550)}>
-        <div className="relative max-w-[1000px] mx-auto">
-          {/* The image with a white vignette overlay to blend edges */}
-          <div className="relative rounded-[20px] overflow-hidden mx-4 md:mx-0 shadow-[0_8px_40px_rgba(0,0,0,0.08)]">
-            <Image
-              src="/images/hero-robot.jpg"
-              alt="KX-9000 Series — Precision Robotic System"
-              width={2560}
-              height={1440}
-              className="w-full h-auto block"
-              priority
-            />
-          </div>
-          {/* Bottom fade to white */}
-          <div className="absolute bottom-0 left-0 right-0 h-[80px] bg-gradient-to-t from-white to-transparent pointer-events-none" />
-        </div>
+      <div className="mt-4" style={s(350)}>
+        <Image src="/images/hero-robot.jpg" alt="KX-9000 Series" width={2560} height={1440} className="w-full h-auto block" priority />
       </div>
     </section>
   );

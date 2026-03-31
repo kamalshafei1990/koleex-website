@@ -1,7 +1,7 @@
 import { Hero } from "@/components/home/Hero";
-import { FeaturedProducts } from "@/components/home/FeaturedProducts";
+import { BrandIntro } from "@/components/home/BrandIntro";
 import { DivisionsPreview } from "@/components/home/DivisionsPreview";
-import { TechnologySection } from "@/components/home/TechnologySection";
+import { FeaturedProducts } from "@/components/home/FeaturedProducts";
 import { SolutionsPreview } from "@/components/home/SolutionsPreview";
 import { GlobalPresence } from "@/components/home/GlobalPresence";
 import { StoriesPreview } from "@/components/home/StoriesPreview";
@@ -10,26 +10,26 @@ import { CatalogSection } from "@/components/home/CatalogSection";
 import { ContactCTA } from "@/components/home/ContactCTA";
 
 /* ---------------------------------------------------------------------------
-   Homepage — 10 sections in defined order.
-   1. Hero
-   2. Featured Products
-   3. Business Divisions
-   4. Technology & Innovation
-   5. Solutions / Industries
-   6. Global Presence (stats)
-   7. Stories / News
-   8. Careers
-   9. Download Catalog
-   10. Contact / CTA
+   Homepage — Apple.com layout pattern:
+   1. Hero (white, full-bleed image)
+   2. Second hero (white, full-bleed image)
+   3. Dark hero (black, full-bleed image)
+   4. 2×2 tile grid (small product cards)
+   5. Solutions (light gray, centered image)
+   6. Global Presence (white, stats)
+   7. Stories (light gray, 3-column cards)
+   8. Careers (black, full-bleed image)
+   9. Catalog / Resources (light gray, links)
+   10. Contact CTA (white, links)
    --------------------------------------------------------------------------- */
 
 export default function HomePage() {
   return (
     <>
       <Hero />
-      <FeaturedProducts />
+      <BrandIntro />
       <DivisionsPreview />
-      <TechnologySection />
+      <FeaturedProducts />
       <SolutionsPreview />
       <GlobalPresence />
       <StoriesPreview />

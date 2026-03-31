@@ -1,55 +1,29 @@
 "use client";
 
+import Link from "next/link";
 import { useScrollReveal, revealStyle } from "@/lib/useScrollReveal";
-import { Button } from "@/components/ui/Button";
-import { Download } from "lucide-react";
 
 /* ---------------------------------------------------------------------------
-   9. Download Catalog — Downloads for catalogs, company profile, brochures.
+   Section 9: Catalog / Downloads — Light gray. Centered text. Simple links.
+   Like Apple's Trade-In or Apple Card section — clean, minimal.
    --------------------------------------------------------------------------- */
-
-const downloads = [
-  { title: "Product Catalog 2026", desc: "Complete product portfolio across all divisions", icon: "📖" },
-  { title: "Company Profile", desc: "Overview of Koleex International Group", icon: "🏢" },
-  { title: "Technology Brochure", desc: "Innovation and R&D capabilities", icon: "💡" },
-];
 
 export function CatalogSection() {
   const { ref, visible } = useScrollReveal(0.1);
 
   return (
-    <section className="bg-black py-32 md:py-44 section-accent-top">
-      <div ref={ref} className="max-w-[980px] mx-auto px-5">
-        <div className="text-center mb-16">
-          <p className="text-overline mb-4" style={revealStyle(visible, 0)}>Downloads</p>
-          <h2 className="text-headline text-gradient-silver" style={revealStyle(visible, 100)}>
-            Explore our resources.
-          </h2>
-          <p className="text-subtitle mt-4 max-w-md mx-auto" style={revealStyle(visible, 200)}>
-            Download our latest catalogs and company materials.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {downloads.map((d, i) => (
-            <div
-              key={d.title}
-              className="card-dark !p-8 !rounded-[20px] text-center"
-              style={{
-                opacity: visible ? 1 : 0,
-                transform: visible ? "translateY(0)" : "translateY(24px)",
-                transition: `opacity 0.8s cubic-bezier(0.16,1,0.3,1) ${300 + i * 100}ms, transform 0.8s cubic-bezier(0.16,1,0.3,1) ${300 + i * 100}ms`,
-              }}
-            >
-              <span className="text-3xl block mb-4">{d.icon}</span>
-              <h3 className="text-[16px] font-semibold text-white">{d.title}</h3>
-              <p className="text-[13px] text-white/35 mt-2 mb-6">{d.desc}</p>
-              <Button variant="outline" size="sm">
-                <Download className="h-3.5 w-3.5" strokeWidth={1.5} />
-                Download PDF
-              </Button>
-            </div>
-          ))}
+    <section ref={ref} className="bg-[#f5f5f7] text-center py-16 md:py-24 overflow-hidden">
+      <div className="max-w-[680px] mx-auto px-6">
+        <h2 className="text-[48px] md:text-[56px] font-semibold leading-[1.05] tracking-[-0.04em] text-[#1d1d1f]" style={revealStyle(visible, 0)}>
+          Resources.
+        </h2>
+        <p className="text-[19px] md:text-[21px] font-normal leading-[1.24] text-[#6e6e73] mt-2" style={revealStyle(visible, 80)}>
+          Download our product catalogs, company profile, and technology brochures.
+        </p>
+        <div className="flex items-center justify-center gap-5 mt-5" style={revealStyle(visible, 160)}>
+          <Link href="/contact" className="text-[17px] text-[#0066cc] hover:underline underline-offset-[3px]">Product Catalog {">"}</Link>
+          <Link href="/contact" className="text-[17px] text-[#0066cc] hover:underline underline-offset-[3px]">Company Profile {">"}</Link>
+          <Link href="/contact" className="text-[17px] text-[#0066cc] hover:underline underline-offset-[3px]">Brochures {">"}</Link>
         </div>
       </div>
     </section>

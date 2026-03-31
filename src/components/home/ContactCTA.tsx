@@ -1,39 +1,29 @@
 "use client";
 
+import Link from "next/link";
 import { useScrollReveal, revealStyle } from "@/lib/useScrollReveal";
-import { Button } from "@/components/ui/Button";
 
 /* ---------------------------------------------------------------------------
-   10. Contact / CTA — Large call-to-action with multiple buttons.
+   Section 10: Contact CTA — White bg. Centered text. Blue links.
+   Apple's final call-to-action style — simple, clean, confident.
    --------------------------------------------------------------------------- */
 
 export function ContactCTA() {
   const { ref, visible } = useScrollReveal(0.15);
 
   return (
-    <section ref={ref} className="relative bg-black text-center py-32 md:py-44 section-accent-top section-gradient-top overflow-hidden">
-      <div className="orb orb-white w-[500px] h-[500px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-
-      <div className="relative z-10 max-w-[700px] mx-auto px-6">
-        <p className="text-overline mb-4" style={revealStyle(visible, 0)}>Get in Touch</p>
-        <h2 className="text-display-sm text-gradient-hero" style={revealStyle(visible, 100)}>
-          Ready to transform
-          <br />your operations?
+    <section ref={ref} className="bg-white text-center py-16 md:py-24 overflow-hidden">
+      <div className="max-w-[680px] mx-auto px-6">
+        <h2 className="text-[48px] md:text-[56px] font-semibold leading-[1.05] tracking-[-0.04em] text-[#1d1d1f]" style={revealStyle(visible, 0)}>
+          Get in touch.
         </h2>
-        <p className="text-subtitle mt-6 !leading-[1.8]" style={revealStyle(visible, 200)}>
-          Connect with our team to discuss solutions, request a quotation,
-          or explore partnership opportunities.
+        <p className="text-[19px] md:text-[21px] font-normal leading-[1.24] text-[#6e6e73] mt-2" style={revealStyle(visible, 80)}>
+          Talk to a specialist about solutions for your business.
         </p>
-        <div className="flex flex-wrap items-center justify-center gap-4 mt-10" style={revealStyle(visible, 350)}>
-          <Button href="/contact" variant="primary" size="lg">
-            Contact Us
-          </Button>
-          <Button href="/contact" variant="secondary" size="lg">
-            Become a Partner
-          </Button>
-          <Button href="/contact" variant="outline" size="lg">
-            Request Quotation
-          </Button>
+        <div className="flex items-center justify-center gap-5 mt-5" style={revealStyle(visible, 160)}>
+          <Link href="/contact" className="text-[17px] text-[#0066cc] hover:underline underline-offset-[3px]">Contact us {">"}</Link>
+          <Link href="/contact" className="text-[17px] text-[#0066cc] hover:underline underline-offset-[3px]">Become a partner {">"}</Link>
+          <Link href="/contact" className="text-[17px] text-[#0066cc] hover:underline underline-offset-[3px]">Request quotation {">"}</Link>
         </div>
       </div>
     </section>

@@ -1,54 +1,51 @@
 "use client";
 
+import Link from "next/link";
 import { useScrollReveal, revealStyle } from "@/lib/useScrollReveal";
 
 /* ---------------------------------------------------------------------------
-   6. Global Presence — Stats counters with animated entrance.
+   Section 6: Global Presence — White bg. Stats in a clean row.
+   Like Apple's trade-in / Apple Card sections — centered text with data.
    --------------------------------------------------------------------------- */
 
 const stats = [
-  { number: "80+", label: "Countries", icon: "🌍" },
-  { number: "12,000+", label: "Enterprise Clients", icon: "🏢" },
-  { number: "340+", label: "Active Projects", icon: "📊" },
-  { number: "4", label: "Business Divisions", icon: "⚡" },
-  { number: "15,000+", label: "Product Configurations", icon: "🔧" },
-  { number: "24/7", label: "Global Support", icon: "🛡️" },
+  { number: "80+", label: "Countries" },
+  { number: "12,000+", label: "Clients" },
+  { number: "340+", label: "Projects" },
+  { number: "15,000+", label: "Configurations" },
 ];
 
 export function GlobalPresence() {
   const { ref, visible } = useScrollReveal(0.1);
 
   return (
-    <section ref={ref} className="relative bg-black py-32 md:py-44 section-accent-top hero-gradient overflow-hidden">
-      <div className="orb orb-silver w-[600px] h-[600px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-40" />
+    <section ref={ref} className="bg-white text-center py-20 md:py-28 overflow-hidden">
+      <div className="max-w-[980px] mx-auto px-6">
+        <h2 className="text-[48px] md:text-[56px] font-semibold leading-[1.05] tracking-[-0.04em] text-[#1d1d1f]" style={revealStyle(visible, 0)}>
+          Global reach.
+        </h2>
+        <p className="text-[19px] md:text-[21px] font-normal leading-[1.24] text-[#6e6e73] mt-2 max-w-md mx-auto" style={revealStyle(visible, 80)}>
+          Operating across continents, delivering precision everywhere.
+        </p>
 
-      <div className="max-w-[1100px] mx-auto px-5 relative z-10">
-        <div className="text-center mb-16 md:mb-20">
-          <p className="text-overline mb-4" style={revealStyle(visible, 0)}>Global Presence</p>
-          <h2 className="text-display-sm text-gradient-hero" style={revealStyle(visible, 100)}>
-            Engineering at scale.
-          </h2>
-          <p className="text-subtitle mt-5 max-w-lg mx-auto" style={revealStyle(visible, 200)}>
-            Operating across continents, delivering precision everywhere.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
-          {stats.map((stat, i) => (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-14">
+          {stats.map((s, i) => (
             <div
-              key={stat.label}
-              className="card-dark !p-6 !rounded-[20px] text-center !min-h-0"
+              key={s.label}
               style={{
                 opacity: visible ? 1 : 0,
-                transform: visible ? "scale(1)" : "scale(0.85)",
-                transition: `opacity 0.7s cubic-bezier(0.34,1.56,0.64,1) ${350 + i * 60}ms, transform 0.7s cubic-bezier(0.34,1.56,0.64,1) ${350 + i * 60}ms`,
+                transform: visible ? "translateY(0)" : "translateY(16px)",
+                transition: `opacity 0.7s cubic-bezier(0.25,0.46,0.45,0.94) ${200 + i * 80}ms, transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94) ${200 + i * 80}ms`,
               }}
             >
-              <span className="text-2xl block mb-3 opacity-50">{stat.icon}</span>
-              <p className="text-[28px] md:text-[32px] font-extrabold text-white tracking-[-0.03em] leading-none">{stat.number}</p>
-              <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-white/30 mt-2">{stat.label}</p>
+              <p className="text-[44px] md:text-[56px] font-bold tracking-[-0.04em] text-[#1d1d1f] leading-none">{s.number}</p>
+              <p className="text-[14px] text-[#86868b] mt-2">{s.label}</p>
             </div>
           ))}
+        </div>
+
+        <div className="mt-12" style={revealStyle(visible, 500)}>
+          <Link href="/about" className="text-[17px] text-[#0066cc] hover:underline underline-offset-[3px]">Learn about Koleex {">"}</Link>
         </div>
       </div>
     </section>
