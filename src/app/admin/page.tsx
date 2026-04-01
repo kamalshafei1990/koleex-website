@@ -114,7 +114,27 @@ export default function AdminPage() {
       if (e.data?.type === "preview-ready") updatePreview();
       if (e.data?.type === "select-section") {
         const s = sections.find((sec) => sec.id === e.data.sectionId);
-        if (s) setSelectedSection(s);
+        if (s) { setSelectedSection(s); setSettingsTab("content"); loadElements(s.id); }
+      }
+      // Inline editing from preview
+      if (e.data?.type === "inline-edit") {
+        const { sectionId, field, value } = e.data;
+        updateSection(sectionId, field, value);
+      }
+      // Floating toolbar actions from preview
+      if (e.data?.type === "toolbar-action") {
+        const { sectionId, action } = e.data;
+        if (action === "moveUp") moveSection(sectionId, "up");
+        if (action === "moveDown") moveSection(sectionId, "down");
+        if (action === "duplicate") {
+          const s = sections.find(sec => sec.id === sectionId);
+          if (s) duplicateSection(s);
+        }
+        if (action === "toggle") {
+          const s = sections.find(sec => sec.id === sectionId);
+          if (s) updateSection(sectionId, "visible", !s.visible);
+        }
+        if (action === "delete") deleteSection(sectionId);
       }
     }
     window.addEventListener("message", handleMessage);
