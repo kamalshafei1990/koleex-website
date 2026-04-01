@@ -273,14 +273,17 @@ function TagListElement({ el }: { el: ElementRow }) {
 
 function CtaBannerElement({ el }: { el: ElementRow }) {
   const t = getTheme(el); const c = tx(t);
-  const d = (el.content || {}) as { title?: string; description?: string; buttonText?: string; buttonLink?: string };
+  const d = (el.content || {}) as { title?: string; description?: string; buttonText?: string; buttonLink?: string; dark?: boolean };
+  // Use style.theme first, fall back to content.dark for backward compat
+  const isDark = t === "dark" || d.dark;
+  const colors = isDark ? tx("dark") : tx("light");
   return (
-    <div className={`rounded-[20px] p-8 md:p-12 ${t === "dark" ? "bg-white/[0.04] border border-white/[0.06]" : "bg-[#f5f5f7]"} flex flex-col md:flex-row items-center justify-between gap-6`}>
+    <div className={`rounded-[20px] p-8 md:p-12 ${isDark ? "bg-[#1d1d1f]" : "bg-[#f5f5f7]"} flex flex-col md:flex-row items-center justify-between gap-6`}>
       <div>
-        {d.title && <h3 className={`text-[24px] font-bold ${c.heading}`}>{d.title}</h3>}
-        {d.description && <p className={`text-[15px] mt-2 ${c.body}`}>{d.description}</p>}
+        {d.title && <h3 className={`text-[24px] font-bold ${colors.heading}`}>{d.title}</h3>}
+        {d.description && <p className={`text-[15px] mt-2 ${colors.body}`}>{d.description}</p>}
       </div>
-      {d.buttonText && <Link href={d.buttonLink || "#"} className={`shrink-0 h-11 px-6 rounded-full text-[14px] font-semibold flex items-center transition-colors ${c.btnSolid}`}>{d.buttonText}</Link>}
+      {d.buttonText && <Link href={d.buttonLink || "#"} className={`shrink-0 h-11 px-6 rounded-full text-[14px] font-semibold flex items-center transition-colors ${colors.btnSolid}`}>{d.buttonText}</Link>}
     </div>
   );
 }

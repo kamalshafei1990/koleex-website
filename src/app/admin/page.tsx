@@ -163,10 +163,15 @@ export default function AdminPage() {
 
   async function editElement(sectionId: string, elementId: string, content: Record<string, unknown>) {
     await updateElement(elementId, { content });
-    setSectionElements(prev => ({
-      ...prev,
-      [sectionId]: (prev[sectionId] || []).map(e => e.id === elementId ? { ...e, content } : e),
-    }));
+    setSectionElements(prev => {
+      const updated = {
+        ...prev,
+        [sectionId]: (prev[sectionId] || []).map(e => e.id === elementId ? { ...e, content } : e),
+      };
+      // Force preview update
+      setTimeout(() => iframeRef.current?.contentWindow?.postMessage({ type: "preview-update", sections: sections.filter(s => s.visible), elements: updated }, "*"), 50);
+      return updated;
+    });
     setSaveState("unsaved");
   }
 
@@ -748,16 +753,27 @@ export default function AdminPage() {
                                       <div className="flex items-center gap-0.5 bg-white/[0.04] rounded p-px" onClick={(e) => e.stopPropagation()}>
                                         <button
                                           onClick={async () => {
-                                            await updateElement(el.id, { style: { ...(el.style || {}), theme: "light" } });
-                                            setSectionElements(prev => ({ ...prev, [selectedSection.id]: (prev[selectedSection.id] || []).map(e => e.id === el.id ? { ...e, style: { ...(e.style || {}), theme: "light" } } : e) }));
+                                            const newStyle = { ...(el.style || {}), theme: "light" };
+                                            await updateElement(el.id, { style: newStyle });
+                                            setSectionElements(prev => {
+                                              const updated = { ...prev, [selectedSection.id]: (prev[selectedSection.id] || []).map(e => e.id === el.id ? { ...e, style: newStyle } : e) };
+                                              // Force preview update with new elements
+                                              setTimeout(() => iframeRef.current?.contentWindow?.postMessage({ type: "preview-update", sections: sections.filter(s => s.visible), elements: updated }, "*"), 50);
+                                              return updated;
+                                            });
                                             setSaveState("unsaved");
                                           }}
                                           className={`h-4 w-4 rounded flex items-center justify-center text-[7px] ${((el.style as Record<string,unknown>)?.theme || "light") === "light" ? "bg-white text-black" : "text-white/25"}`}
                                         >☀</button>
                                         <button
                                           onClick={async () => {
-                                            await updateElement(el.id, { style: { ...(el.style || {}), theme: "dark" } });
-                                            setSectionElements(prev => ({ ...prev, [selectedSection.id]: (prev[selectedSection.id] || []).map(e => e.id === el.id ? { ...e, style: { ...(e.style || {}), theme: "dark" } } : e) }));
+                                            const newStyle = { ...(el.style || {}), theme: "dark" };
+                                            await updateElement(el.id, { style: newStyle });
+                                            setSectionElements(prev => {
+                                              const updated = { ...prev, [selectedSection.id]: (prev[selectedSection.id] || []).map(e => e.id === el.id ? { ...e, style: newStyle } : e) };
+                                              setTimeout(() => iframeRef.current?.contentWindow?.postMessage({ type: "preview-update", sections: sections.filter(s => s.visible), elements: updated }, "*"), 50);
+                                              return updated;
+                                            });
                                             setSaveState("unsaved");
                                           }}
                                           className={`h-4 w-4 rounded flex items-center justify-center text-[7px] ${((el.style as Record<string,unknown>)?.theme) === "dark" ? "bg-[#1d1d1f] text-white" : "text-white/25"}`}
