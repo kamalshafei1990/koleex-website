@@ -1185,11 +1185,59 @@ function ElementEditor({ el, sectionId, onEdit }: { el: import("@/types/supabase
     case "card":
       return (
         <div className="space-y-2">
+          {/* Content */}
           <F label="Icon"><InlineIconPicker value={(c.icon as string) || ""} onChange={(v) => upd("icon", v)} /></F>
           <F label="Title"><input value={(c.title as string) || ""} onChange={(e) => upd("title", e.target.value)} className="input-field" placeholder="Card title" /></F>
           <F label="Description"><textarea value={(c.description as string) || ""} onChange={(e) => upd("description", e.target.value)} className="input-field resize-y" rows={2} placeholder="Card description" /></F>
           <F label="Image"><MediaSelector currentUrl={(c.image as string) || null} onSelect={(url) => upd("image", url)} /></F>
+          <F label="Badge"><input value={(c.badge as string) || ""} onChange={(e) => upd("badge", e.target.value)} className="input-field" placeholder="NEW, FEATURED, etc." /></F>
+          <F label="Price"><input value={(c.price as string) || ""} onChange={(e) => upd("price", e.target.value)} className="input-field" placeholder="$99.00" /></F>
           <F label="Link"><input value={(c.link as string) || ""} onChange={(e) => upd("link", e.target.value)} className="input-field" placeholder="/page-link" /></F>
+
+          {/* Card Style */}
+          <div className="pt-2 border-t border-white/[0.04]">
+            <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-white/15 mb-2">Card Style</p>
+            <F label="Style">
+              <div className="flex gap-1">
+                {["default","elevated","outlined","flat"].map(s => (
+                  <button key={s} onClick={() => upd("cardStyle", s)}
+                    className={`flex-1 h-7 rounded-md text-[9px] font-medium capitalize transition-all ${(c.cardStyle as string) === s ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" : "bg-white/[0.04] border border-white/[0.06] text-white/25"}`}>{s}</button>
+                ))}
+              </div>
+            </F>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              <F label="Card BG"><input value={(c.cardBg as string) || ""} onChange={(e) => upd("cardBg", e.target.value)} className="input-field" placeholder="#f5f5f7" /></F>
+              <F label="Border"><input value={(c.cardBorderColor as string) || ""} onChange={(e) => upd("cardBorderColor", e.target.value)} className="input-field" placeholder="transparent" /></F>
+            </div>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              <F label="Title Color"><input value={(c.titleColor as string) || ""} onChange={(e) => upd("titleColor", e.target.value)} className="input-field" placeholder="#1d1d1f" /></F>
+              <F label="Desc Color"><input value={(c.descColor as string) || ""} onChange={(e) => upd("descColor", e.target.value)} className="input-field" placeholder="#86868b" /></F>
+            </div>
+            <F label="Radius"><input value={(c.cardRadius as string) || ""} onChange={(e) => upd("cardRadius", e.target.value)} className="input-field" placeholder="18px" /></F>
+          </div>
+
+          {/* Icon Style */}
+          {(c.icon as string) && (
+            <div className="pt-2 border-t border-white/[0.04]">
+              <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-white/15 mb-2">Icon Style</p>
+              <div className="grid grid-cols-2 gap-2">
+                <F label="Icon Color"><input value={(c.iconColor as string) || ""} onChange={(e) => upd("iconColor", e.target.value)} className="input-field" placeholder="#0066cc" /></F>
+                <F label="Icon Size"><input value={(c.iconSize as string) || ""} onChange={(e) => upd("iconSize", e.target.value)} className="input-field" placeholder="28px" /></F>
+              </div>
+              <F label="Icon BG Shape">
+                <div className="flex gap-1">
+                  {["none","circle","rounded","pill"].map(s => (
+                    <button key={s} onClick={() => upd("iconBgShape", s)}
+                      className={`flex-1 h-7 rounded-md text-[9px] font-medium capitalize transition-all ${(c.iconBgShape as string || "none") === s ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" : "bg-white/[0.04] border border-white/[0.06] text-white/25"}`}>{s}</button>
+                  ))}
+                </div>
+              </F>
+              {(c.iconBgShape as string) && (c.iconBgShape as string) !== "none" && (
+                <F label="Icon BG Color"><input value={(c.iconBgColor as string) || ""} onChange={(e) => upd("iconBgColor", e.target.value)} className="input-field" placeholder="#f0f0f5" /></F>
+              )}
+              <F label="Badge Color"><input value={(c.badgeColor as string) || ""} onChange={(e) => upd("badgeColor", e.target.value)} className="input-field" placeholder="#0066cc" /></F>
+            </div>
+          )}
         </div>
       );
     case "badge":

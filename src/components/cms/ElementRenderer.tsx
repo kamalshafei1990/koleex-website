@@ -105,13 +105,94 @@ function ListElement({ el }: { el: ElementRow }) {
 
 function CardElement({ el }: { el: ElementRow }) {
   const t = getTheme(el); const c = tx(t);
-  const d = (el.content || {}) as { title?: string; description?: string; icon?: string; image?: string; link?: string };
+  const d = (el.content || {}) as {
+    title?: string; description?: string; icon?: string; image?: string; link?: string;
+    cardBg?: string; cardTextColor?: string; cardBorderColor?: string; cardRadius?: string;
+    iconColor?: string; iconBgColor?: string; iconBgShape?: string; iconSize?: string;
+    titleColor?: string; descColor?: string; cardStyle?: string;
+    badge?: string; badgeColor?: string; price?: string;
+  };
+
+  // Card style presets
+  const presetStyles: Record<string, string> = {
+    default: "",
+    elevated: "shadow-md hover:shadow-xl",
+    outlined: "border-2",
+    flat: "",
+    glass: "backdrop-blur-xl bg-opacity-80",
+  };
+
+  // Custom colors or defaults
+  const bgColor = d.cardBg || (t === "dark" ? "rgba(255,255,255,0.03)" : "#f5f5f7");
+  const textColor = d.cardTextColor || (t === "dark" ? "#ffffff" : "#1d1d1f");
+  const descClr = d.descColor || (t === "dark" ? "rgba(255,255,255,0.5)" : "#86868b");
+  const borderClr = d.cardBorderColor || (t === "dark" ? "rgba(255,255,255,0.05)" : "transparent");
+  const radius = d.cardRadius || "18px";
+
+  // Icon styling
+  const iconSize = d.iconSize || "28px";
+  const iconColor = d.iconColor || (t === "dark" ? "#2997ff" : "#0066cc");
+  const iconBgShape = d.iconBgShape || "none";
+  const iconBgColor = d.iconBgColor || (t === "dark" ? "rgba(255,255,255,0.06)" : "#f0f0f5");
+
   const inner = (
-    <div className={`${c.card} border rounded-[18px] p-6 hover:-translate-y-1 transition-all duration-500 ${c.cardHover}`}>
-      {d.image && <CmsImage src={d.image} alt={d.title || ""} className="w-full h-[160px] object-cover rounded-xl mb-4" />}
-      {d.icon && <span className="text-[28px] block mb-3">{d.icon}</span>}
-      {d.title && <h4 className={`text-[16px] font-semibold ${c.heading}`}>{d.title}</h4>}
-      {d.description && <p className={`text-[13px] ${c.body} mt-2 leading-[1.55]`}>{d.description}</p>}
+    <div
+      className={`p-6 hover:-translate-y-1 transition-all duration-500 ${presetStyles[d.cardStyle || "default"]}`}
+      style={{
+        backgroundColor: bgColor,
+        borderColor: borderClr,
+        borderWidth: "1px",
+        borderStyle: "solid",
+        borderRadius: radius,
+        color: textColor,
+      }}
+    >
+      {/* Image */}
+      {d.image && <CmsImage src={d.image} alt={d.title || ""} className={`w-full h-[180px] object-cover mb-4 rounded-xl`} />}
+
+      {/* Icon with optional background */}
+      {d.icon && (
+        <div className="mb-3">
+          {iconBgShape !== "none" ? (
+            <div
+              className={`inline-flex items-center justify-center ${iconBgShape === "circle" ? "rounded-full" : iconBgShape === "rounded" ? "rounded-xl" : "rounded-full px-3"}`}
+              style={{ backgroundColor: iconBgColor, padding: "10px" }}
+            >
+              <span style={{ fontSize: iconSize, color: iconColor, lineHeight: 1 }}>{d.icon}</span>
+            </div>
+          ) : (
+            <span style={{ fontSize: iconSize, color: iconColor, lineHeight: 1 }}>{d.icon}</span>
+          )}
+        </div>
+      )}
+
+      {/* Badge */}
+      {d.badge && (
+        <p className="text-[11px] font-semibold uppercase tracking-[0.06em] mb-2" style={{ color: d.badgeColor || iconColor }}>
+          {d.badge}
+        </p>
+      )}
+
+      {/* Title */}
+      {d.title && (
+        <h4 className="text-[16px] font-semibold leading-[1.3]" style={{ color: d.titleColor || textColor }}>
+          {d.title}
+        </h4>
+      )}
+
+      {/* Description */}
+      {d.description && (
+        <p className="text-[13px] mt-2 leading-[1.55]" style={{ color: descClr }}>
+          {d.description}
+        </p>
+      )}
+
+      {/* Price */}
+      {d.price && (
+        <p className="text-[15px] font-semibold mt-3" style={{ color: textColor }}>
+          {d.price}
+        </p>
+      )}
     </div>
   );
   return d.link ? <Link href={d.link}>{inner}</Link> : inner;
