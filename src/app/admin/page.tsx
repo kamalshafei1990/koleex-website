@@ -7,6 +7,7 @@ import { MediaSelector } from "@/components/cms/MediaSelector";
 import { ButtonEditor } from "@/components/cms/ButtonEditor";
 import { getSectionSettings, getButtonConfig, updateSectionSettings } from "@/lib/section-helpers";
 import { blockLibrary, type BlockTemplate } from "@/data/block-library";
+import { createElement, getElementsBySectionId, updateElement, deleteElement } from "@/lib/elements";
 import {
   Plus, Trash2, Eye, EyeOff, Save, GripVertical, LogIn, Copy,
   ChevronDown, ChevronUp, Monitor, Tablet, Smartphone, Undo2,
@@ -66,7 +67,9 @@ export default function AdminPage() {
   const [viewport, setViewport] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [mode, setMode] = useState<"edit" | "preview">("edit");
   const [pageListOpen, setPageListOpen] = useState(false);
-  const [settingsTab, setSettingsTab] = useState<"content" | "style" | "buttons">("content");
+  const [settingsTab, setSettingsTab] = useState<"content" | "style" | "buttons" | "elements">("content");
+  const [sectionElements, setSectionElements] = useState<Record<string, import("@/types/supabase").ElementRow[]>>({});
+  const [showElementPicker, setShowElementPicker] = useState<string | null>(null); // section id
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
@@ -128,6 +131,40 @@ export default function AdminPage() {
     if (selectedSection?.id === id) {
       setSelectedSection((prev) => prev ? { ...prev, [field]: value } : prev);
     }
+    setSaveState("unsaved");
+  }
+
+  // Load elements when section is selected
+  async function loadElements(sectionId: string) {
+    if (sectionElements[sectionId]) return; // already loaded
+    const els = await getElementsBySectionId(sectionId);
+    setSectionElements(prev => ({ ...prev, [sectionId]: els }));
+  }
+
+  async function addElement(sectionId: string, type: import("@/types/supabase").ElementType) {
+    const existing = sectionElements[sectionId] || [];
+    const el = await createElement(sectionId, type, undefined, existing.length + 1);
+    if (el) {
+      setSectionElements(prev => ({ ...prev, [sectionId]: [...(prev[sectionId] || []), el] }));
+    }
+    setShowElementPicker(null);
+  }
+
+  async function removeElement(sectionId: string, elementId: string) {
+    if (!confirm("Delete this element?")) return;
+    await deleteElement(elementId);
+    setSectionElements(prev => ({
+      ...prev,
+      [sectionId]: (prev[sectionId] || []).filter(e => e.id !== elementId),
+    }));
+  }
+
+  async function editElement(sectionId: string, elementId: string, content: Record<string, unknown>) {
+    await updateElement(elementId, { content });
+    setSectionElements(prev => ({
+      ...prev,
+      [sectionId]: (prev[sectionId] || []).map(e => e.id === elementId ? { ...e, content } : e),
+    }));
     setSaveState("unsaved");
   }
 
@@ -348,7 +385,7 @@ export default function AdminPage() {
             {sections.map((s, idx) => (
               <div key={s.id}>
                 <div
-                  onClick={() => { setSelectedSection(s); setSettingsTab("content"); iframeRef.current?.contentWindow?.postMessage({ type: "scroll-to-section", sectionId: s.id }, "*"); }}
+                  onClick={() => { setSelectedSection(s); setSettingsTab("content"); loadElements(s.id); iframeRef.current?.contentWindow?.postMessage({ type: "scroll-to-section", sectionId: s.id }, "*"); }}
                   className={`mx-1 mb-0.5 px-3 py-2 rounded-lg cursor-pointer transition-colors ${selectedSection?.id === s.id ? "bg-white/[0.08] border border-blue-500/20" : "hover:bg-white/[0.03] border border-transparent"}`}
                 >
                   <div className="flex items-center gap-2">
@@ -424,7 +461,7 @@ export default function AdminPage() {
 
               {/* Settings tabs */}
               <div className="flex border-b border-white/[0.06] shrink-0">
-                {(["content", "style", "buttons"] as const).map((tab) => (
+                {(["content", "style", "buttons", "elements"] as const).map((tab) => (
                   <button key={tab} onClick={() => setSettingsTab(tab)} className={`flex-1 py-2.5 text-[11px] font-medium capitalize transition-colors border-b-2 ${settingsTab === tab ? "text-white border-white/40" : "text-white/30 border-transparent hover:text-white/50"}`}>
                     {tab}
                   </button>
@@ -678,6 +715,118 @@ export default function AdminPage() {
                         dark={selectedSection.background === "dark" || selectedSection.background === "black"}
                         onChange={(config) => updateButton(selectedSection.id, "btn2", config)}
                       />
+                    </>
+                  )}
+
+                  {/* ═══ ELEMENTS TAB ═══ */}
+                  {settingsTab === "elements" && (
+                    <>
+                      <SettingsGroup title="Elements in this section">
+                        {(sectionElements[selectedSection.id] || []).length === 0 ? (
+                          <p className="text-[12px] text-white/20 py-4 text-center">No elements yet</p>
+                        ) : (
+                          <div className="space-y-2">
+                            {(sectionElements[selectedSection.id] || []).map((el) => {
+                              const c = (el.content || {}) as Record<string, string>;
+                              return (
+                                <div key={el.id} className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.05] space-y-2">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-[10px] px-2 py-0.5 rounded bg-white/[0.06] text-white/30 font-medium uppercase">{el.type}</span>
+                                    </div>
+                                    <button onClick={() => removeElement(selectedSection.id, el.id)} className="text-white/15 hover:text-red-400/60 transition-colors">
+                                      <Trash2 className="h-3 w-3" />
+                                    </button>
+                                  </div>
+                                  {/* Inline content editor based on type */}
+                                  {(el.type === "heading" || el.type === "paragraph") && (
+                                    <input
+                                      value={c.text || ""}
+                                      onChange={(e) => editElement(selectedSection.id, el.id, { ...el.content, text: e.target.value })}
+                                      className="input-field"
+                                      placeholder={el.type === "heading" ? "Heading text" : "Paragraph text"}
+                                    />
+                                  )}
+                                  {el.type === "button" && (
+                                    <div className="grid grid-cols-2 gap-2">
+                                      <input value={c.text || ""} onChange={(e) => editElement(selectedSection.id, el.id, { ...el.content, text: e.target.value })} className="input-field" placeholder="Button text" />
+                                      <input value={c.link || ""} onChange={(e) => editElement(selectedSection.id, el.id, { ...el.content, link: e.target.value })} className="input-field" placeholder="/link" />
+                                    </div>
+                                  )}
+                                  {el.type === "image" && (
+                                    <div>
+                                      <MediaSelector
+                                        currentUrl={c.src || null}
+                                        onSelect={(url) => editElement(selectedSection.id, el.id, { ...el.content, src: url })}
+                                      />
+                                    </div>
+                                  )}
+                                  {el.type === "divider" && (
+                                    <p className="text-[10px] text-white/15">Horizontal divider line</p>
+                                  )}
+                                  {el.type === "spacer" && (
+                                    <input value={c.height || "48px"} onChange={(e) => editElement(selectedSection.id, el.id, { ...el.content, height: e.target.value })} className="input-field" placeholder="48px" />
+                                  )}
+                                  {el.type === "card" && (
+                                    <div className="space-y-2">
+                                      <input value={c.title || ""} onChange={(e) => editElement(selectedSection.id, el.id, { ...el.content, title: e.target.value })} className="input-field" placeholder="Card title" />
+                                      <input value={c.description || ""} onChange={(e) => editElement(selectedSection.id, el.id, { ...el.content, description: e.target.value })} className="input-field" placeholder="Card description" />
+                                      <input value={c.icon || ""} onChange={(e) => editElement(selectedSection.id, el.id, { ...el.content, icon: e.target.value })} className="input-field" placeholder="Icon (emoji)" />
+                                    </div>
+                                  )}
+                                  {el.type === "video" && (
+                                    <input value={c.src || ""} onChange={(e) => editElement(selectedSection.id, el.id, { ...el.content, src: e.target.value })} className="input-field" placeholder="Video URL" />
+                                  )}
+                                  {el.type === "list" && (
+                                    <textarea
+                                      value={((el.content as Record<string, unknown>)?.items as string[] || []).join("\n")}
+                                      onChange={(e) => editElement(selectedSection.id, el.id, { ...el.content, items: e.target.value.split("\n") })}
+                                      className="input-field resize-y"
+                                      rows={3}
+                                      placeholder="One item per line"
+                                    />
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </SettingsGroup>
+
+                      {/* Add Element picker */}
+                      <div className="mt-2">
+                        {showElementPicker === selectedSection.id ? (
+                          <div className="grid grid-cols-3 gap-1.5">
+                            {([
+                              { type: "heading", icon: "H", label: "Heading" },
+                              { type: "paragraph", icon: "¶", label: "Text" },
+                              { type: "image", icon: "🖼", label: "Image" },
+                              { type: "button", icon: "▢", label: "Button" },
+                              { type: "card", icon: "◻", label: "Card" },
+                              { type: "video", icon: "▶", label: "Video" },
+                              { type: "list", icon: "≡", label: "List" },
+                              { type: "divider", icon: "—", label: "Divider" },
+                              { type: "spacer", icon: "↕", label: "Spacer" },
+                            ] as { type: import("@/types/supabase").ElementType; icon: string; label: string }[]).map((et) => (
+                              <button
+                                key={et.type}
+                                onClick={() => addElement(selectedSection.id, et.type)}
+                                className="flex flex-col items-center gap-1 p-3 rounded-lg bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.10] transition-all"
+                              >
+                                <span className="text-[16px]">{et.icon}</span>
+                                <span className="text-[9px] text-white/30">{et.label}</span>
+                              </button>
+                            ))}
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setShowElementPicker(selectedSection.id)}
+                            className="w-full h-9 rounded-lg bg-white/[0.04] border border-white/[0.06] text-[11px] text-white/30 hover:text-white/60 hover:bg-white/[0.06] transition-colors flex items-center justify-center gap-1.5"
+                          >
+                            <Plus className="h-3 w-3" /> Add Element
+                          </button>
+                        )}
+                      </div>
                     </>
                   )}
                 </div>
