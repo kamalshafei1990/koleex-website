@@ -57,6 +57,32 @@ export interface SectionSettings {
   autoplay?: boolean;
   loop?: boolean;
   muted?: boolean;
+  // Layout zones
+  zoneLayout?: ZoneLayout;
+}
+
+/* ── Layout Zones ── */
+export type ZoneLayout =
+  | "1-col"
+  | "2-col"
+  | "3-col"
+  | "4-col"
+  | "70-30"
+  | "30-70"
+  | "60-40"
+  | "40-60";
+
+/* ── Icon Config ── */
+export interface IconConfig {
+  type: "emoji" | "lucide" | "svg" | "image";
+  value: string; // emoji char, lucide name, svg string, or image URL
+  size: "xs" | "sm" | "md" | "lg" | "xl" | "custom";
+  customSize?: number;
+  color?: string;
+  bgShape?: "none" | "circle" | "rounded" | "pill";
+  bgColor?: string;
+  position?: "left" | "right" | "top" | "bottom" | "center";
+  align?: "left" | "center" | "right";
 }
 
 /* ── Element Types ── */
@@ -106,6 +132,7 @@ export interface ElementRow {
   settings: Record<string, unknown> | null;
   order: number;
   visible: boolean;
+  zone?: string; // "a", "b", "c", "d" — which column/zone the element is in
   created_at: string;
   updated_at: string;
 }

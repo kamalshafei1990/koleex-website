@@ -3,7 +3,9 @@
 import { useEffect, useState, useCallback } from "react";
 import { SectionRenderer } from "@/components/cms/SectionRenderer";
 import { ElementRenderer } from "@/components/cms/ElementRenderer";
-import type { SectionRow, ElementRow } from "@/types/supabase";
+import { ZoneRenderer } from "@/components/cms/ZoneRenderer";
+import { getSectionSettings } from "@/lib/section-helpers";
+import type { SectionRow, ElementRow, ZoneLayout } from "@/types/supabase";
 
 /* ---------------------------------------------------------------------------
    Admin Preview — Live preview with inline editing support.
@@ -129,12 +131,22 @@ export default function PreviewPage() {
               />
             </div>
 
-            {/* Render child elements */}
-            {sectionElements.length > 0 && (
-              <div className="max-w-[1000px] mx-auto px-6 py-8 space-y-6">
-                <ElementRenderer elements={sectionElements} />
-              </div>
-            )}
+            {/* Render child elements — using zones if section has multi-zone layout */}
+            {sectionElements.length > 0 && (() => {
+              const settings = getSectionSettings(section);
+              const zoneLayout = settings.zoneLayout || "1-col";
+              return (
+                <div className="max-w-[1000px] mx-auto px-6 py-8">
+                  {zoneLayout === "1-col" ? (
+                    <div className="space-y-6">
+                      <ElementRenderer elements={sectionElements} />
+                    </div>
+                  ) : (
+                    <ZoneRenderer elements={sectionElements} layout={zoneLayout as ZoneLayout} isEditing={isSelected} />
+                  )}
+                </div>
+              );
+            })()}
           </div>
         );
       })}

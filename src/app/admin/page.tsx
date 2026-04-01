@@ -632,6 +632,30 @@ export default function AdminPage() {
                   {/* ═══ STYLE TAB ═══ */}
                   {settingsTab === "style" && (
                     <>
+                      {/* Zone Layout */}
+                      <SettingsGroup title="Layout Zones">
+                        <Field label="Column Layout">
+                          <div className="grid grid-cols-4 gap-1.5">
+                            {([
+                              { value: "1-col", label: "1 Col", preview: <div className="h-6 bg-blue-400/30 rounded" /> },
+                              { value: "2-col", label: "2 Col", preview: <div className="flex gap-0.5 h-6"><div className="flex-1 bg-blue-400/30 rounded" /><div className="flex-1 bg-blue-400/30 rounded" /></div> },
+                              { value: "3-col", label: "3 Col", preview: <div className="flex gap-0.5 h-6"><div className="flex-1 bg-blue-400/30 rounded" /><div className="flex-1 bg-blue-400/30 rounded" /><div className="flex-1 bg-blue-400/30 rounded" /></div> },
+                              { value: "4-col", label: "4 Col", preview: <div className="flex gap-0.5 h-6"><div className="flex-1 bg-blue-400/30 rounded" /><div className="flex-1 bg-blue-400/30 rounded" /><div className="flex-1 bg-blue-400/30 rounded" /><div className="flex-1 bg-blue-400/30 rounded" /></div> },
+                              { value: "70-30", label: "70/30", preview: <div className="flex gap-0.5 h-6"><div className="w-[70%] bg-blue-400/30 rounded" /><div className="w-[30%] bg-blue-400/20 rounded" /></div> },
+                              { value: "30-70", label: "30/70", preview: <div className="flex gap-0.5 h-6"><div className="w-[30%] bg-blue-400/20 rounded" /><div className="w-[70%] bg-blue-400/30 rounded" /></div> },
+                              { value: "60-40", label: "60/40", preview: <div className="flex gap-0.5 h-6"><div className="w-[60%] bg-blue-400/30 rounded" /><div className="w-[40%] bg-blue-400/20 rounded" /></div> },
+                              { value: "40-60", label: "40/60", preview: <div className="flex gap-0.5 h-6"><div className="w-[40%] bg-blue-400/20 rounded" /><div className="w-[60%] bg-blue-400/30 rounded" /></div> },
+                            ] as { value: string; label: string; preview: React.ReactNode }[]).map((l) => (
+                              <button key={l.value} onClick={() => updateSetting(selectedSection.id, "zoneLayout", l.value)}
+                                className={`p-2 rounded-lg border transition-all ${(getSectionSettings(selectedSection).zoneLayout || "1-col") === l.value ? "border-blue-500/40 bg-blue-500/10" : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]"}`}>
+                                {l.preview}
+                                <p className="text-[8px] text-white/25 mt-1 text-center">{l.label}</p>
+                              </button>
+                            ))}
+                          </div>
+                        </Field>
+                      </SettingsGroup>
+
                       <SettingsGroup title="Background">
                         <Field label="Color">
                           <div className="flex gap-2">
@@ -807,7 +831,31 @@ export default function AdminPage() {
                                   </div>
                                   {/* Editor — shown when expanded */}
                                   {isExpanded && (
-                                    <div className="px-3 pb-3 pt-1 border-t border-white/[0.04]">
+                                    <div className="px-3 pb-3 pt-1 border-t border-white/[0.04] space-y-3">
+                                      {/* Zone selector — only show if section has multi-zone layout */}
+                                      {(getSectionSettings(selectedSection).zoneLayout && getSectionSettings(selectedSection).zoneLayout !== "1-col") && (
+                                        <div>
+                                          <label className="text-[9px] text-white/25 mb-1 block">Zone</label>
+                                          <div className="flex gap-1">
+                                            {(() => {
+                                              const zl = getSectionSettings(selectedSection).zoneLayout || "1-col";
+                                              const zones = zl === "3-col" ? ["a","b","c"] : zl === "4-col" ? ["a","b","c","d"] : ["a","b"];
+                                              return zones.map((z) => (
+                                                <button key={z} onClick={async () => {
+                                                  await updateElement(el.id, { settings: { ...(el.settings || {}), zone: z } });
+                                                  setSectionElements(prev => ({
+                                                    ...prev,
+                                                    [selectedSection.id]: (prev[selectedSection.id] || []).map(e => e.id === el.id ? { ...e, zone: z } : e),
+                                                  }));
+                                                  setSaveState("unsaved");
+                                                }}
+                                                  className={`flex-1 h-7 rounded-md text-[10px] font-semibold uppercase transition-all ${(el.zone || "a") === z ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" : "bg-white/[0.04] border border-white/[0.06] text-white/25"}`}
+                                                >{z}</button>
+                                              ));
+                                            })()}
+                                          </div>
+                                        </div>
+                                      )}
                                       <ElementEditor el={el} sectionId={selectedSection.id} onEdit={editElement} />
                                     </div>
                                   )}
