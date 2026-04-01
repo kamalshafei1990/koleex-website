@@ -462,8 +462,49 @@ export default function AdminPage() {
                       {/* Video */}
                       {selectedSection.layout === "video" && (
                         <SettingsGroup title="Video">
-                          <Field label="Embed URL">
-                            <input value={selectedSection.video_url || ""} onChange={(e) => updateSection(selectedSection.id, "video_url", e.target.value)} className="input-field" placeholder="https://youtube.com/embed/..." />
+                          <Field label="Video Source">
+                            <div className="space-y-3">
+                              {/* Upload video */}
+                              <div>
+                                <label className="flex items-center gap-2 h-9 px-3 rounded-lg bg-white/[0.06] border border-white/[0.08] text-[12px] font-medium text-white/50 hover:text-white/80 hover:bg-white/[0.10] transition-all cursor-pointer">
+                                  <PlayCircle className="h-3.5 w-3.5" />
+                                  Upload Video
+                                  <input
+                                    type="file"
+                                    accept="video/*"
+                                    className="hidden"
+                                    onChange={async (e) => {
+                                      const file = e.target.files?.[0];
+                                      if (!file) return;
+                                      const { uploadMedia } = await import("@/lib/media");
+                                      const result = await uploadMedia(file);
+                                      if (result) updateSection(selectedSection.id, "video_url", result.url);
+                                      else alert("Upload failed");
+                                    }}
+                                  />
+                                </label>
+                              </div>
+                              {/* Or paste URL */}
+                              <div className="flex items-center gap-2">
+                                <div className="h-px flex-1 bg-white/[0.06]" />
+                                <span className="text-[10px] text-white/15">or paste URL</span>
+                                <div className="h-px flex-1 bg-white/[0.06]" />
+                              </div>
+                              <input value={selectedSection.video_url || ""} onChange={(e) => updateSection(selectedSection.id, "video_url", e.target.value)} className="input-field" placeholder="https://youtube.com/embed/..." />
+                              {/* Current video preview */}
+                              {selectedSection.video_url && (
+                                <div className="mt-2">
+                                  <p className="text-[10px] text-white/20 mb-1 truncate">{selectedSection.video_url}</p>
+                                  <button onClick={() => updateSection(selectedSection.id, "video_url", null)} className="text-[11px] text-red-400/50 hover:text-red-400 transition-colors">Remove video</button>
+                                </div>
+                              )}
+                            </div>
+                          </Field>
+                          <Field label="Poster Image (thumbnail)">
+                            <MediaSelector
+                              currentUrl={selectedSection.image_url}
+                              onSelect={(url) => updateSection(selectedSection.id, "image_url", url || null)}
+                            />
                           </Field>
                         </SettingsGroup>
                       )}

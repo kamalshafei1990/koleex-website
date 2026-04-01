@@ -52,7 +52,7 @@ export async function uploadMedia(file: File): Promise<MediaRow | null> {
       name: file.name,
       file_path: filePath,
       url: url,
-      type: file.type.startsWith("image/") ? "image" : "file",
+      type: file.type.startsWith("image/") ? "image" : file.type.startsWith("video/") ? "video" : "file",
       size: file.size,
     })
     .select()

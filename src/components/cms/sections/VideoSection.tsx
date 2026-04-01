@@ -3,6 +3,19 @@
 import Link from "next/link";
 import type { SectionRow } from "@/types/supabase";
 
+/* ---------------------------------------------------------------------------
+   VideoSection — Supports both:
+   1. Embed URLs (YouTube/Vimeo) → renders in iframe
+   2. Uploaded video files (Supabase Storage) → renders in <video> tag
+
+   Detection: if video_url contains "youtube", "vimeo", or "embed" → iframe
+   Otherwise → native <video> player
+   --------------------------------------------------------------------------- */
+
+function isEmbedUrl(url: string): boolean {
+  return /youtube|youtu\.be|vimeo|embed|dailymotion/i.test(url);
+}
+
 export function VideoSection({ section }: { section: SectionRow }) {
   const dark = section.background === "dark" || section.background === "black";
 
@@ -19,17 +32,34 @@ export function VideoSection({ section }: { section: SectionRow }) {
             )}
           </div>
         )}
+
         {section.video_url && (
           <div className="aspect-video rounded-[16px] overflow-hidden bg-black">
-            <iframe
-              src={section.video_url}
-              title={section.title || "Video"}
-              className="w-full h-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+            {isEmbedUrl(section.video_url) ? (
+              /* Embed (YouTube/Vimeo) */
+              <iframe
+                src={section.video_url}
+                title={section.title || "Video"}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              /* Uploaded video file */
+              <video
+                src={section.video_url}
+                controls
+                playsInline
+                preload="metadata"
+                className="w-full h-full object-contain bg-black"
+                poster={section.image_url || undefined}
+              >
+                Your browser does not support the video tag.
+              </video>
+            )}
           </div>
         )}
+
         {section.button_text && section.button_link && (
           <div className="text-center mt-8">
             <Link href={section.button_link} className={`text-[17px] ${dark ? "text-[#2997ff]" : "text-[#0066cc]"} hover:underline underline-offset-[3px]`}>
