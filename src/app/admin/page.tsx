@@ -1,30 +1,52 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
 import { getAllPages } from "@/lib/cms";
 import { MediaSelector } from "@/components/cms/MediaSelector";
-import { ChevronDown, ChevronUp, Plus, Trash2, Eye, EyeOff, Save, GripVertical, LogIn } from "lucide-react";
-import type { PageRow, SectionRow, SectionLayout } from "@/types/supabase";
+import {
+  Plus, Trash2, Eye, EyeOff, Save, GripVertical, LogIn, Copy,
+  ChevronDown, ChevronUp, Monitor, Tablet, Smartphone, Undo2,
+  Layout, Type, Image as ImageIcon, Columns, BarChart3, PlayCircle,
+  Quote, Clock, Grid3X3, Download, Star, MessageSquare, Layers,
+  ArrowLeft, X, Check, ExternalLink,
+} from "lucide-react";
+import type { PageRow, SectionRow, SectionLayout, SectionItem } from "@/types/supabase";
 
 /* ---------------------------------------------------------------------------
-   Admin CMS Editor — Simple password-protected content editor.
-   - Lists all pages
-   - Edit sections: title, subtitle, content, image, buttons, layout, order
-   - Toggle visibility
-   - Add/delete sections
-   - Reorder with up/down arrows
-   - Save to Supabase
+   Visual Page Builder — Three-panel editor.
+   Left: Section list | Center: Live preview | Right: Section settings
    --------------------------------------------------------------------------- */
 
 const ADMIN_PASSWORD = "koleex2024";
 
-const layoutOptions: SectionLayout[] = [
-  "hero", "image-left", "image-right", "cards", "grid",
-  "numbers", "video", "cta", "quote", "full-image", "split", "brands", "timeline",
+/* ── Section Library ── */
+const sectionLibrary: { type: SectionLayout; label: string; icon: React.ReactNode; desc: string }[] = [
+  { type: "hero", label: "Hero", icon: <Layout className="h-4 w-4" />, desc: "Full-width hero with title & image" },
+  { type: "image-left", label: "Image + Text", icon: <Columns className="h-4 w-4" />, desc: "Image left, text right" },
+  { type: "image-right", label: "Text + Image", icon: <Columns className="h-4 w-4" />, desc: "Text left, image right" },
+  { type: "cards", label: "Cards", icon: <Grid3X3 className="h-4 w-4" />, desc: "Card grid with icons" },
+  { type: "grid", label: "Image Grid", icon: <Grid3X3 className="h-4 w-4" />, desc: "Photo card grid" },
+  { type: "numbers", label: "Stats / Numbers", icon: <BarChart3 className="h-4 w-4" />, desc: "Statistics row" },
+  { type: "cta", label: "Call to Action", icon: <MessageSquare className="h-4 w-4" />, desc: "CTA with buttons" },
+  { type: "quote", label: "Quote", icon: <Quote className="h-4 w-4" />, desc: "Blockquote section" },
+  { type: "full-image", label: "Full Image", icon: <ImageIcon className="h-4 w-4" />, desc: "Image with text overlay" },
+  { type: "video", label: "Video", icon: <PlayCircle className="h-4 w-4" />, desc: "Embedded video section" },
+  { type: "timeline", label: "Timeline", icon: <Clock className="h-4 w-4" />, desc: "Timeline milestones" },
+  { type: "brands", label: "Logo Cloud", icon: <Star className="h-4 w-4" />, desc: "Partner/brand logos" },
+  { type: "split", label: "Product Showcase", icon: <Layers className="h-4 w-4" />, desc: "Product feature split" },
 ];
 
-const bgOptions = ["white", "light", "dark", "black", "image"];
+const bgOptions = [
+  { value: "white", label: "White", color: "#ffffff" },
+  { value: "light", label: "Light Gray", color: "#f5f5f7" },
+  { value: "dark", label: "Dark", color: "#1d1d1f" },
+  { value: "black", label: "Black", color: "#000000" },
+];
+
+const btnStyles = ["solid", "outline", "ghost"];
+const btnShapes = ["pill", "rounded", "square"];
+const btnSizes = ["small", "medium", "large"];
 
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
@@ -32,23 +54,22 @@ export default function AdminPage() {
   const [pages, setPages] = useState<PageRow[]>([]);
   const [selectedPage, setSelectedPage] = useState<PageRow | null>(null);
   const [sections, setSections] = useState<SectionRow[]>([]);
+  const [selectedSection, setSelectedSection] = useState<SectionRow | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [showLibrary, setShowLibrary] = useState(false);
+  const [viewport, setViewport] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [pageListOpen, setPageListOpen] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Check session
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (sessionStorage.getItem("koleex-admin") === "true") setAuthed(true);
-    }
+    if (typeof window !== "undefined" && sessionStorage.getItem("koleex-admin") === "true") setAuthed(true);
   }, []);
 
-  // Load pages
   useEffect(() => {
     if (authed) getAllPages().then(setPages);
   }, [authed]);
 
-  // Load sections when page selected
   useEffect(() => {
     if (!selectedPage) return;
     supabase
@@ -56,383 +77,467 @@ export default function AdminPage() {
       .select("*")
       .eq("page_id", selectedPage.id)
       .order("order", { ascending: true })
-      .then(({ data }) => setSections(data || []));
+      .then(({ data }) => {
+        const s = data || [];
+        setSections(s);
+        setSelectedSection(null);
+      });
   }, [selectedPage]);
+
+  // Send sections to preview iframe
+  const updatePreview = useCallback(() => {
+    iframeRef.current?.contentWindow?.postMessage({
+      type: "preview-update",
+      sections: sections.filter((s) => s.visible),
+    }, "*");
+  }, [sections]);
+
+  useEffect(() => {
+    updatePreview();
+  }, [sections, updatePreview]);
+
+  // Listen for messages from preview
+  useEffect(() => {
+    function handleMessage(e: MessageEvent) {
+      if (e.data?.type === "preview-ready") updatePreview();
+      if (e.data?.type === "select-section") {
+        const s = sections.find((sec) => sec.id === e.data.sectionId);
+        if (s) setSelectedSection(s);
+      }
+    }
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [sections, updatePreview]);
 
   function handleLogin() {
     if (password === ADMIN_PASSWORD) {
       setAuthed(true);
       sessionStorage.setItem("koleex-admin", "true");
-    } else {
-      alert("Wrong password");
-    }
+    } else alert("Wrong password");
   }
 
   function updateSection(id: string, field: string, value: unknown) {
-    setSections((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, [field]: value } : s))
-    );
+    setSections((prev) => prev.map((s) => (s.id === id ? { ...s, [field]: value } : s)));
+    if (selectedSection?.id === id) {
+      setSelectedSection((prev) => prev ? { ...prev, [field]: value } : prev);
+    }
     setSaved(false);
   }
 
-  function moveSection(id: string, direction: "up" | "down") {
+  function moveSection(id: string, dir: "up" | "down") {
     setSections((prev) => {
       const idx = prev.findIndex((s) => s.id === id);
       if (idx < 0) return prev;
-      const newIdx = direction === "up" ? idx - 1 : idx + 1;
-      if (newIdx < 0 || newIdx >= prev.length) return prev;
+      const ni = dir === "up" ? idx - 1 : idx + 1;
+      if (ni < 0 || ni >= prev.length) return prev;
       const copy = [...prev];
-      [copy[idx], copy[newIdx]] = [copy[newIdx], copy[idx]];
+      [copy[idx], copy[ni]] = [copy[ni], copy[idx]];
       return copy.map((s, i) => ({ ...s, order: i + 1 }));
     });
     setSaved(false);
   }
 
-  async function addSection() {
+  async function addSection(layout: SectionLayout) {
     if (!selectedPage) return;
     const newOrder = sections.length + 1;
     const { data, error } = await supabase
       .from("sections")
       .insert({
         page_id: selectedPage.id,
-        section_key: `section-${newOrder}`,
-        layout: "hero",
-        title: "New Section",
-        subtitle: null,
-        content: null,
-        image_url: null,
-        button_text: null,
-        button_link: null,
-        background: "white",
+        section_key: `${layout}-${newOrder}`,
+        layout,
+        title: sectionLibrary.find((s) => s.type === layout)?.label || "New Section",
+        background: layout === "quote" ? "dark" : "white",
         order: newOrder,
         visible: true,
       })
       .select()
       .single();
-
     if (data) {
       setSections((prev) => [...prev, data]);
-      setExpandedId(data.id);
+      setSelectedSection(data);
     }
     if (error) alert("Error: " + error.message);
+    setShowLibrary(false);
+  }
+
+  async function duplicateSection(section: SectionRow) {
+    const { id, created_at, updated_at, ...rest } = section;
+    const { data } = await supabase
+      .from("sections")
+      .insert({ ...rest, section_key: `${rest.section_key}-copy`, order: sections.length + 1 })
+      .select()
+      .single();
+    if (data) setSections((prev) => [...prev, data]);
   }
 
   async function deleteSection(id: string) {
     if (!confirm("Delete this section?")) return;
     await supabase.from("sections").delete().eq("id", id);
     setSections((prev) => prev.filter((s) => s.id !== id));
+    if (selectedSection?.id === id) setSelectedSection(null);
   }
 
   async function saveAll() {
     setSaving(true);
-    for (const section of sections) {
-      await supabase
-        .from("sections")
-        .update({
-          title: section.title,
-          subtitle: section.subtitle,
-          content: section.content,
-          image_url: section.image_url,
-          image_alt: section.image_alt,
-          video_url: section.video_url,
-          button_text: section.button_text,
-          button_link: section.button_link,
-          button2_text: section.button2_text,
-          button2_link: section.button2_link,
-          layout: section.layout,
-          background: section.background,
-          order: section.order,
-          visible: section.visible,
-          items: section.items,
-        })
-        .eq("id", section.id);
+    for (const s of sections) {
+      await supabase.from("sections").update({
+        title: s.title, subtitle: s.subtitle, content: s.content,
+        image_url: s.image_url, image_alt: s.image_alt, video_url: s.video_url,
+        button_text: s.button_text, button_link: s.button_link,
+        button2_text: s.button2_text, button2_link: s.button2_link,
+        layout: s.layout, background: s.background,
+        order: s.order, visible: s.visible, items: s.items,
+      }).eq("id", s.id);
     }
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   }
 
-  // ── Login screen ──
+  // ── Login ──
   if (!authed) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <div className="w-[360px] bg-[#141414] border border-white/[0.06] rounded-2xl p-8">
-          <h1 className="text-[24px] font-bold text-white mb-2">Admin Panel</h1>
-          <p className="text-[13px] text-white/30 mb-6">Enter password to continue.</p>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-            placeholder="Password"
-            className="w-full h-10 px-4 rounded-lg bg-white/[0.05] border border-white/[0.08] text-[14px] text-white placeholder:text-white/25 outline-none focus:border-white/20 transition-colors"
-          />
-          <button
-            onClick={handleLogin}
-            className="w-full h-10 mt-3 rounded-lg bg-white text-black text-[13px] font-semibold hover:bg-white/90 transition-colors flex items-center justify-center gap-2"
-          >
-            <LogIn className="h-4 w-4" />
-            Sign In
+          <h1 className="text-[24px] font-bold text-white mb-2">Koleex Builder</h1>
+          <p className="text-[13px] text-white/30 mb-6">Visual Page Editor</p>
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleLogin()} placeholder="Password" className="w-full h-10 px-4 rounded-lg bg-white/[0.05] border border-white/[0.08] text-[14px] text-white placeholder:text-white/25 outline-none focus:border-white/20" />
+          <button onClick={handleLogin} className="w-full h-10 mt-3 rounded-lg bg-white text-black text-[13px] font-semibold hover:bg-white/90 transition-colors flex items-center justify-center gap-2">
+            <LogIn className="h-4 w-4" /> Sign In
           </button>
         </div>
       </div>
     );
   }
 
-  // ── Admin dashboard ──
+  const vpWidth = viewport === "desktop" ? "100%" : viewport === "tablet" ? "768px" : "375px";
+
+  // ── Three-panel editor ──
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
-      {/* Top bar */}
-      <div className="border-b border-white/[0.06] px-6 py-4 flex items-center justify-between">
-        <div>
-          <h1 className="text-[18px] font-bold">Koleex CMS</h1>
-          <p className="text-[12px] text-white/30">Content Management System</p>
-        </div>
+    <div className="h-screen bg-[#0a0a0a] text-white flex flex-col overflow-hidden">
+      {/* ═══ TOP BAR ═══ */}
+      <div className="h-[52px] shrink-0 border-b border-white/[0.06] px-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {saved && <span className="text-[12px] text-green-400">✓ Saved</span>}
-          <button
-            onClick={saveAll}
-            disabled={saving}
-            className="h-9 px-4 rounded-lg bg-white text-black text-[12px] font-semibold flex items-center gap-2 hover:bg-white/90 transition-colors disabled:opacity-50"
-          >
-            <Save className="h-3.5 w-3.5" />
-            {saving ? "Saving..." : "Save All"}
+          <span className="text-[14px] font-bold">Koleex Builder</span>
+          {/* Page selector */}
+          <div className="relative">
+            <button onClick={() => setPageListOpen(!pageListOpen)} className="h-8 px-3 rounded-lg bg-white/[0.06] border border-white/[0.06] text-[12px] font-medium text-white/60 hover:text-white flex items-center gap-2 transition-colors">
+              {selectedPage?.name || "Select page"} <ChevronDown className="h-3 w-3" />
+            </button>
+            {pageListOpen && (
+              <div className="absolute top-full left-0 mt-1 w-[180px] bg-[#1a1a1a] border border-white/[0.08] rounded-xl shadow-2xl z-50 py-1">
+                {pages.map((p) => (
+                  <button key={p.id} onClick={() => { setSelectedPage(p); setPageListOpen(false); }} className={`w-full text-left px-3 py-2 text-[12px] transition-colors ${selectedPage?.id === p.id ? "bg-white/[0.08] text-white" : "text-white/50 hover:text-white hover:bg-white/[0.04]"}`}>
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Center: viewport toggle */}
+        <div className="flex items-center gap-1 bg-white/[0.04] rounded-lg p-0.5">
+          {([["desktop", <Monitor key="d" className="h-3.5 w-3.5" />], ["tablet", <Tablet key="t" className="h-3.5 w-3.5" />], ["mobile", <Smartphone key="m" className="h-3.5 w-3.5" />]] as const).map(([vp, icon]) => (
+            <button key={vp} onClick={() => setViewport(vp as "desktop" | "tablet" | "mobile")} className={`h-7 w-7 flex items-center justify-center rounded-md transition-colors ${viewport === vp ? "bg-white/[0.10] text-white" : "text-white/30 hover:text-white/60"}`}>
+              {icon}
+            </button>
+          ))}
+        </div>
+
+        {/* Right: actions */}
+        <div className="flex items-center gap-2">
+          {saved && <span className="text-[11px] text-green-400 flex items-center gap-1"><Check className="h-3 w-3" /> Saved</span>}
+          <a href={`/${selectedPage?.slug || ""}`} target="_blank" className="h-8 px-3 rounded-lg text-[11px] font-medium text-white/40 hover:text-white/70 flex items-center gap-1.5 transition-colors">
+            <ExternalLink className="h-3 w-3" /> Preview
+          </a>
+          <button onClick={saveAll} disabled={saving} className="h-8 px-4 rounded-lg bg-white text-black text-[11px] font-semibold flex items-center gap-1.5 hover:bg-white/90 transition-colors disabled:opacity-50">
+            <Save className="h-3 w-3" /> {saving ? "Saving..." : "Save"}
           </button>
         </div>
       </div>
 
-      <div className="flex">
-        {/* ── Sidebar: pages list ── */}
-        <div className="w-[220px] shrink-0 border-r border-white/[0.06] min-h-[calc(100vh-65px)]">
-          <div className="px-4 py-3 border-b border-white/[0.06]">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/25">Pages</p>
+      {/* ═══ THREE PANELS ═══ */}
+      <div className="flex-1 flex overflow-hidden">
+
+        {/* ── LEFT: Sections List ── */}
+        <div className="w-[240px] shrink-0 border-r border-white/[0.06] flex flex-col">
+          <div className="px-3 py-3 border-b border-white/[0.06] flex items-center justify-between">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/25">Sections</span>
+            <button onClick={() => setShowLibrary(true)} className="h-6 w-6 flex items-center justify-center rounded-md bg-white/[0.06] text-white/40 hover:text-white hover:bg-white/[0.10] transition-colors">
+              <Plus className="h-3.5 w-3.5" />
+            </button>
           </div>
-          <div className="py-1">
-            {pages.map((page) => (
-              <button
-                key={page.id}
-                onClick={() => setSelectedPage(page)}
-                className={`w-full text-left px-4 py-2.5 text-[13px] transition-colors ${
-                  selectedPage?.id === page.id
-                    ? "bg-white/[0.08] text-white font-medium"
-                    : "text-white/50 hover:text-white/80 hover:bg-white/[0.03]"
-                }`}
+          <div className="flex-1 overflow-y-auto py-1">
+            {sections.map((s, idx) => (
+              <div
+                key={s.id}
+                onClick={() => { setSelectedSection(s); iframeRef.current?.contentWindow?.postMessage({ type: "scroll-to-section", sectionId: s.id }, "*"); }}
+                className={`mx-1 mb-0.5 px-3 py-2.5 rounded-lg cursor-pointer transition-colors ${selectedSection?.id === s.id ? "bg-white/[0.08]" : "hover:bg-white/[0.03]"}`}
               >
-                {page.name}
-              </button>
+                <div className="flex items-center gap-2">
+                  <GripVertical className="h-3 w-3 text-white/10 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[12px] font-medium text-white/70 truncate">{s.title || "(untitled)"}</p>
+                    <p className="text-[10px] text-white/20">{s.layout}</p>
+                  </div>
+                  <div className="flex items-center gap-0.5 shrink-0">
+                    {!s.visible && <EyeOff className="h-3 w-3 text-red-400/40" />}
+                    <button onClick={(e) => { e.stopPropagation(); moveSection(s.id, "up"); }} className="h-5 w-5 flex items-center justify-center text-white/15 hover:text-white/40" disabled={idx === 0}><ChevronUp className="h-3 w-3" /></button>
+                    <button onClick={(e) => { e.stopPropagation(); moveSection(s.id, "down"); }} className="h-5 w-5 flex items-center justify-center text-white/15 hover:text-white/40" disabled={idx === sections.length - 1}><ChevronDown className="h-3 w-3" /></button>
+                  </div>
+                </div>
+              </div>
             ))}
+            {sections.length === 0 && selectedPage && (
+              <div className="px-4 py-8 text-center">
+                <p className="text-[12px] text-white/20 mb-3">No sections</p>
+                <button onClick={() => setShowLibrary(true)} className="text-[11px] text-white/40 hover:text-white/70 transition-colors">+ Add section</button>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* ── Main: section editor ── */}
-        <div className="flex-1 p-6">
-          {!selectedPage ? (
-            <div className="flex items-center justify-center h-[60vh]">
-              <p className="text-[15px] text-white/20">Select a page to edit</p>
+        {/* ── CENTER: Live Preview ── */}
+        <div className="flex-1 bg-[#0e0e0e] flex items-start justify-center overflow-auto p-4">
+          <div className="transition-all duration-300" style={{ width: vpWidth, maxWidth: "100%" }}>
+            <iframe
+              ref={iframeRef}
+              src="/admin/preview"
+              className="w-full bg-white rounded-lg shadow-2xl"
+              style={{ height: "calc(100vh - 120px)", border: "1px solid rgba(255,255,255,0.06)" }}
+            />
+          </div>
+        </div>
+
+        {/* ── RIGHT: Section Settings ── */}
+        <div className="w-[320px] shrink-0 border-l border-white/[0.06] flex flex-col overflow-hidden">
+          {!selectedSection ? (
+            <div className="flex-1 flex items-center justify-center">
+              <p className="text-[13px] text-white/20">Select a section to edit</p>
             </div>
           ) : (
             <>
-              <div className="flex items-center justify-between mb-6">
+              {/* Settings header */}
+              <div className="px-4 py-3 border-b border-white/[0.06] flex items-center justify-between shrink-0">
                 <div>
-                  <h2 className="text-[20px] font-bold">{selectedPage.name}</h2>
-                  <p className="text-[12px] text-white/30">/{selectedPage.slug} · {sections.length} sections</p>
+                  <p className="text-[13px] font-semibold text-white">{selectedSection.title || "Section"}</p>
+                  <p className="text-[10px] text-white/25">{selectedSection.layout} · #{selectedSection.order}</p>
                 </div>
-                <button
-                  onClick={addSection}
-                  className="h-8 px-3 rounded-lg bg-white/[0.06] border border-white/[0.08] text-[12px] font-medium text-white/60 hover:text-white hover:bg-white/[0.10] transition-all flex items-center gap-1.5"
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                  Add Section
-                </button>
-              </div>
-
-              {/* Section list */}
-              <div className="space-y-2">
-                {sections.map((section, idx) => {
-                  const expanded = expandedId === section.id;
-                  return (
-                    <div key={section.id} className="bg-[#141414] border border-white/[0.06] rounded-xl overflow-hidden">
-                      {/* Header */}
-                      <div
-                        className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/[0.02] transition-colors"
-                        onClick={() => setExpandedId(expanded ? null : section.id)}
-                      >
-                        <GripVertical className="h-4 w-4 text-white/15 shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="text-[13px] font-medium text-white truncate">{section.title || "(no title)"}</span>
-                            <span className="text-[10px] px-2 py-0.5 rounded bg-white/[0.06] text-white/30">{section.layout}</span>
-                            <span className="text-[10px] text-white/20">#{section.order}</span>
-                          </div>
-                          <p className="text-[11px] text-white/20 truncate">{section.section_key}</p>
-                        </div>
-                        <div className="flex items-center gap-1 shrink-0">
-                          <button onClick={(e) => { e.stopPropagation(); updateSection(section.id, "visible", !section.visible); }} className="h-7 w-7 flex items-center justify-center rounded text-white/25 hover:text-white/60 transition-colors">
-                            {section.visible ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5 text-red-400/50" />}
-                          </button>
-                          <button onClick={(e) => { e.stopPropagation(); moveSection(section.id, "up"); }} disabled={idx === 0} className="h-7 w-7 flex items-center justify-center rounded text-white/25 hover:text-white/60 transition-colors disabled:opacity-20">
-                            <ChevronUp className="h-3.5 w-3.5" />
-                          </button>
-                          <button onClick={(e) => { e.stopPropagation(); moveSection(section.id, "down"); }} disabled={idx === sections.length - 1} className="h-7 w-7 flex items-center justify-center rounded text-white/25 hover:text-white/60 transition-colors disabled:opacity-20">
-                            <ChevronDown className="h-3.5 w-3.5" />
-                          </button>
-                          <button onClick={(e) => { e.stopPropagation(); deleteSection(section.id); }} className="h-7 w-7 flex items-center justify-center rounded text-white/25 hover:text-red-400/60 transition-colors">
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Expanded editor */}
-                      {expanded && (
-                        <div className="px-4 pb-5 pt-2 border-t border-white/[0.04] space-y-4">
-                          {/* Row 1: Layout + Background */}
-                          <div className="grid grid-cols-2 gap-3">
-                            <div>
-                              <label className="text-[11px] text-white/30 mb-1 block">Layout</label>
-                              <select
-                                value={section.layout}
-                                onChange={(e) => updateSection(section.id, "layout", e.target.value)}
-                                className="w-full h-9 px-3 rounded-lg bg-white/[0.05] border border-white/[0.08] text-[13px] text-white outline-none"
-                              >
-                                {layoutOptions.map((l) => <option key={l} value={l}>{l}</option>)}
-                              </select>
-                            </div>
-                            <div>
-                              <label className="text-[11px] text-white/30 mb-1 block">Background</label>
-                              <select
-                                value={section.background || "white"}
-                                onChange={(e) => updateSection(section.id, "background", e.target.value)}
-                                className="w-full h-9 px-3 rounded-lg bg-white/[0.05] border border-white/[0.08] text-[13px] text-white outline-none"
-                              >
-                                {bgOptions.map((b) => <option key={b} value={b}>{b}</option>)}
-                              </select>
-                            </div>
-                          </div>
-
-                          {/* Row 2: Title */}
-                          <div>
-                            <label className="text-[11px] text-white/30 mb-1 block">Title</label>
-                            <input
-                              value={section.title || ""}
-                              onChange={(e) => updateSection(section.id, "title", e.target.value)}
-                              className="w-full h-9 px-3 rounded-lg bg-white/[0.05] border border-white/[0.08] text-[13px] text-white placeholder:text-white/20 outline-none focus:border-white/20"
-                              placeholder="Section title"
-                            />
-                          </div>
-
-                          {/* Row 3: Subtitle */}
-                          <div>
-                            <label className="text-[11px] text-white/30 mb-1 block">Subtitle</label>
-                            <input
-                              value={section.subtitle || ""}
-                              onChange={(e) => updateSection(section.id, "subtitle", e.target.value)}
-                              className="w-full h-9 px-3 rounded-lg bg-white/[0.05] border border-white/[0.08] text-[13px] text-white placeholder:text-white/20 outline-none focus:border-white/20"
-                              placeholder="Section subtitle"
-                            />
-                          </div>
-
-                          {/* Row 4: Content */}
-                          <div>
-                            <label className="text-[11px] text-white/30 mb-1 block">Content</label>
-                            <textarea
-                              value={section.content || ""}
-                              onChange={(e) => updateSection(section.id, "content", e.target.value)}
-                              rows={3}
-                              className="w-full px-3 py-2 rounded-lg bg-white/[0.05] border border-white/[0.08] text-[13px] text-white placeholder:text-white/20 outline-none focus:border-white/20 resize-y"
-                              placeholder="Section content (optional)"
-                            />
-                          </div>
-
-                          {/* Row 5: Image */}
-                          <div>
-                            <label className="text-[11px] text-white/30 mb-1 block">Image</label>
-                            <MediaSelector
-                              currentUrl={section.image_url}
-                              onSelect={(url) => updateSection(section.id, "image_url", url || null)}
-                            />
-                          </div>
-
-                          {/* Row 6: Buttons */}
-                          <div className="grid grid-cols-2 gap-3">
-                            <div>
-                              <label className="text-[11px] text-white/30 mb-1 block">Button 1 Text</label>
-                              <input
-                                value={section.button_text || ""}
-                                onChange={(e) => updateSection(section.id, "button_text", e.target.value || null)}
-                                className="w-full h-9 px-3 rounded-lg bg-white/[0.05] border border-white/[0.08] text-[13px] text-white placeholder:text-white/20 outline-none"
-                                placeholder="Learn more"
-                              />
-                            </div>
-                            <div>
-                              <label className="text-[11px] text-white/30 mb-1 block">Button 1 Link</label>
-                              <input
-                                value={section.button_link || ""}
-                                onChange={(e) => updateSection(section.id, "button_link", e.target.value || null)}
-                                className="w-full h-9 px-3 rounded-lg bg-white/[0.05] border border-white/[0.08] text-[13px] text-white placeholder:text-white/20 outline-none"
-                                placeholder="/products"
-                              />
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-2 gap-3">
-                            <div>
-                              <label className="text-[11px] text-white/30 mb-1 block">Button 2 Text</label>
-                              <input
-                                value={section.button2_text || ""}
-                                onChange={(e) => updateSection(section.id, "button2_text", e.target.value || null)}
-                                className="w-full h-9 px-3 rounded-lg bg-white/[0.05] border border-white/[0.08] text-[13px] text-white placeholder:text-white/20 outline-none"
-                                placeholder="Contact sales"
-                              />
-                            </div>
-                            <div>
-                              <label className="text-[11px] text-white/30 mb-1 block">Button 2 Link</label>
-                              <input
-                                value={section.button2_link || ""}
-                                onChange={(e) => updateSection(section.id, "button2_link", e.target.value || null)}
-                                className="w-full h-9 px-3 rounded-lg bg-white/[0.05] border border-white/[0.08] text-[13px] text-white placeholder:text-white/20 outline-none"
-                                placeholder="/contact"
-                              />
-                            </div>
-                          </div>
-
-                          {/* Row 7: Section key + order */}
-                          <div className="grid grid-cols-2 gap-3">
-                            <div>
-                              <label className="text-[11px] text-white/30 mb-1 block">Section Key</label>
-                              <input
-                                value={section.section_key}
-                                onChange={(e) => updateSection(section.id, "section_key", e.target.value)}
-                                className="w-full h-9 px-3 rounded-lg bg-white/[0.05] border border-white/[0.08] text-[13px] text-white/50 outline-none"
-                              />
-                            </div>
-                            <div>
-                              <label className="text-[11px] text-white/30 mb-1 block">Order</label>
-                              <input
-                                type="number"
-                                value={section.order}
-                                onChange={(e) => updateSection(section.id, "order", parseInt(e.target.value) || 0)}
-                                className="w-full h-9 px-3 rounded-lg bg-white/[0.05] border border-white/[0.08] text-[13px] text-white outline-none"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {sections.length === 0 && (
-                <div className="text-center py-20">
-                  <p className="text-[15px] text-white/20 mb-4">No sections yet.</p>
-                  <button onClick={addSection} className="h-9 px-4 rounded-lg bg-white/[0.06] text-[13px] text-white/60 hover:text-white transition-colors">
-                    + Add first section
+                <div className="flex items-center gap-1">
+                  <button onClick={() => updateSection(selectedSection.id, "visible", !selectedSection.visible)} className={`h-7 w-7 flex items-center justify-center rounded-md transition-colors ${selectedSection.visible ? "text-white/30 hover:text-white/60" : "text-red-400/50"}`}>
+                    {selectedSection.visible ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
                   </button>
+                  <button onClick={() => duplicateSection(selectedSection)} className="h-7 w-7 flex items-center justify-center rounded-md text-white/20 hover:text-white/50 transition-colors"><Copy className="h-3.5 w-3.5" /></button>
+                  <button onClick={() => deleteSection(selectedSection.id)} className="h-7 w-7 flex items-center justify-center rounded-md text-white/20 hover:text-red-400/60 transition-colors"><Trash2 className="h-3.5 w-3.5" /></button>
                 </div>
-              )}
+              </div>
+
+              {/* Scrollable settings */}
+              <div className="flex-1 overflow-y-auto">
+                <div className="p-4 space-y-5">
+
+                  {/* Layout & Background */}
+                  <SettingsGroup title="Layout">
+                    <Field label="Section Type">
+                      <select value={selectedSection.layout} onChange={(e) => updateSection(selectedSection.id, "layout", e.target.value)} className="input-field">
+                        {sectionLibrary.map((s) => <option key={s.type} value={s.type}>{s.label}</option>)}
+                      </select>
+                    </Field>
+                    <Field label="Background">
+                      <div className="flex gap-2">
+                        {bgOptions.map((bg) => (
+                          <button key={bg.value} onClick={() => updateSection(selectedSection.id, "background", bg.value)}
+                            className={`h-8 w-8 rounded-lg border-2 transition-all ${selectedSection.background === bg.value ? "border-blue-500 scale-110" : "border-white/10 hover:border-white/20"}`}
+                            style={{ backgroundColor: bg.color }}
+                            title={bg.label}
+                          />
+                        ))}
+                      </div>
+                    </Field>
+                  </SettingsGroup>
+
+                  {/* Content */}
+                  <SettingsGroup title="Content">
+                    <Field label="Title">
+                      <input value={selectedSection.title || ""} onChange={(e) => updateSection(selectedSection.id, "title", e.target.value)} className="input-field" placeholder="Section title" />
+                    </Field>
+                    <Field label="Subtitle">
+                      <input value={selectedSection.subtitle || ""} onChange={(e) => updateSection(selectedSection.id, "subtitle", e.target.value)} className="input-field" placeholder="Subtitle" />
+                    </Field>
+                    {["quote", "image-left", "image-right", "cta"].includes(selectedSection.layout) && (
+                      <Field label="Content">
+                        <textarea value={selectedSection.content || ""} onChange={(e) => updateSection(selectedSection.id, "content", e.target.value)} rows={3} className="input-field resize-y" placeholder="Body text" />
+                      </Field>
+                    )}
+                  </SettingsGroup>
+
+                  {/* Image */}
+                  {["hero", "image-left", "image-right", "full-image", "grid", "split"].includes(selectedSection.layout) && (
+                    <SettingsGroup title="Image">
+                      <MediaSelector
+                        currentUrl={selectedSection.image_url}
+                        onSelect={(url) => updateSection(selectedSection.id, "image_url", url || null)}
+                      />
+                    </SettingsGroup>
+                  )}
+
+                  {/* Video */}
+                  {selectedSection.layout === "video" && (
+                    <SettingsGroup title="Video">
+                      <Field label="Video URL (YouTube/Vimeo)">
+                        <input value={selectedSection.video_url || ""} onChange={(e) => updateSection(selectedSection.id, "video_url", e.target.value)} className="input-field" placeholder="https://youtube.com/embed/..." />
+                      </Field>
+                    </SettingsGroup>
+                  )}
+
+                  {/* Buttons */}
+                  <SettingsGroup title="Buttons">
+                    <div className="grid grid-cols-2 gap-2">
+                      <Field label="Button 1 Text">
+                        <input value={selectedSection.button_text || ""} onChange={(e) => updateSection(selectedSection.id, "button_text", e.target.value || null)} className="input-field" placeholder="Learn more" />
+                      </Field>
+                      <Field label="Button 1 Link">
+                        <input value={selectedSection.button_link || ""} onChange={(e) => updateSection(selectedSection.id, "button_link", e.target.value || null)} className="input-field" placeholder="/products" />
+                      </Field>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Field label="Button 2 Text">
+                        <input value={selectedSection.button2_text || ""} onChange={(e) => updateSection(selectedSection.id, "button2_text", e.target.value || null)} className="input-field" placeholder="Contact" />
+                      </Field>
+                      <Field label="Button 2 Link">
+                        <input value={selectedSection.button2_link || ""} onChange={(e) => updateSection(selectedSection.id, "button2_link", e.target.value || null)} className="input-field" placeholder="/contact" />
+                      </Field>
+                    </div>
+                  </SettingsGroup>
+
+                  {/* Cards / Items (for cards, grid, numbers, brands) */}
+                  {["cards", "grid", "numbers", "brands", "timeline"].includes(selectedSection.layout) && (
+                    <SettingsGroup title="Items">
+                      <ItemsEditor
+                        items={selectedSection.items || []}
+                        layout={selectedSection.layout}
+                        onChange={(items) => updateSection(selectedSection.id, "items", items)}
+                      />
+                    </SettingsGroup>
+                  )}
+
+                  {/* Section key */}
+                  <SettingsGroup title="Advanced">
+                    <Field label="Section Key">
+                      <input value={selectedSection.section_key} onChange={(e) => updateSection(selectedSection.id, "section_key", e.target.value)} className="input-field text-white/40" />
+                    </Field>
+                  </SettingsGroup>
+                </div>
+              </div>
             </>
           )}
         </div>
       </div>
+
+      {/* ═══ SECTION LIBRARY MODAL ═══ */}
+      {showLibrary && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowLibrary(false)} />
+          <div className="relative z-10 w-full max-w-[560px] bg-[#1a1a1a] border border-white/[0.08] rounded-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+              <h3 className="text-[15px] font-semibold">Add Section</h3>
+              <button onClick={() => setShowLibrary(false)} className="h-7 w-7 flex items-center justify-center rounded-lg text-white/30 hover:text-white hover:bg-white/[0.06]"><X className="h-4 w-4" /></button>
+            </div>
+            <div className="p-4 grid grid-cols-2 gap-2 max-h-[60vh] overflow-y-auto">
+              {sectionLibrary.map((s) => (
+                <button key={s.type} onClick={() => addSection(s.type)} className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.10] transition-all text-left">
+                  <div className="h-9 w-9 rounded-lg bg-white/[0.06] flex items-center justify-center text-white/40 shrink-0">{s.icon}</div>
+                  <div>
+                    <p className="text-[13px] font-medium text-white">{s.label}</p>
+                    <p className="text-[11px] text-white/25 mt-0.5">{s.desc}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx global>{`
+        .input-field {
+          width: 100%;
+          height: 34px;
+          padding: 0 10px;
+          border-radius: 8px;
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.06);
+          color: white;
+          font-size: 12px;
+          outline: none;
+          transition: border-color 0.2s;
+        }
+        .input-field:focus { border-color: rgba(255,255,255,0.15); }
+        .input-field::placeholder { color: rgba(255,255,255,0.2); }
+        textarea.input-field { height: auto; padding: 8px 10px; }
+      `}</style>
+    </div>
+  );
+}
+
+/* ── Helper Components ── */
+
+function SettingsGroup({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/20 mb-3">{title}</p>
+      <div className="space-y-3">{children}</div>
+    </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="text-[10px] text-white/30 mb-1 block">{label}</label>
+      {children}
+    </div>
+  );
+}
+
+function ItemsEditor({ items, layout, onChange }: { items: SectionItem[]; layout: string; onChange: (items: SectionItem[]) => void }) {
+  function addItem() {
+    onChange([...items, { title: "New item", description: "" }]);
+  }
+  function removeItem(idx: number) {
+    onChange(items.filter((_, i) => i !== idx));
+  }
+  function updateItem(idx: number, field: string, value: string) {
+    onChange(items.map((item, i) => (i === idx ? { ...item, [field]: value } : item)));
+  }
+
+  return (
+    <div className="space-y-2">
+      {items.map((item, i) => (
+        <div key={i} className="p-3 rounded-lg bg-white/[0.03] border border-white/[0.04] space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-white/20">Item {i + 1}</span>
+            <button onClick={() => removeItem(i)} className="text-white/15 hover:text-red-400/60 transition-colors"><Trash2 className="h-3 w-3" /></button>
+          </div>
+          <input value={item.title} onChange={(e) => updateItem(i, "title", e.target.value)} className="input-field" placeholder="Title" />
+          {layout !== "numbers" && (
+            <input value={item.description || ""} onChange={(e) => updateItem(i, "description", e.target.value)} className="input-field" placeholder="Description" />
+          )}
+          {layout === "numbers" && (
+            <div className="grid grid-cols-2 gap-2">
+              <input value={item.value || ""} onChange={(e) => updateItem(i, "value", e.target.value)} className="input-field" placeholder="Value (e.g. 80+)" />
+              <input value={item.label || ""} onChange={(e) => updateItem(i, "label", e.target.value)} className="input-field" placeholder="Label" />
+            </div>
+          )}
+          {(layout === "cards" || layout === "brands") && (
+            <input value={item.icon || ""} onChange={(e) => updateItem(i, "icon", e.target.value)} className="input-field" placeholder="Icon (emoji or text)" />
+          )}
+        </div>
+      ))}
+      <button onClick={addItem} className="w-full h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] text-[11px] text-white/30 hover:text-white/60 hover:bg-white/[0.06] transition-colors flex items-center justify-center gap-1">
+        <Plus className="h-3 w-3" /> Add Item
+      </button>
     </div>
   );
 }
