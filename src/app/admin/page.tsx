@@ -693,6 +693,33 @@ export default function AdminPage() {
                   {/* ═══ STYLE TAB ═══ */}
                   {settingsTab === "style" && (
                     <>
+                      {/* Element Layout — controls how child elements arrange inside this section */}
+                      <SettingsGroup title="Element Layout">
+                        <Field label="Arrange elements in columns">
+                          <div className="grid grid-cols-4 gap-1.5">
+                            {([
+                              { value: "1-col", label: "1 Col", preview: <div className="h-5 bg-blue-400/30 rounded" /> },
+                              { value: "2-col", label: "2 Col", preview: <div className="flex gap-0.5 h-5"><div className="flex-1 bg-blue-400/30 rounded" /><div className="flex-1 bg-blue-400/30 rounded" /></div> },
+                              { value: "3-col", label: "3 Col", preview: <div className="flex gap-0.5 h-5"><div className="flex-1 bg-blue-400/30 rounded" /><div className="flex-1 bg-blue-400/30 rounded" /><div className="flex-1 bg-blue-400/30 rounded" /></div> },
+                              { value: "4-col", label: "4 Col", preview: <div className="flex gap-0.5 h-5"><div className="flex-1 bg-blue-400/30 rounded" /><div className="flex-1 bg-blue-400/30 rounded" /><div className="flex-1 bg-blue-400/30 rounded" /><div className="flex-1 bg-blue-400/30 rounded" /></div> },
+                              { value: "70-30", label: "70/30", preview: <div className="flex gap-0.5 h-5"><div className="w-[70%] bg-blue-400/30 rounded" /><div className="w-[30%] bg-blue-400/20 rounded" /></div> },
+                              { value: "30-70", label: "30/70", preview: <div className="flex gap-0.5 h-5"><div className="w-[30%] bg-blue-400/20 rounded" /><div className="w-[70%] bg-blue-400/30 rounded" /></div> },
+                              { value: "60-40", label: "60/40", preview: <div className="flex gap-0.5 h-5"><div className="w-[60%] bg-blue-400/30 rounded" /><div className="w-[40%] bg-blue-400/20 rounded" /></div> },
+                              { value: "40-60", label: "40/60", preview: <div className="flex gap-0.5 h-5"><div className="w-[40%] bg-blue-400/20 rounded" /><div className="w-[60%] bg-blue-400/30 rounded" /></div> },
+                            ] as { value: string; label: string; preview: React.ReactNode }[]).map((l) => (
+                              <button key={l.value} onClick={() => updateSetting(selectedSection.id, "zoneLayout", l.value)}
+                                className={`p-1.5 rounded-lg border transition-all ${(getSectionSettings(selectedSection).zoneLayout || "1-col") === l.value ? "border-blue-500/40 bg-blue-500/10" : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]"}`}>
+                                {l.preview}
+                                <p className="text-[7px] text-white/20 mt-0.5 text-center">{l.label}</p>
+                              </button>
+                            ))}
+                          </div>
+                        </Field>
+                        <p className="text-[9px] text-white/15 leading-relaxed">
+                          This controls how elements added in the Elements tab are arranged. It does not change the section&apos;s own layout type.
+                        </p>
+                      </SettingsGroup>
+
                       <SettingsGroup title="Background">
                         <Field label="Color">
                           <div className="flex gap-2">
