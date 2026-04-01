@@ -141,11 +141,15 @@ export default function PreviewPage() {
               )}
             </div>
 
-            {/* Canvas elements — wrapped in CanvasElement for visual editing */}
-            {sectionElements.length > 0 && (
-              <div className={`max-w-[1000px] mx-auto px-6 py-8 ${isSelected ? "relative" : ""}`}>
-                {zoneLayout === "1-col" ? (
-                  <div className="space-y-4">
+            {/* Canvas elements — using columns/gap from settings */}
+            {sectionElements.length > 0 && (() => {
+              const cols = settings.columns || 1;
+              const gap = settings.gap || "24px";
+              const pt = settings.paddingTop || "32px";
+              const pb = settings.paddingBottom || "32px";
+              return (
+              <div className="max-w-[1000px] mx-auto px-6" style={{ paddingTop: pt, paddingBottom: pb }}>
+                <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap }}>
                     {sectionElements.map((el) => (
                       <CanvasElement
                         key={el.id}
@@ -159,12 +163,10 @@ export default function PreviewPage() {
                         <ElementRenderer elements={[el]} />
                       </CanvasElement>
                     ))}
-                  </div>
-                ) : (
-                  <ZoneRenderer elements={sectionElements} layout={zoneLayout as ZoneLayout} isEditing={isSelected} />
-                )}
+                </div>
               </div>
-            )}
+              );
+            })()}
 
             {/* Add element button — shows when section is selected and empty */}
             {isSelected && sectionElements.length === 0 && (

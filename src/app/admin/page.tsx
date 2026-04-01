@@ -693,31 +693,63 @@ export default function AdminPage() {
                   {/* ═══ STYLE TAB ═══ */}
                   {settingsTab === "style" && (
                     <>
-                      {/* Element Layout — controls how child elements arrange inside this section */}
+                      {/* Element Layout — columns, rows, gap */}
                       <SettingsGroup title="Element Layout">
-                        <Field label="Arrange elements in columns">
-                          <div className="grid grid-cols-4 gap-1.5">
+                        {/* Columns */}
+                        <Field label="Columns">
+                          <div className="flex items-center gap-2">
+                            <button onClick={() => { const cur = getSectionSettings(selectedSection).columns || 1; if (cur > 1) updateSetting(selectedSection.id, "columns", cur - 1); }}
+                              className="h-8 w-8 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-all text-[14px] font-bold">−</button>
+                            <div className="flex-1 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-[13px] font-semibold text-white/60">
+                              {getSectionSettings(selectedSection).columns || 1}
+                            </div>
+                            <button onClick={() => { const cur = getSectionSettings(selectedSection).columns || 1; if (cur < 6) updateSetting(selectedSection.id, "columns", cur + 1); }}
+                              className="h-8 w-8 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-all text-[14px] font-bold">+</button>
+                          </div>
+                        </Field>
+
+                        {/* Quick presets */}
+                        <Field label="Presets">
+                          <div className="grid grid-cols-4 gap-1">
                             {([
-                              { value: "1-col", label: "1 Col", preview: <div className="h-5 bg-blue-400/30 rounded" /> },
-                              { value: "2-col", label: "2 Col", preview: <div className="flex gap-0.5 h-5"><div className="flex-1 bg-blue-400/30 rounded" /><div className="flex-1 bg-blue-400/30 rounded" /></div> },
-                              { value: "3-col", label: "3 Col", preview: <div className="flex gap-0.5 h-5"><div className="flex-1 bg-blue-400/30 rounded" /><div className="flex-1 bg-blue-400/30 rounded" /><div className="flex-1 bg-blue-400/30 rounded" /></div> },
-                              { value: "4-col", label: "4 Col", preview: <div className="flex gap-0.5 h-5"><div className="flex-1 bg-blue-400/30 rounded" /><div className="flex-1 bg-blue-400/30 rounded" /><div className="flex-1 bg-blue-400/30 rounded" /><div className="flex-1 bg-blue-400/30 rounded" /></div> },
-                              { value: "70-30", label: "70/30", preview: <div className="flex gap-0.5 h-5"><div className="w-[70%] bg-blue-400/30 rounded" /><div className="w-[30%] bg-blue-400/20 rounded" /></div> },
-                              { value: "30-70", label: "30/70", preview: <div className="flex gap-0.5 h-5"><div className="w-[30%] bg-blue-400/20 rounded" /><div className="w-[70%] bg-blue-400/30 rounded" /></div> },
-                              { value: "60-40", label: "60/40", preview: <div className="flex gap-0.5 h-5"><div className="w-[60%] bg-blue-400/30 rounded" /><div className="w-[40%] bg-blue-400/20 rounded" /></div> },
-                              { value: "40-60", label: "40/60", preview: <div className="flex gap-0.5 h-5"><div className="w-[40%] bg-blue-400/20 rounded" /><div className="w-[60%] bg-blue-400/30 rounded" /></div> },
-                            ] as { value: string; label: string; preview: React.ReactNode }[]).map((l) => (
-                              <button key={l.value} onClick={() => updateSetting(selectedSection.id, "zoneLayout", l.value)}
-                                className={`p-1.5 rounded-lg border transition-all ${(getSectionSettings(selectedSection).zoneLayout || "1-col") === l.value ? "border-blue-500/40 bg-blue-500/10" : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]"}`}>
+                              { value: "1-col", label: "1", cols: 1, preview: <div className="h-4 bg-blue-400/30 rounded-sm" /> },
+                              { value: "2-col", label: "2", cols: 2, preview: <div className="flex gap-px h-4"><div className="flex-1 bg-blue-400/30 rounded-sm" /><div className="flex-1 bg-blue-400/30 rounded-sm" /></div> },
+                              { value: "3-col", label: "3", cols: 3, preview: <div className="flex gap-px h-4"><div className="flex-1 bg-blue-400/30 rounded-sm" /><div className="flex-1 bg-blue-400/30 rounded-sm" /><div className="flex-1 bg-blue-400/30 rounded-sm" /></div> },
+                              { value: "4-col", label: "4", cols: 4, preview: <div className="flex gap-px h-4"><div className="flex-1 bg-blue-400/30 rounded-sm" /><div className="flex-1 bg-blue-400/30 rounded-sm" /><div className="flex-1 bg-blue-400/30 rounded-sm" /><div className="flex-1 bg-blue-400/30 rounded-sm" /></div> },
+                            ] as { value: string; label: string; cols: number; preview: React.ReactNode }[]).map((l) => (
+                              <button key={l.value} onClick={() => { updateSetting(selectedSection.id, "columns", l.cols); updateSetting(selectedSection.id, "zoneLayout", l.value); }}
+                                className={`p-1.5 rounded-lg border transition-all ${(getSectionSettings(selectedSection).columns || 1) === l.cols ? "border-blue-500/30 bg-blue-500/10" : "border-white/[0.05] bg-white/[0.02] hover:border-white/[0.10]"}`}>
                                 {l.preview}
-                                <p className="text-[7px] text-white/20 mt-0.5 text-center">{l.label}</p>
                               </button>
                             ))}
                           </div>
                         </Field>
-                        <p className="text-[9px] text-white/15 leading-relaxed">
-                          This controls how elements added in the Elements tab are arranged. It does not change the section&apos;s own layout type.
-                        </p>
+
+                        {/* Gap / Spacing */}
+                        <Field label="Gap between elements">
+                          <div className="flex gap-1">
+                            {(["0", "8", "16", "24", "32", "48"] as const).map((g) => (
+                              <button key={g} onClick={() => updateSetting(selectedSection.id, "gap", g + "px")}
+                                className={`flex-1 h-7 rounded-md text-[10px] font-medium transition-all ${(getSectionSettings(selectedSection).gap || "24px") === g + "px" ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" : "bg-white/[0.04] border border-white/[0.06] text-white/30"}`}>
+                                {g}
+                              </button>
+                            ))}
+                          </div>
+                        </Field>
+
+                        {/* Padding */}
+                        <div className="grid grid-cols-2 gap-2">
+                          <Field label="Padding Top">
+                            <select value={getSectionSettings(selectedSection).paddingTop || "32px"} onChange={(e) => updateSetting(selectedSection.id, "paddingTop", e.target.value)} className="input-field">
+                              {["0px", "8px", "16px", "24px", "32px", "48px", "64px", "80px", "96px", "128px"].map(v => <option key={v} value={v}>{v}</option>)}
+                            </select>
+                          </Field>
+                          <Field label="Padding Bottom">
+                            <select value={getSectionSettings(selectedSection).paddingBottom || "32px"} onChange={(e) => updateSetting(selectedSection.id, "paddingBottom", e.target.value)} className="input-field">
+                              {["0px", "8px", "16px", "24px", "32px", "48px", "64px", "80px", "96px", "128px"].map(v => <option key={v} value={v}>{v}</option>)}
+                            </select>
+                          </Field>
+                        </div>
                       </SettingsGroup>
 
                       <SettingsGroup title="Background">
@@ -1077,6 +1109,29 @@ export default function AdminPage() {
 /* ── Helper Components ── */
 
 /* ── Full Element Editor — edits all properties per element type ── */
+/* Inline icon picker with emoji grid */
+function InlineIconPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const emojis = ["⚡","🎯","🔧","⚙️","💡","🏭","🤖","💻","🌐","📊","🔬","🛡️","📦","🚀","✅","⭐","🏢","👥","📈","🔗","📋","🎨","🔒","💎","🌍","⏱️","📡","🧠","🔌","🏗️","📱","🖥️","◆","◇","●","○","■","□","▲","△","⊕","⊗","◎","◉","♦","★","☆","✦"];
+  return (
+    <div className="relative">
+      <div className="flex items-center gap-2">
+        <button onClick={() => setOpen(!open)} className="h-9 w-9 rounded-lg bg-white/[0.06] border border-white/[0.08] flex items-center justify-center text-[20px] hover:bg-white/[0.10] transition-colors shrink-0">
+          {value || "⚡"}
+        </button>
+        <input value={value || ""} onChange={(e) => onChange(e.target.value)} className="input-field flex-1" placeholder="Type or pick →" />
+      </div>
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-1 z-50 p-2 bg-[#1a1a1a] border border-white/[0.08] rounded-xl shadow-2xl grid grid-cols-8 gap-1">
+          {emojis.map((e) => (
+            <button key={e} onClick={() => { onChange(e); setOpen(false); }} className="h-7 w-7 rounded flex items-center justify-center text-[14px] hover:bg-white/[0.08] transition-colors">{e}</button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ElementEditor({ el, sectionId, onEdit }: { el: import("@/types/supabase").ElementRow; sectionId: string; onEdit: (sId: string, eId: string, content: Record<string, unknown>) => void }) {
   const c = (el.content || {}) as Record<string, unknown>;
   const upd = (field: string, value: unknown) => onEdit(sectionId, el.id, { ...c, [field]: value });
@@ -1130,7 +1185,7 @@ function ElementEditor({ el, sectionId, onEdit }: { el: import("@/types/supabase
     case "card":
       return (
         <div className="space-y-2">
-          <F label="Icon (emoji)"><input value={(c.icon as string) || ""} onChange={(e) => upd("icon", e.target.value)} className="input-field" placeholder="⚡" /></F>
+          <F label="Icon"><InlineIconPicker value={(c.icon as string) || ""} onChange={(v) => upd("icon", v)} /></F>
           <F label="Title"><input value={(c.title as string) || ""} onChange={(e) => upd("title", e.target.value)} className="input-field" placeholder="Card title" /></F>
           <F label="Description"><textarea value={(c.description as string) || ""} onChange={(e) => upd("description", e.target.value)} className="input-field resize-y" rows={2} placeholder="Card description" /></F>
           <F label="Image"><MediaSelector currentUrl={(c.image as string) || null} onSelect={(url) => upd("image", url)} /></F>
@@ -1179,7 +1234,7 @@ function ElementEditor({ el, sectionId, onEdit }: { el: import("@/types/supabase
     case "feature":
       return (
         <div className="space-y-2">
-          <F label="Icon (emoji)"><input value={(c.icon as string) || ""} onChange={(e) => upd("icon", e.target.value)} className="input-field" placeholder="⚡" /></F>
+          <F label="Icon"><InlineIconPicker value={(c.icon as string) || ""} onChange={(v) => upd("icon", v)} /></F>
           <F label="Title"><input value={(c.title as string) || ""} onChange={(e) => upd("title", e.target.value)} className="input-field" placeholder="Feature title" /></F>
           <F label="Description"><textarea value={(c.description as string) || ""} onChange={(e) => upd("description", e.target.value)} className="input-field resize-y" rows={2} placeholder="Feature description" /></F>
         </div>
@@ -1252,7 +1307,7 @@ function ElementEditor({ el, sectionId, onEdit }: { el: import("@/types/supabase
     case "icon-box":
       return (
         <div className="space-y-2">
-          <F label="Icon (emoji)"><input value={(c.icon as string) || ""} onChange={(e) => upd("icon", e.target.value)} className="input-field" placeholder="🎯" /></F>
+          <F label="Icon"><InlineIconPicker value={(c.icon as string) || ""} onChange={(v) => upd("icon", v)} /></F>
           <F label="Title"><input value={(c.title as string) || ""} onChange={(e) => upd("title", e.target.value)} className="input-field" placeholder="Title" /></F>
           <F label="Description"><textarea value={(c.description as string) || ""} onChange={(e) => upd("description", e.target.value)} className="input-field resize-y" rows={2} placeholder="Description" /></F>
         </div>
