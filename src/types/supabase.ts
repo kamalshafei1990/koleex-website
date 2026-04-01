@@ -73,7 +73,29 @@ export type ElementType =
   | "video"
   | "divider"
   | "container"
-  | "spacer";
+  | "spacer"
+  | "badge"
+  | "avatar"
+  | "stat"
+  | "testimonial"
+  | "feature"
+  | "pricing"
+  | "faq"
+  | "social"
+  | "logo"
+  | "countdown"
+  | "progress"
+  | "tag-list"
+  | "cta-banner"
+  | "icon-box"
+  | "gallery"
+  | "map"
+  | "code"
+  | "table"
+  | "accordion"
+  | "tabs"
+  | "alert"
+  | "breadcrumb";
 
 export interface ElementRow {
   id: string;

@@ -796,27 +796,67 @@ export default function AdminPage() {
                       {/* Add Element picker */}
                       <div className="mt-2">
                         {showElementPicker === selectedSection.id ? (
-                          <div className="grid grid-cols-3 gap-1.5">
+                          <div>
+                            <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-white/15 mb-2">Basic</p>
+                            <div className="grid grid-cols-3 gap-1.5 mb-3">
                             {([
                               { type: "heading", icon: "H", label: "Heading" },
                               { type: "paragraph", icon: "¶", label: "Text" },
                               { type: "image", icon: "🖼", label: "Image" },
                               { type: "button", icon: "▢", label: "Button" },
-                              { type: "card", icon: "◻", label: "Card" },
                               { type: "video", icon: "▶", label: "Video" },
-                              { type: "list", icon: "≡", label: "List" },
                               { type: "divider", icon: "—", label: "Divider" },
                               { type: "spacer", icon: "↕", label: "Spacer" },
+                              { type: "list", icon: "≡", label: "List" },
+                              { type: "icon-box", icon: "◉", label: "Icon Box" },
                             ] as { type: import("@/types/supabase").ElementType; icon: string; label: string }[]).map((et) => (
-                              <button
-                                key={et.type}
-                                onClick={() => addElement(selectedSection.id, et.type)}
-                                className="flex flex-col items-center gap-1 p-3 rounded-lg bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.10] transition-all"
-                              >
-                                <span className="text-[16px]">{et.icon}</span>
-                                <span className="text-[9px] text-white/30">{et.label}</span>
+                              <button key={et.type} onClick={() => addElement(selectedSection.id, et.type)}
+                                className="flex flex-col items-center gap-1 p-2.5 rounded-lg bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.10] transition-all">
+                                <span className="text-[14px]">{et.icon}</span>
+                                <span className="text-[8px] text-white/25">{et.label}</span>
                               </button>
                             ))}
+                            </div>
+                            <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-white/15 mb-2">Components</p>
+                            <div className="grid grid-cols-3 gap-1.5 mb-3">
+                            {([
+                              { type: "card", icon: "◻", label: "Card" },
+                              { type: "feature", icon: "✦", label: "Feature" },
+                              { type: "stat", icon: "##", label: "Stat" },
+                              { type: "badge", icon: "●", label: "Badge" },
+                              { type: "avatar", icon: "👤", label: "Avatar" },
+                              { type: "testimonial", icon: "💬", label: "Review" },
+                              { type: "faq", icon: "?", label: "FAQ" },
+                              { type: "alert", icon: "⚠", label: "Alert" },
+                              { type: "progress", icon: "▰", label: "Progress" },
+                            ] as { type: import("@/types/supabase").ElementType; icon: string; label: string }[]).map((et) => (
+                              <button key={et.type} onClick={() => addElement(selectedSection.id, et.type)}
+                                className="flex flex-col items-center gap-1 p-2.5 rounded-lg bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.10] transition-all">
+                                <span className="text-[14px]">{et.icon}</span>
+                                <span className="text-[8px] text-white/25">{et.label}</span>
+                              </button>
+                            ))}
+                            </div>
+                            <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-white/15 mb-2">Advanced</p>
+                            <div className="grid grid-cols-3 gap-1.5">
+                            {([
+                              { type: "pricing", icon: "$", label: "Pricing" },
+                              { type: "cta-banner", icon: "📣", label: "CTA Banner" },
+                              { type: "gallery", icon: "🖼", label: "Gallery" },
+                              { type: "tag-list", icon: "#", label: "Tags" },
+                              { type: "social", icon: "🔗", label: "Social" },
+                              { type: "logo", icon: "◈", label: "Logo" },
+                              { type: "table", icon: "▦", label: "Table" },
+                              { type: "accordion", icon: "▼", label: "Accordion" },
+                              { type: "map", icon: "📍", label: "Map" },
+                            ] as { type: import("@/types/supabase").ElementType; icon: string; label: string }[]).map((et) => (
+                              <button key={et.type} onClick={() => addElement(selectedSection.id, et.type)}
+                                className="flex flex-col items-center gap-1 p-2.5 rounded-lg bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.10] transition-all">
+                                <span className="text-[14px]">{et.icon}</span>
+                                <span className="text-[8px] text-white/25">{et.label}</span>
+                              </button>
+                            ))}
+                            </div>
                           </div>
                         ) : (
                           <button
