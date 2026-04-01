@@ -6,6 +6,7 @@ import { getAllPages } from "@/lib/cms";
 import { MediaSelector } from "@/components/cms/MediaSelector";
 import { ButtonEditor } from "@/components/cms/ButtonEditor";
 import { getSectionSettings, getButtonConfig, updateSectionSettings } from "@/lib/section-helpers";
+import { blockLibrary, type BlockTemplate } from "@/data/block-library";
 import {
   Plus, Trash2, Eye, EyeOff, Save, GripVertical, LogIn, Copy,
   ChevronDown, ChevronUp, Monitor, Tablet, Smartphone, Undo2,
@@ -61,6 +62,7 @@ export default function AdminPage() {
   const [saving, setSaving] = useState(false);
   const [saveState, setSaveState] = useState<"saved" | "unsaved" | "saving">("saved");
   const [showLibrary, setShowLibrary] = useState(false);
+  const [libraryCategory, setLibraryCategory] = useState<string | null>(null);
   const [viewport, setViewport] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [mode, setMode] = useState<"edit" | "preview">("edit");
   const [pageListOpen, setPageListOpen] = useState(false);
@@ -168,17 +170,26 @@ export default function AdminPage() {
     setSaveState("unsaved");
   }
 
-  async function addSection(layout: SectionLayout) {
+  async function addFromTemplate(template: BlockTemplate) {
     if (!selectedPage) return;
     const newOrder = sections.length + 1;
+    const d = template.defaults;
     const { data, error } = await supabase
       .from("sections")
       .insert({
         page_id: selectedPage.id,
-        section_key: `${layout}-${newOrder}`,
-        layout,
-        title: sectionLibrary.find((s) => s.type === layout)?.label || "New Section",
-        background: layout === "quote" ? "dark" : "white",
+        section_key: `${template.id}-${newOrder}`,
+        layout: template.layout,
+        title: d.title || template.label,
+        subtitle: d.subtitle || null,
+        content: d.content || null,
+        image_url: d.image_url || null,
+        button_text: d.button_text || null,
+        button_link: d.button_link || null,
+        button2_text: d.button2_text || null,
+        button2_link: d.button2_link || null,
+        background: d.background || "white",
+        items: d.items || null,
         order: newOrder,
         visible: true,
       })
@@ -189,6 +200,21 @@ export default function AdminPage() {
       setSelectedSection(data);
     }
     if (error) alert("Error: " + error.message);
+    setShowLibrary(false);
+    setLibraryCategory(null);
+  }
+
+  // Keep old addSection for backward compat
+  async function addSection(layout: SectionLayout) {
+    const template = blockLibrary.flatMap(c => c.templates).find(t => t.layout === layout);
+    if (template) return addFromTemplate(template);
+    // Fallback
+    if (!selectedPage) return;
+    const { data } = await supabase.from("sections").insert({
+      page_id: selectedPage.id, section_key: `${layout}-${sections.length + 1}`,
+      layout, title: "New Section", background: "white", order: sections.length + 1, visible: true,
+    }).select().single();
+    if (data) { setSections(prev => [...prev, data]); setSelectedSection(data); }
     setShowLibrary(false);
   }
 
@@ -401,7 +427,7 @@ export default function AdminPage() {
                       <SettingsGroup title="Section Type">
                         <Field label="Layout">
                           <select value={selectedSection.layout} onChange={(e) => updateSection(selectedSection.id, "layout", e.target.value)} className="input-field">
-                            {sectionLibrary.map((s) => <option key={s.type} value={s.type}>{s.label}</option>)}
+                            {["hero","bg-hero","image-left","image-right","cards","grid","numbers","cta","quote","full-image","video","timeline","brands","split"].map((l) => <option key={l} value={l}>{l}</option>)}
                           </select>
                         </Field>
                       </SettingsGroup>
@@ -583,25 +609,65 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* ═══ SECTION LIBRARY MODAL ═══ */}
+      {/* ═══ BLOCK LIBRARY MODAL ═══ */}
       {showLibrary && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowLibrary(false)} />
-          <div className="relative z-10 w-full max-w-[560px] bg-[#1a1a1a] border border-white/[0.08] rounded-2xl overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
-              <h3 className="text-[15px] font-semibold">Add Section</h3>
-              <button onClick={() => setShowLibrary(false)} className="h-7 w-7 flex items-center justify-center rounded-lg text-white/30 hover:text-white hover:bg-white/[0.06]"><X className="h-4 w-4" /></button>
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => { setShowLibrary(false); setLibraryCategory(null); }} />
+          <div className="relative z-10 w-full max-w-[720px] max-h-[80vh] bg-[#141414] border border-white/[0.08] rounded-2xl overflow-hidden flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06] shrink-0">
+              <div className="flex items-center gap-3">
+                {libraryCategory && (
+                  <button onClick={() => setLibraryCategory(null)} className="h-7 w-7 flex items-center justify-center rounded-lg text-white/30 hover:text-white hover:bg-white/[0.06]">
+                    <ArrowLeft className="h-4 w-4" />
+                  </button>
+                )}
+                <h3 className="text-[15px] font-semibold text-white">
+                  {libraryCategory
+                    ? blockLibrary.find(c => c.id === libraryCategory)?.label || "Templates"
+                    : "Add Block"}
+                </h3>
+              </div>
+              <button onClick={() => { setShowLibrary(false); setLibraryCategory(null); }} className="h-7 w-7 flex items-center justify-center rounded-lg text-white/30 hover:text-white hover:bg-white/[0.06]">
+                <X className="h-4 w-4" />
+              </button>
             </div>
-            <div className="p-4 grid grid-cols-2 gap-2 max-h-[60vh] overflow-y-auto">
-              {sectionLibrary.map((s) => (
-                <button key={s.type} onClick={() => addSection(s.type)} className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.10] transition-all text-left">
-                  <div className="h-9 w-9 rounded-lg bg-white/[0.06] flex items-center justify-center text-white/40 shrink-0">{s.icon}</div>
-                  <div>
-                    <p className="text-[13px] font-medium text-white">{s.label}</p>
-                    <p className="text-[11px] text-white/25 mt-0.5">{s.desc}</p>
-                  </div>
-                </button>
-              ))}
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-4">
+              {!libraryCategory ? (
+                /* ── Category grid ── */
+                <div className="grid grid-cols-3 gap-2">
+                  {blockLibrary.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => setLibraryCategory(cat.id)}
+                      className="flex flex-col items-center gap-2 p-5 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.10] transition-all"
+                    >
+                      <span className="text-[24px]">{cat.icon}</span>
+                      <span className="text-[12px] font-medium text-white/70">{cat.label}</span>
+                      <span className="text-[10px] text-white/20">{cat.templates.length} templates</span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                /* ── Templates grid for selected category ── */
+                <div className="grid grid-cols-2 gap-3">
+                  {blockLibrary.find(c => c.id === libraryCategory)?.templates.map((tmpl) => (
+                    <button
+                      key={tmpl.id}
+                      onClick={() => addFromTemplate(tmpl)}
+                      className="flex flex-col items-center p-5 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.12] transition-all text-center group"
+                    >
+                      <div className="h-16 w-full rounded-lg bg-white/[0.04] flex items-center justify-center text-[32px] mb-3 group-hover:bg-white/[0.08] transition-colors">
+                        {tmpl.preview}
+                      </div>
+                      <p className="text-[13px] font-medium text-white">{tmpl.label}</p>
+                      <p className="text-[10px] text-white/20 mt-0.5">{tmpl.layout}</p>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
