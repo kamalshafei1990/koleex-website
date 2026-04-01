@@ -198,10 +198,30 @@ export default function AdminPage() {
   function updateSetting(sectionId: string, key: keyof SectionSettings, value: unknown) {
     const section = sections.find((s) => s.id === sectionId);
     if (!section) return;
-    const settings = getSectionSettings(section);
-    const newSettings = { ...settings, [key]: value };
+    const currentSettings = getSectionSettings(section);
+    const newSettings = { ...currentSettings, [key]: value };
     const newItems = updateSectionSettings(section.items, newSettings);
-    updateSection(sectionId, "items", newItems);
+
+    // Update sections state with new items
+    setSections(prev => {
+      const updated = prev.map(s => s.id === sectionId ? { ...s, items: newItems } : s);
+      // Force immediate preview update
+      setTimeout(() => {
+        iframeRef.current?.contentWindow?.postMessage({
+          type: "preview-update",
+          sections: updated.filter(s => s.visible),
+          elements: sectionElements,
+        }, "*");
+      }, 50);
+      return updated;
+    });
+
+    // Update selected section if it's the one being changed
+    if (selectedSection?.id === sectionId) {
+      setSelectedSection(prev => prev ? { ...prev, items: newItems } : prev);
+    }
+
+    setSaveState("unsaved");
   }
 
   function updateButton(sectionId: string, which: "btn1" | "btn2", config: ButtonConfig) {
