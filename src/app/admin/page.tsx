@@ -797,67 +797,42 @@ export default function AdminPage() {
                       {/* Add Element picker */}
                       <div className="mt-2">
                         {showElementPicker === selectedSection.id ? (
-                          <div>
-                            <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-white/15 mb-2">Basic</p>
-                            <div className="grid grid-cols-3 gap-1.5 mb-3">
-                            {([
-                              { type: "heading", icon: "H", label: "Heading" },
-                              { type: "paragraph", icon: "¶", label: "Text" },
-                              { type: "image", icon: "🖼", label: "Image" },
-                              { type: "button", icon: "▢", label: "Button" },
-                              { type: "video", icon: "▶", label: "Video" },
-                              { type: "divider", icon: "—", label: "Divider" },
-                              { type: "spacer", icon: "↕", label: "Spacer" },
-                              { type: "list", icon: "≡", label: "List" },
-                              { type: "icon-box", icon: "◉", label: "Icon Box" },
-                            ] as { type: import("@/types/supabase").ElementType; icon: string; label: string }[]).map((et) => (
-                              <button key={et.type} onClick={() => addElement(selectedSection.id, et.type)}
-                                className="flex flex-col items-center gap-1 p-2.5 rounded-lg bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.10] transition-all">
-                                <span className="text-[14px]">{et.icon}</span>
-                                <span className="text-[8px] text-white/25">{et.label}</span>
-                              </button>
-                            ))}
-                            </div>
-                            <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-white/15 mb-2">Components</p>
-                            <div className="grid grid-cols-3 gap-1.5 mb-3">
-                            {([
-                              { type: "card", icon: "◻", label: "Card" },
-                              { type: "feature", icon: "✦", label: "Feature" },
-                              { type: "stat", icon: "##", label: "Stat" },
-                              { type: "badge", icon: "●", label: "Badge" },
-                              { type: "avatar", icon: "👤", label: "Avatar" },
-                              { type: "testimonial", icon: "💬", label: "Review" },
-                              { type: "faq", icon: "?", label: "FAQ" },
-                              { type: "alert", icon: "⚠", label: "Alert" },
-                              { type: "progress", icon: "▰", label: "Progress" },
-                            ] as { type: import("@/types/supabase").ElementType; icon: string; label: string }[]).map((et) => (
-                              <button key={et.type} onClick={() => addElement(selectedSection.id, et.type)}
-                                className="flex flex-col items-center gap-1 p-2.5 rounded-lg bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.10] transition-all">
-                                <span className="text-[14px]">{et.icon}</span>
-                                <span className="text-[8px] text-white/25">{et.label}</span>
-                              </button>
-                            ))}
-                            </div>
-                            <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-white/15 mb-2">Advanced</p>
-                            <div className="grid grid-cols-3 gap-1.5">
-                            {([
-                              { type: "pricing", icon: "$", label: "Pricing" },
-                              { type: "cta-banner", icon: "📣", label: "CTA Banner" },
-                              { type: "gallery", icon: "🖼", label: "Gallery" },
-                              { type: "tag-list", icon: "#", label: "Tags" },
-                              { type: "social", icon: "🔗", label: "Social" },
-                              { type: "logo", icon: "◈", label: "Logo" },
-                              { type: "table", icon: "▦", label: "Table" },
-                              { type: "accordion", icon: "▼", label: "Accordion" },
-                              { type: "map", icon: "📍", label: "Map" },
-                            ] as { type: import("@/types/supabase").ElementType; icon: string; label: string }[]).map((et) => (
-                              <button key={et.type} onClick={() => addElement(selectedSection.id, et.type)}
-                                className="flex flex-col items-center gap-1 p-2.5 rounded-lg bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.10] transition-all">
-                                <span className="text-[14px]">{et.icon}</span>
-                                <span className="text-[8px] text-white/25">{et.label}</span>
-                              </button>
-                            ))}
-                            </div>
+                          <div className="space-y-3">
+                            <ElementPickerGroup title="Basic" items={[
+                              { type: "heading", label: "Heading", preview: <div className="space-y-1"><div className="h-2.5 w-[70%] bg-[#1d1d1f] rounded-sm" /><div className="h-1.5 w-[45%] bg-[#d2d2d7] rounded-sm" /></div> },
+                              { type: "paragraph", label: "Text", preview: <div className="space-y-1"><div className="h-1 w-full bg-[#d2d2d7] rounded-sm" /><div className="h-1 w-full bg-[#d2d2d7] rounded-sm" /><div className="h-1 w-[60%] bg-[#d2d2d7] rounded-sm" /></div> },
+                              { type: "image", label: "Image", preview: <div className="h-8 w-full bg-[#e8e8ed] rounded-md flex items-center justify-center"><div className="h-3 w-3 border border-[#aeaeb2] rounded-sm" /></div> },
+                              { type: "button", label: "Button", preview: <div className="flex justify-center"><div className="h-4 px-3 bg-[#1d1d1f] rounded-full flex items-center"><div className="h-1 w-6 bg-white rounded-sm" /></div></div> },
+                              { type: "video", label: "Video", preview: <div className="h-8 w-full bg-[#1d1d1f] rounded-md flex items-center justify-center"><div className="h-3 w-3 border-l-[5px] border-l-white border-y-[3px] border-y-transparent" /></div> },
+                              { type: "divider", label: "Divider", preview: <div className="flex items-center h-6"><div className="h-px w-full bg-[#d2d2d7]" /></div> },
+                              { type: "spacer", label: "Spacer", preview: <div className="flex items-center justify-center h-6"><div className="h-4 w-px bg-[#d2d2d7]" /><div className="text-[6px] text-[#aeaeb2] mx-1">↕</div><div className="h-4 w-px bg-[#d2d2d7]" /></div> },
+                              { type: "list", label: "List", preview: <div className="space-y-1 pl-2">{[1,2,3].map(i => <div key={i} className="flex items-center gap-1"><div className="h-1 w-1 rounded-full bg-[#aeaeb2]" /><div className="h-1 w-[60%] bg-[#d2d2d7] rounded-sm" /></div>)}</div> },
+                              { type: "icon-box", label: "Icon Box", preview: <div className="flex flex-col items-center gap-1"><div className="h-4 w-4 rounded-md bg-[#e8e8ed]" /><div className="h-1 w-6 bg-[#1d1d1f] rounded-sm" /><div className="h-0.5 w-8 bg-[#d2d2d7] rounded-sm" /></div> },
+                            ]} onAdd={(t) => addElement(selectedSection.id, t as import("@/types/supabase").ElementType)} />
+
+                            <ElementPickerGroup title="Components" items={[
+                              { type: "card", label: "Card", preview: <div className="bg-[#f5f5f7] rounded-md p-1.5 space-y-1"><div className="h-4 bg-[#e8e8ed] rounded-sm" /><div className="h-1.5 w-[70%] bg-[#1d1d1f] rounded-sm" /><div className="h-1 w-full bg-[#d2d2d7] rounded-sm" /></div> },
+                              { type: "feature", label: "Feature", preview: <div className="flex gap-1.5"><div className="h-4 w-4 rounded bg-[#e8e8ed] shrink-0" /><div className="space-y-0.5 flex-1"><div className="h-1.5 w-[80%] bg-[#1d1d1f] rounded-sm" /><div className="h-1 w-full bg-[#d2d2d7] rounded-sm" /></div></div> },
+                              { type: "stat", label: "Stat", preview: <div className="text-center"><div className="text-[12px] font-bold text-[#1d1d1f] leading-none">100+</div><div className="h-0.5 w-6 bg-[#d2d2d7] rounded-sm mx-auto mt-0.5" /></div> },
+                              { type: "badge", label: "Badge", preview: <div className="flex justify-center"><div className="h-3 px-2 bg-[#1d1d1f] rounded-full flex items-center"><div className="h-0.5 w-4 bg-white rounded-sm" /></div></div> },
+                              { type: "avatar", label: "Avatar", preview: <div className="flex items-center gap-1.5"><div className="h-5 w-5 rounded-full bg-[#e8e8ed]" /><div className="space-y-0.5"><div className="h-1 w-6 bg-[#1d1d1f] rounded-sm" /><div className="h-0.5 w-8 bg-[#d2d2d7] rounded-sm" /></div></div> },
+                              { type: "testimonial", label: "Review", preview: <div className="bg-[#f5f5f7] rounded-md p-1.5 space-y-1"><div className="flex gap-px">{[1,2,3,4,5].map(i => <div key={i} className="text-[4px] text-amber-400">★</div>)}</div><div className="h-1 w-full bg-[#d2d2d7] rounded-sm italic" /><div className="flex items-center gap-1 mt-0.5"><div className="h-2.5 w-2.5 rounded-full bg-[#e8e8ed]" /><div className="h-0.5 w-5 bg-[#aeaeb2] rounded-sm" /></div></div> },
+                              { type: "faq", label: "FAQ", preview: <div className="space-y-1">{[1,2].map(i => <div key={i} className="flex items-center justify-between bg-[#f5f5f7] rounded px-1 py-0.5"><div className="h-1 w-[60%] bg-[#1d1d1f] rounded-sm" /><div className="text-[5px] text-[#aeaeb2]">+</div></div>)}</div> },
+                              { type: "alert", label: "Alert", preview: <div className="bg-blue-50 border border-blue-200 rounded px-1.5 py-1"><div className="h-1 w-full bg-blue-300 rounded-sm" /></div> },
+                              { type: "progress", label: "Progress", preview: <div className="space-y-0.5"><div className="flex justify-between"><div className="h-0.5 w-5 bg-[#1d1d1f] rounded-sm" /><div className="h-0.5 w-3 bg-[#aeaeb2] rounded-sm" /></div><div className="h-1.5 bg-[#e8e8ed] rounded-full overflow-hidden"><div className="h-full w-[70%] bg-[#1d1d1f] rounded-full" /></div></div> },
+                            ]} onAdd={(t) => addElement(selectedSection.id, t as import("@/types/supabase").ElementType)} />
+
+                            <ElementPickerGroup title="Advanced" items={[
+                              { type: "pricing", label: "Pricing", preview: <div className="bg-[#f5f5f7] rounded-md p-1.5 text-center space-y-0.5"><div className="h-0.5 w-5 bg-[#aeaeb2] rounded-sm mx-auto" /><div className="text-[10px] font-bold text-[#1d1d1f] leading-none">$99</div><div className="h-0.5 w-3 bg-[#aeaeb2] rounded-sm mx-auto" />{[1,2].map(i => <div key={i} className="flex items-center gap-0.5 justify-center"><div className="text-[4px] text-green-500">✓</div><div className="h-0.5 w-5 bg-[#d2d2d7] rounded-sm" /></div>)}</div> },
+                              { type: "cta-banner", label: "CTA Banner", preview: <div className="bg-[#1d1d1f] rounded-md p-1.5 flex items-center justify-between"><div className="space-y-0.5"><div className="h-1.5 w-8 bg-white rounded-sm" /><div className="h-0.5 w-10 bg-white/30 rounded-sm" /></div><div className="h-3 px-1.5 bg-white rounded-full" /></div> },
+                              { type: "gallery", label: "Gallery", preview: <div className="grid grid-cols-3 gap-0.5">{[1,2,3,4,5,6].map(i => <div key={i} className="aspect-square bg-[#e8e8ed] rounded-sm" />)}</div> },
+                              { type: "tag-list", label: "Tags", preview: <div className="flex flex-wrap gap-0.5">{["Tag", "Label", "Item"].map(t => <div key={t} className="h-2.5 px-1 bg-[#e8e8ed] rounded-full flex items-center"><span className="text-[4px] text-[#6e6e73]">{t}</span></div>)}</div> },
+                              { type: "social", label: "Social", preview: <div className="flex gap-1 justify-center">{[1,2,3,4].map(i => <div key={i} className="h-3.5 w-3.5 rounded-full bg-[#e8e8ed]" />)}</div> },
+                              { type: "logo", label: "Logo", preview: <div className="flex items-center justify-center h-6"><div className="h-3 w-10 bg-[#e8e8ed] rounded opacity-50" /></div> },
+                              { type: "table", label: "Table", preview: <div className="border border-[#e8e8ed] rounded overflow-hidden"><div className="flex bg-[#f5f5f7]">{[1,2,3].map(i => <div key={i} className="flex-1 h-2 border-r border-[#e8e8ed] last:border-r-0" />)}</div><div className="flex">{[1,2,3].map(i => <div key={i} className="flex-1 h-2 border-r border-[#e8e8ed] last:border-r-0 border-t border-[#e8e8ed]" />)}</div></div> },
+                              { type: "accordion", label: "Accordion", preview: <div className="border border-[#e8e8ed] rounded overflow-hidden">{[1,2,3].map(i => <div key={i} className="flex items-center justify-between px-1 py-0.5 border-b border-[#e8e8ed] last:border-b-0"><div className="h-0.5 w-6 bg-[#1d1d1f] rounded-sm" /><div className="text-[4px] text-[#aeaeb2]">▶</div></div>)}</div> },
+                              { type: "map", label: "Map", preview: <div className="h-8 bg-[#e8e8ed] rounded-md flex items-center justify-center"><div className="text-[8px] text-[#aeaeb2]">📍</div></div> },
+                            ]} onAdd={(t) => addElement(selectedSection.id, t as import("@/types/supabase").ElementType)} />
                           </div>
                         ) : (
                           <button
@@ -964,6 +939,28 @@ export default function AdminPage() {
 }
 
 /* ── Helper Components ── */
+
+function ElementPickerGroup({ title, items, onAdd }: { title: string; items: { type: string; label: string; preview: React.ReactNode }[]; onAdd: (type: string) => void }) {
+  return (
+    <div>
+      <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-white/15 mb-2">{title}</p>
+      <div className="grid grid-cols-3 gap-1.5">
+        {items.map((item) => (
+          <button
+            key={item.type}
+            onClick={() => onAdd(item.type)}
+            className="flex flex-col rounded-lg bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.07] hover:border-white/[0.12] transition-all overflow-hidden"
+          >
+            <div className="w-full bg-white rounded-t-md p-2 h-[48px] flex items-center justify-center">
+              {item.preview}
+            </div>
+            <span className="text-[8px] text-white/30 py-1.5 text-center w-full">{item.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function SettingsGroup({ title, children }: { title: string; children: React.ReactNode }) {
   return (
