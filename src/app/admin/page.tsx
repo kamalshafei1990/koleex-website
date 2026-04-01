@@ -69,7 +69,8 @@ export default function AdminPage() {
   const [pageListOpen, setPageListOpen] = useState(false);
   const [settingsTab, setSettingsTab] = useState<"content" | "style" | "buttons" | "elements">("content");
   const [sectionElements, setSectionElements] = useState<Record<string, import("@/types/supabase").ElementRow[]>>({});
-  const [showElementPicker, setShowElementPicker] = useState<string | null>(null); // section id
+  const [showElementPicker, setShowElementPicker] = useState<string | null>(null);
+  const [expandedElement, setExpandedElement] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
@@ -728,22 +729,30 @@ export default function AdminPage() {
                         ) : (
                           <div className="space-y-2">
                             {(sectionElements[selectedSection.id] || []).map((el) => {
-                              const c = (el.content || {}) as Record<string, string>;
+                              const isExpanded = expandedElement === el.id;
+                              const elContent = (el.content || {}) as Record<string, unknown>;
+                              const preview = (elContent.text as string) || (elContent.title as string) || (elContent.question as string) || (elContent.quote as string) || (elContent.name as string) || (elContent.label as string) || (elContent.value as string) || "";
                               return (
-                                <div key={el.id} className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.05] space-y-2">
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-[10px] px-2 py-0.5 rounded bg-white/[0.06] text-white/30 font-medium uppercase">{el.type}</span>
+                                <div key={el.id} className={`rounded-xl border overflow-hidden transition-colors ${isExpanded ? "bg-white/[0.05] border-blue-500/20" : "bg-white/[0.02] border-white/[0.05] hover:border-white/[0.08]"}`}>
+                                  {/* Header — click to expand */}
+                                  <div
+                                    className="flex items-center justify-between px-3 py-2.5 cursor-pointer"
+                                    onClick={() => setExpandedElement(isExpanded ? null : el.id)}
+                                  >
+                                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/[0.06] text-white/30 font-semibold uppercase shrink-0">{el.type}</span>
+                                      <span className="text-[11px] text-white/40 truncate">{preview || "(empty)"}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1 shrink-0 ml-2">
                                       {/* Theme toggle */}
-                                      <div className="flex items-center gap-0.5 bg-white/[0.04] rounded-md p-0.5">
+                                      <div className="flex items-center gap-0.5 bg-white/[0.04] rounded p-px" onClick={(e) => e.stopPropagation()}>
                                         <button
                                           onClick={async () => {
                                             await updateElement(el.id, { style: { ...(el.style || {}), theme: "light" } });
                                             setSectionElements(prev => ({ ...prev, [selectedSection.id]: (prev[selectedSection.id] || []).map(e => e.id === el.id ? { ...e, style: { ...(e.style || {}), theme: "light" } } : e) }));
                                             setSaveState("unsaved");
                                           }}
-                                          className={`h-5 w-5 rounded flex items-center justify-center text-[8px] transition-all ${((el.style as Record<string,unknown>)?.theme || "light") === "light" ? "bg-white text-black shadow-sm" : "text-white/30"}`}
-                                          title="Light"
+                                          className={`h-4 w-4 rounded flex items-center justify-center text-[7px] ${((el.style as Record<string,unknown>)?.theme || "light") === "light" ? "bg-white text-black" : "text-white/25"}`}
                                         >☀</button>
                                         <button
                                           onClick={async () => {
@@ -751,17 +760,21 @@ export default function AdminPage() {
                                             setSectionElements(prev => ({ ...prev, [selectedSection.id]: (prev[selectedSection.id] || []).map(e => e.id === el.id ? { ...e, style: { ...(e.style || {}), theme: "dark" } } : e) }));
                                             setSaveState("unsaved");
                                           }}
-                                          className={`h-5 w-5 rounded flex items-center justify-center text-[8px] transition-all ${((el.style as Record<string,unknown>)?.theme) === "dark" ? "bg-[#1d1d1f] text-white shadow-sm" : "text-white/30"}`}
-                                          title="Dark"
+                                          className={`h-4 w-4 rounded flex items-center justify-center text-[7px] ${((el.style as Record<string,unknown>)?.theme) === "dark" ? "bg-[#1d1d1f] text-white" : "text-white/25"}`}
                                         >🌙</button>
                                       </div>
+                                      <button onClick={(e) => { e.stopPropagation(); removeElement(selectedSection.id, el.id); }} className="h-5 w-5 flex items-center justify-center text-white/10 hover:text-red-400/60 transition-colors">
+                                        <Trash2 className="h-2.5 w-2.5" />
+                                      </button>
+                                      <ChevronDown className={`h-3 w-3 text-white/15 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
                                     </div>
-                                    <button onClick={() => removeElement(selectedSection.id, el.id)} className="text-white/15 hover:text-red-400/60 transition-colors">
-                                      <Trash2 className="h-3 w-3" />
-                                    </button>
                                   </div>
-                                  {/* ── Full element editor by type ── */}
-                                  <ElementEditor el={el} sectionId={selectedSection.id} onEdit={editElement} />
+                                  {/* Editor — shown when expanded */}
+                                  {isExpanded && (
+                                    <div className="px-3 pb-3 pt-1 border-t border-white/[0.04]">
+                                      <ElementEditor el={el} sectionId={selectedSection.id} onEdit={editElement} />
+                                    </div>
+                                  )}
                                 </div>
                               );
                             })}
