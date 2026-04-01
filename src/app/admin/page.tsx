@@ -56,10 +56,12 @@ export default function AdminPage() {
   const [sections, setSections] = useState<SectionRow[]>([]);
   const [selectedSection, setSelectedSection] = useState<SectionRow | null>(null);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [saveState, setSaveState] = useState<"saved" | "unsaved" | "saving">("saved");
   const [showLibrary, setShowLibrary] = useState(false);
   const [viewport, setViewport] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [mode, setMode] = useState<"edit" | "preview">("edit");
   const [pageListOpen, setPageListOpen] = useState(false);
+  const [settingsTab, setSettingsTab] = useState<"content" | "style" | "buttons">("content");
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
@@ -121,7 +123,7 @@ export default function AdminPage() {
     if (selectedSection?.id === id) {
       setSelectedSection((prev) => prev ? { ...prev, [field]: value } : prev);
     }
-    setSaved(false);
+    setSaveState("unsaved");
   }
 
   function moveSection(id: string, dir: "up" | "down") {
@@ -134,7 +136,7 @@ export default function AdminPage() {
       [copy[idx], copy[ni]] = [copy[ni], copy[idx]];
       return copy.map((s, i) => ({ ...s, order: i + 1 }));
     });
-    setSaved(false);
+    setSaveState("unsaved");
   }
 
   async function addSection(layout: SectionLayout) {
@@ -180,6 +182,7 @@ export default function AdminPage() {
 
   async function saveAll() {
     setSaving(true);
+    setSaveState("saving");
     for (const s of sections) {
       await supabase.from("sections").update({
         title: s.title, subtitle: s.subtitle, content: s.content,
@@ -191,8 +194,7 @@ export default function AdminPage() {
       }).eq("id", s.id);
     }
     setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    setSaveState("saved");
   }
 
   // ── Login ──
@@ -237,23 +239,40 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Center: viewport toggle */}
-        <div className="flex items-center gap-1 bg-white/[0.04] rounded-lg p-0.5">
-          {([["desktop", <Monitor key="d" className="h-3.5 w-3.5" />], ["tablet", <Tablet key="t" className="h-3.5 w-3.5" />], ["mobile", <Smartphone key="m" className="h-3.5 w-3.5" />]] as const).map(([vp, icon]) => (
-            <button key={vp} onClick={() => setViewport(vp as "desktop" | "tablet" | "mobile")} className={`h-7 w-7 flex items-center justify-center rounded-md transition-colors ${viewport === vp ? "bg-white/[0.10] text-white" : "text-white/30 hover:text-white/60"}`}>
-              {icon}
+        {/* Center: mode + viewport */}
+        <div className="flex items-center gap-3">
+          {/* Edit / Preview mode */}
+          <div className="flex items-center gap-1 bg-white/[0.04] rounded-lg p-0.5">
+            <button onClick={() => setMode("edit")} className={`h-7 px-3 rounded-md text-[11px] font-medium transition-colors ${mode === "edit" ? "bg-white/[0.10] text-white" : "text-white/30 hover:text-white/60"}`}>
+              Edit
             </button>
-          ))}
+            <button onClick={() => setMode("preview")} className={`h-7 px-3 rounded-md text-[11px] font-medium transition-colors ${mode === "preview" ? "bg-white/[0.10] text-white" : "text-white/30 hover:text-white/60"}`}>
+              Preview
+            </button>
+          </div>
+          {/* Viewport */}
+          <div className="flex items-center gap-1 bg-white/[0.04] rounded-lg p-0.5">
+            {([["desktop", <Monitor key="d" className="h-3.5 w-3.5" />], ["tablet", <Tablet key="t" className="h-3.5 w-3.5" />], ["mobile", <Smartphone key="m" className="h-3.5 w-3.5" />]] as const).map(([vp, icon]) => (
+              <button key={vp} onClick={() => setViewport(vp as "desktop" | "tablet" | "mobile")} className={`h-7 w-7 flex items-center justify-center rounded-md transition-colors ${viewport === vp ? "bg-white/[0.10] text-white" : "text-white/30 hover:text-white/60"}`}>
+                {icon}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Right: actions */}
+        {/* Right: save state + actions */}
         <div className="flex items-center gap-2">
-          {saved && <span className="text-[11px] text-green-400 flex items-center gap-1"><Check className="h-3 w-3" /> Saved</span>}
+          {/* Save state indicator */}
+          <span className={`text-[11px] flex items-center gap-1 ${saveState === "saved" ? "text-green-400/70" : saveState === "saving" ? "text-yellow-400/70" : "text-orange-400/70"}`}>
+            {saveState === "saved" && <><Check className="h-3 w-3" /> Saved</>}
+            {saveState === "saving" && <><Save className="h-3 w-3 animate-pulse" /> Saving...</>}
+            {saveState === "unsaved" && <><div className="h-1.5 w-1.5 rounded-full bg-orange-400" /> Unsaved</>}
+          </span>
           <a href={`/${selectedPage?.slug || ""}`} target="_blank" className="h-8 px-3 rounded-lg text-[11px] font-medium text-white/40 hover:text-white/70 flex items-center gap-1.5 transition-colors">
-            <ExternalLink className="h-3 w-3" /> Preview
+            <ExternalLink className="h-3 w-3" /> View Page
           </a>
           <button onClick={saveAll} disabled={saving} className="h-8 px-4 rounded-lg bg-white text-black text-[11px] font-semibold flex items-center gap-1.5 hover:bg-white/90 transition-colors disabled:opacity-50">
-            <Save className="h-3 w-3" /> {saving ? "Saving..." : "Save"}
+            <Save className="h-3 w-3" /> {saving ? "Saving..." : "Publish"}
           </button>
         </div>
       </div>
@@ -262,7 +281,7 @@ export default function AdminPage() {
       <div className="flex-1 flex overflow-hidden">
 
         {/* ── LEFT: Sections List ── */}
-        <div className="w-[240px] shrink-0 border-r border-white/[0.06] flex flex-col">
+        <div className={`w-[240px] shrink-0 border-r border-white/[0.06] flex flex-col transition-all duration-300 ${mode === "preview" ? "w-0 overflow-hidden border-none" : ""}`}>
           <div className="px-3 py-3 border-b border-white/[0.06] flex items-center justify-between">
             <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/25">Sections</span>
             <button onClick={() => setShowLibrary(true)} className="h-6 w-6 flex items-center justify-center rounded-md bg-white/[0.06] text-white/40 hover:text-white hover:bg-white/[0.10] transition-colors">
@@ -312,7 +331,7 @@ export default function AdminPage() {
         </div>
 
         {/* ── RIGHT: Section Settings ── */}
-        <div className="w-[320px] shrink-0 border-l border-white/[0.06] flex flex-col overflow-hidden">
+        <div className={`w-[320px] shrink-0 border-l border-white/[0.06] flex flex-col overflow-hidden transition-all duration-300 ${mode === "preview" ? "w-0 overflow-hidden border-none" : ""}`}>
           {!selectedSection ? (
             <div className="flex-1 flex items-center justify-center">
               <p className="text-[13px] text-white/20">Select a section to edit</p>
@@ -334,101 +353,206 @@ export default function AdminPage() {
                 </div>
               </div>
 
+              {/* Settings tabs */}
+              <div className="flex border-b border-white/[0.06] shrink-0">
+                {(["content", "style", "buttons"] as const).map((tab) => (
+                  <button key={tab} onClick={() => setSettingsTab(tab)} className={`flex-1 py-2.5 text-[11px] font-medium capitalize transition-colors border-b-2 ${settingsTab === tab ? "text-white border-white/40" : "text-white/30 border-transparent hover:text-white/50"}`}>
+                    {tab}
+                  </button>
+                ))}
+              </div>
+
               {/* Scrollable settings */}
               <div className="flex-1 overflow-y-auto">
                 <div className="p-4 space-y-5">
 
-                  {/* Layout & Background */}
-                  <SettingsGroup title="Layout">
-                    <Field label="Section Type">
-                      <select value={selectedSection.layout} onChange={(e) => updateSection(selectedSection.id, "layout", e.target.value)} className="input-field">
-                        {sectionLibrary.map((s) => <option key={s.type} value={s.type}>{s.label}</option>)}
-                      </select>
-                    </Field>
-                    <Field label="Background">
-                      <div className="flex gap-2">
-                        {bgOptions.map((bg) => (
-                          <button key={bg.value} onClick={() => updateSection(selectedSection.id, "background", bg.value)}
-                            className={`h-8 w-8 rounded-lg border-2 transition-all ${selectedSection.background === bg.value ? "border-blue-500 scale-110" : "border-white/10 hover:border-white/20"}`}
-                            style={{ backgroundColor: bg.color }}
-                            title={bg.label}
+                  {/* ═══ CONTENT TAB ═══ */}
+                  {settingsTab === "content" && (
+                    <>
+                      <SettingsGroup title="Section Type">
+                        <Field label="Layout">
+                          <select value={selectedSection.layout} onChange={(e) => updateSection(selectedSection.id, "layout", e.target.value)} className="input-field">
+                            {sectionLibrary.map((s) => <option key={s.type} value={s.type}>{s.label}</option>)}
+                          </select>
+                        </Field>
+                      </SettingsGroup>
+
+                      <SettingsGroup title="Text">
+                        <Field label="Title">
+                          <input value={selectedSection.title || ""} onChange={(e) => updateSection(selectedSection.id, "title", e.target.value)} className="input-field" placeholder="Section title" />
+                        </Field>
+                        <Field label="Subtitle">
+                          <input value={selectedSection.subtitle || ""} onChange={(e) => updateSection(selectedSection.id, "subtitle", e.target.value)} className="input-field" placeholder="Subtitle" />
+                        </Field>
+                        {["quote", "image-left", "image-right", "cta", "split"].includes(selectedSection.layout) && (
+                          <Field label="Body Text">
+                            <textarea value={selectedSection.content || ""} onChange={(e) => updateSection(selectedSection.id, "content", e.target.value)} rows={3} className="input-field resize-y" placeholder="Body text" />
+                          </Field>
+                        )}
+                      </SettingsGroup>
+
+                      {/* Image */}
+                      {["hero", "image-left", "image-right", "full-image", "grid", "split"].includes(selectedSection.layout) && (
+                        <SettingsGroup title="Image">
+                          <MediaSelector
+                            currentUrl={selectedSection.image_url}
+                            onSelect={(url) => updateSection(selectedSection.id, "image_url", url || null)}
                           />
-                        ))}
-                      </div>
-                    </Field>
-                  </SettingsGroup>
+                          <Field label="Alt Text">
+                            <input value={selectedSection.image_alt || ""} onChange={(e) => updateSection(selectedSection.id, "image_alt", e.target.value || null)} className="input-field" placeholder="Image description" />
+                          </Field>
+                        </SettingsGroup>
+                      )}
 
-                  {/* Content */}
-                  <SettingsGroup title="Content">
-                    <Field label="Title">
-                      <input value={selectedSection.title || ""} onChange={(e) => updateSection(selectedSection.id, "title", e.target.value)} className="input-field" placeholder="Section title" />
-                    </Field>
-                    <Field label="Subtitle">
-                      <input value={selectedSection.subtitle || ""} onChange={(e) => updateSection(selectedSection.id, "subtitle", e.target.value)} className="input-field" placeholder="Subtitle" />
-                    </Field>
-                    {["quote", "image-left", "image-right", "cta"].includes(selectedSection.layout) && (
-                      <Field label="Content">
-                        <textarea value={selectedSection.content || ""} onChange={(e) => updateSection(selectedSection.id, "content", e.target.value)} rows={3} className="input-field resize-y" placeholder="Body text" />
-                      </Field>
-                    )}
-                  </SettingsGroup>
+                      {/* Video */}
+                      {selectedSection.layout === "video" && (
+                        <SettingsGroup title="Video">
+                          <Field label="Embed URL">
+                            <input value={selectedSection.video_url || ""} onChange={(e) => updateSection(selectedSection.id, "video_url", e.target.value)} className="input-field" placeholder="https://youtube.com/embed/..." />
+                          </Field>
+                        </SettingsGroup>
+                      )}
 
-                  {/* Image */}
-                  {["hero", "image-left", "image-right", "full-image", "grid", "split"].includes(selectedSection.layout) && (
-                    <SettingsGroup title="Image">
-                      <MediaSelector
-                        currentUrl={selectedSection.image_url}
-                        onSelect={(url) => updateSection(selectedSection.id, "image_url", url || null)}
-                      />
-                    </SettingsGroup>
+                      {/* Cards / Items */}
+                      {["cards", "grid", "numbers", "brands", "timeline"].includes(selectedSection.layout) && (
+                        <SettingsGroup title="Items">
+                          <ItemsEditor
+                            items={selectedSection.items || []}
+                            layout={selectedSection.layout}
+                            onChange={(items) => updateSection(selectedSection.id, "items", items)}
+                          />
+                        </SettingsGroup>
+                      )}
+
+                      <SettingsGroup title="Advanced">
+                        <Field label="Section Key">
+                          <input value={selectedSection.section_key} onChange={(e) => updateSection(selectedSection.id, "section_key", e.target.value)} className="input-field text-white/40" />
+                        </Field>
+                      </SettingsGroup>
+                    </>
                   )}
 
-                  {/* Video */}
-                  {selectedSection.layout === "video" && (
-                    <SettingsGroup title="Video">
-                      <Field label="Video URL (YouTube/Vimeo)">
-                        <input value={selectedSection.video_url || ""} onChange={(e) => updateSection(selectedSection.id, "video_url", e.target.value)} className="input-field" placeholder="https://youtube.com/embed/..." />
-                      </Field>
-                    </SettingsGroup>
+                  {/* ═══ STYLE TAB ═══ */}
+                  {settingsTab === "style" && (
+                    <>
+                      <SettingsGroup title="Background">
+                        <Field label="Color">
+                          <div className="flex gap-2">
+                            {bgOptions.map((bg) => (
+                              <button key={bg.value} onClick={() => updateSection(selectedSection.id, "background", bg.value)}
+                                className={`h-8 w-8 rounded-lg border-2 transition-all ${selectedSection.background === bg.value ? "border-blue-500 scale-110" : "border-white/10 hover:border-white/20"}`}
+                                style={{ backgroundColor: bg.color }}
+                                title={bg.label}
+                              />
+                            ))}
+                          </div>
+                        </Field>
+                        {selectedSection.background === "image" && (
+                          <Field label="Background Image">
+                            <MediaSelector
+                              currentUrl={selectedSection.image_url}
+                              onSelect={(url) => updateSection(selectedSection.id, "image_url", url || null)}
+                            />
+                          </Field>
+                        )}
+                      </SettingsGroup>
+
+                      <SettingsGroup title="Spacing">
+                        <Field label="Text Alignment">
+                          <div className="flex gap-1">
+                            {["left", "center", "right"].map((a) => (
+                              <button key={a} className="flex-1 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] text-[11px] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-colors capitalize">
+                                {a}
+                              </button>
+                            ))}
+                          </div>
+                        </Field>
+                      </SettingsGroup>
+
+                      <SettingsGroup title="Visibility">
+                        <Field label="Show on page">
+                          <button
+                            onClick={() => updateSection(selectedSection.id, "visible", !selectedSection.visible)}
+                            className={`h-8 px-3 rounded-lg text-[11px] font-medium flex items-center gap-2 transition-all ${selectedSection.visible ? "bg-green-500/10 text-green-400 border border-green-500/20" : "bg-red-500/10 text-red-400 border border-red-500/20"}`}
+                          >
+                            {selectedSection.visible ? <><Eye className="h-3 w-3" /> Visible</> : <><EyeOff className="h-3 w-3" /> Hidden</>}
+                          </button>
+                        </Field>
+                      </SettingsGroup>
+                    </>
                   )}
 
-                  {/* Buttons */}
-                  <SettingsGroup title="Buttons">
-                    <div className="grid grid-cols-2 gap-2">
-                      <Field label="Button 1 Text">
-                        <input value={selectedSection.button_text || ""} onChange={(e) => updateSection(selectedSection.id, "button_text", e.target.value || null)} className="input-field" placeholder="Learn more" />
-                      </Field>
-                      <Field label="Button 1 Link">
-                        <input value={selectedSection.button_link || ""} onChange={(e) => updateSection(selectedSection.id, "button_link", e.target.value || null)} className="input-field" placeholder="/products" />
-                      </Field>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <Field label="Button 2 Text">
-                        <input value={selectedSection.button2_text || ""} onChange={(e) => updateSection(selectedSection.id, "button2_text", e.target.value || null)} className="input-field" placeholder="Contact" />
-                      </Field>
-                      <Field label="Button 2 Link">
-                        <input value={selectedSection.button2_link || ""} onChange={(e) => updateSection(selectedSection.id, "button2_link", e.target.value || null)} className="input-field" placeholder="/contact" />
-                      </Field>
-                    </div>
-                  </SettingsGroup>
+                  {/* ═══ BUTTONS TAB ═══ */}
+                  {settingsTab === "buttons" && (
+                    <>
+                      <SettingsGroup title="Primary Button">
+                        <Field label="Text">
+                          <input value={selectedSection.button_text || ""} onChange={(e) => updateSection(selectedSection.id, "button_text", e.target.value || null)} className="input-field" placeholder="Learn more" />
+                        </Field>
+                        <Field label="Link URL">
+                          <input value={selectedSection.button_link || ""} onChange={(e) => updateSection(selectedSection.id, "button_link", e.target.value || null)} className="input-field" placeholder="/products" />
+                        </Field>
+                        {selectedSection.button_text && (
+                          <div className="p-3 rounded-lg bg-white/[0.03] border border-white/[0.04] space-y-2">
+                            <Field label="Style">
+                              <div className="flex gap-1">
+                                {btnStyles.map((s) => (
+                                  <button key={s} className="flex-1 h-7 rounded-md bg-white/[0.04] border border-white/[0.06] text-[10px] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-colors capitalize">{s}</button>
+                                ))}
+                              </div>
+                            </Field>
+                            <Field label="Shape">
+                              <div className="flex gap-1">
+                                {btnShapes.map((s) => (
+                                  <button key={s} className="flex-1 h-7 rounded-md bg-white/[0.04] border border-white/[0.06] text-[10px] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-colors capitalize">{s}</button>
+                                ))}
+                              </div>
+                            </Field>
+                            <Field label="Size">
+                              <div className="flex gap-1">
+                                {btnSizes.map((s) => (
+                                  <button key={s} className="flex-1 h-7 rounded-md bg-white/[0.04] border border-white/[0.06] text-[10px] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-colors capitalize">{s}</button>
+                                ))}
+                              </div>
+                            </Field>
+                          </div>
+                        )}
+                      </SettingsGroup>
 
-                  {/* Cards / Items (for cards, grid, numbers, brands) */}
-                  {["cards", "grid", "numbers", "brands", "timeline"].includes(selectedSection.layout) && (
-                    <SettingsGroup title="Items">
-                      <ItemsEditor
-                        items={selectedSection.items || []}
-                        layout={selectedSection.layout}
-                        onChange={(items) => updateSection(selectedSection.id, "items", items)}
-                      />
-                    </SettingsGroup>
+                      <SettingsGroup title="Secondary Button">
+                        <Field label="Text">
+                          <input value={selectedSection.button2_text || ""} onChange={(e) => updateSection(selectedSection.id, "button2_text", e.target.value || null)} className="input-field" placeholder="Contact sales" />
+                        </Field>
+                        <Field label="Link URL">
+                          <input value={selectedSection.button2_link || ""} onChange={(e) => updateSection(selectedSection.id, "button2_link", e.target.value || null)} className="input-field" placeholder="/contact" />
+                        </Field>
+                        {selectedSection.button2_text && (
+                          <div className="p-3 rounded-lg bg-white/[0.03] border border-white/[0.04] space-y-2">
+                            <Field label="Style">
+                              <div className="flex gap-1">
+                                {btnStyles.map((s) => (
+                                  <button key={s} className="flex-1 h-7 rounded-md bg-white/[0.04] border border-white/[0.06] text-[10px] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-colors capitalize">{s}</button>
+                                ))}
+                              </div>
+                            </Field>
+                            <Field label="Shape">
+                              <div className="flex gap-1">
+                                {btnShapes.map((s) => (
+                                  <button key={s} className="flex-1 h-7 rounded-md bg-white/[0.04] border border-white/[0.06] text-[10px] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-colors capitalize">{s}</button>
+                                ))}
+                              </div>
+                            </Field>
+                          </div>
+                        )}
+                      </SettingsGroup>
+
+                      {!selectedSection.button_text && !selectedSection.button2_text && (
+                        <div className="text-center py-6">
+                          <p className="text-[12px] text-white/20">Add button text above to configure styles</p>
+                        </div>
+                      )}
+                    </>
                   )}
-
-                  {/* Section key */}
-                  <SettingsGroup title="Advanced">
-                    <Field label="Section Key">
-                      <input value={selectedSection.section_key} onChange={(e) => updateSection(selectedSection.id, "section_key", e.target.value)} className="input-field text-white/40" />
-                    </Field>
-                  </SettingsGroup>
                 </div>
               </div>
             </>
