@@ -734,6 +734,27 @@ export default function AdminPage() {
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                       <span className="text-[10px] px-2 py-0.5 rounded bg-white/[0.06] text-white/30 font-medium uppercase">{el.type}</span>
+                                      {/* Theme toggle */}
+                                      <div className="flex items-center gap-0.5 bg-white/[0.04] rounded-md p-0.5">
+                                        <button
+                                          onClick={async () => {
+                                            await updateElement(el.id, { style: { ...(el.style || {}), theme: "light" } });
+                                            setSectionElements(prev => ({ ...prev, [selectedSection.id]: (prev[selectedSection.id] || []).map(e => e.id === el.id ? { ...e, style: { ...(e.style || {}), theme: "light" } } : e) }));
+                                            setSaveState("unsaved");
+                                          }}
+                                          className={`h-5 w-5 rounded flex items-center justify-center text-[8px] transition-all ${((el.style as Record<string,unknown>)?.theme || "light") === "light" ? "bg-white text-black shadow-sm" : "text-white/30"}`}
+                                          title="Light"
+                                        >☀</button>
+                                        <button
+                                          onClick={async () => {
+                                            await updateElement(el.id, { style: { ...(el.style || {}), theme: "dark" } });
+                                            setSectionElements(prev => ({ ...prev, [selectedSection.id]: (prev[selectedSection.id] || []).map(e => e.id === el.id ? { ...e, style: { ...(e.style || {}), theme: "dark" } } : e) }));
+                                            setSaveState("unsaved");
+                                          }}
+                                          className={`h-5 w-5 rounded flex items-center justify-center text-[8px] transition-all ${((el.style as Record<string,unknown>)?.theme) === "dark" ? "bg-[#1d1d1f] text-white shadow-sm" : "text-white/30"}`}
+                                          title="Dark"
+                                        >🌙</button>
+                                      </div>
                                     </div>
                                     <button onClick={() => removeElement(selectedSection.id, el.id)} className="text-white/15 hover:text-red-400/60 transition-colors">
                                       <Trash2 className="h-3 w-3" />
