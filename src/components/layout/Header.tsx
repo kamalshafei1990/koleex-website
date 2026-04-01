@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Menu, X, User } from "lucide-react";
+import { Search, Globe, Menu, X, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { mainNav } from "@/data/navigation";
 import { getDefaultRegion, type Region, type Language } from "@/data/regions";
@@ -11,8 +11,6 @@ import { KoleexLogo } from "@/components/ui/KoleexLogo";
 import MegaMenu from "./MegaMenu";
 import MobileMenu from "./MobileMenu";
 import SearchOverlay from "./SearchOverlay";
-import RegionSelector from "./RegionSelector";
-import LanguageSelector from "./LanguageSelector";
 import RegionSuggestionModal from "./RegionSuggestionModal";
 
 /* ---------------------------------------------------------------------------
@@ -150,22 +148,19 @@ export default function Header() {
               <Search className="h-[16px] w-[16px]" strokeWidth={1.5} />
             </button>
 
-            {/* Region selector */}
-            <div className="hidden lg:block">
-              <RegionSelector
-                currentRegion={currentRegion}
-                onRegionChange={handleRegionChange}
-              />
-            </div>
+            {/* Region — links to choose-region page */}
+            <Link
+              href="/choose-region"
+              className="hidden lg:flex items-center gap-[6px] h-9 px-3 rounded-full text-[12px] font-medium text-white/40 hover:text-white/75 hover:bg-white/[0.06] transition-all duration-[400ms]"
+            >
+              <Globe className="h-[14px] w-[14px]" strokeWidth={1.5} />
+              <span>{currentRegion.name}</span>
+            </Link>
 
-            {/* Language selector */}
-            <div className="hidden lg:block">
-              <LanguageSelector
-                currentRegion={currentRegion}
-                currentLanguage={currentLanguage}
-                onLanguageChange={(lang) => setCurrentLanguage(lang)}
-              />
-            </div>
+            {/* Language */}
+            <span className="hidden lg:inline text-[11px] font-medium text-white/25 px-1">
+              {currentLanguage.code.toUpperCase()}
+            </span>
 
             {/* Divider */}
             <div className="hidden lg:block w-px h-4 bg-white/[0.08]" />
