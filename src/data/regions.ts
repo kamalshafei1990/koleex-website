@@ -4,49 +4,56 @@
    Region = business context (pricing, contacts, distributors, catalogs)
    Language = UI translation only
 
-   URL strategy (future): /{region}/{language}
-   e.g. /global/en, /middle-east/ar, /china/zh, /americas/es
+   URL strategy: /{region}/{language}
+   e.g. /global/en, /middle-east/ar, /asia/zh
    --------------------------------------------------------------------------- */
 
 export interface Language {
-  code: string;       // ISO 639-1 (en, ar, zh, fr, es, etc.)
-  name: string;       // Native name shown in selector
-  nameEn: string;     // English name for reference
+  code: string;
+  name: string;
+  nameEn: string;
   dir?: "ltr" | "rtl";
 }
 
 export interface Region {
-  slug: string;         // URL-safe slug
-  name: string;         // Display name
-  flag: string;         // Emoji flag or code
-  currency?: string;    // Default currency code
+  slug: string;
+  name: string;
+  flag: string;
   languages: Language[];
-  defaultLanguage: string; // code of default language
-  description?: string;    // Short description for dropdown
+  defaultLanguage: string;
+  description?: string;
 }
 
-/* ── Languages ── */
+/* ── All 18 Languages ── */
 
 export const languages: Record<string, Language> = {
   en: { code: "en", name: "English", nameEn: "English" },
-  ar: { code: "ar", name: "العربية", nameEn: "Arabic", dir: "rtl" },
   zh: { code: "zh", name: "中文", nameEn: "Chinese" },
-  fr: { code: "fr", name: "Français", nameEn: "French" },
+  ar: { code: "ar", name: "العربية", nameEn: "Arabic", dir: "rtl" },
   es: { code: "es", name: "Español", nameEn: "Spanish" },
-  de: { code: "de", name: "Deutsch", nameEn: "German" },
+  fr: { code: "fr", name: "Français", nameEn: "French" },
+  nl: { code: "nl", name: "Nederlands", nameEn: "Dutch" },
+  pl: { code: "pl", name: "Polski", nameEn: "Polish" },
   pt: { code: "pt", name: "Português", nameEn: "Portuguese" },
   hi: { code: "hi", name: "हिन्दी", nameEn: "Hindi" },
+  ur: { code: "ur", name: "اردو", nameEn: "Urdu", dir: "rtl" },
+  fa: { code: "fa", name: "فارسی", nameEn: "Farsi", dir: "rtl" },
+  th: { code: "th", name: "ไทย", nameEn: "Thai" },
+  vi: { code: "vi", name: "Tiếng Việt", nameEn: "Vietnamese" },
+  ru: { code: "ru", name: "Русский", nameEn: "Russian" },
+  id: { code: "id", name: "Bahasa Indonesia", nameEn: "Indonesian" },
   tr: { code: "tr", name: "Türkçe", nameEn: "Turkish" },
+  ta: { code: "ta", name: "தமிழ்", nameEn: "Tamil" },
+  bn: { code: "bn", name: "বাংলা", nameEn: "Bengali" },
 };
 
-/* ── Regions ── */
+/* ── 6 Regions with language mappings ── */
 
 export const regions: Region[] = [
   {
     slug: "global",
     name: "Global",
     flag: "🌐",
-    currency: "USD",
     languages: [languages.en],
     defaultLanguage: "en",
     description: "Worldwide — default experience",
@@ -54,65 +61,42 @@ export const regions: Region[] = [
   {
     slug: "middle-east",
     name: "Middle East",
-    flag: "🇦🇪",
-    currency: "AED",
-    languages: [languages.ar, languages.en],
+    flag: "🌍",
+    languages: [languages.ar, languages.en, languages.fa],
     defaultLanguage: "ar",
-    description: "GCC, Levant & North Africa",
-  },
-  {
-    slug: "china",
-    name: "China",
-    flag: "🇨🇳",
-    currency: "CNY",
-    languages: [languages.zh, languages.en],
-    defaultLanguage: "zh",
-    description: "Mainland China & Hong Kong",
+    description: "GCC, Levant, Iran & North Africa",
   },
   {
     slug: "europe",
     name: "Europe",
     flag: "🇪🇺",
-    currency: "EUR",
-    languages: [languages.en, languages.de, languages.fr],
+    languages: [languages.en, languages.fr, languages.nl, languages.pl, languages.pt, languages.ru, languages.tr],
     defaultLanguage: "en",
-    description: "EU, UK & Switzerland",
+    description: "EU, UK, Turkey & Russia",
   },
   {
-    slug: "south-asia",
-    name: "South Asia",
-    flag: "🇮🇳",
-    currency: "INR",
-    languages: [languages.en, languages.hi],
+    slug: "asia",
+    name: "Asia",
+    flag: "🌏",
+    languages: [languages.en, languages.zh, languages.hi, languages.ur, languages.ta, languages.bn, languages.th, languages.vi, languages.id],
     defaultLanguage: "en",
-    description: "India, Bangladesh & Sri Lanka",
-  },
-  {
-    slug: "africa",
-    name: "Africa",
-    flag: "🌍",
-    currency: "USD",
-    languages: [languages.en, languages.fr],
-    defaultLanguage: "en",
-    description: "Sub-Saharan & North Africa",
+    description: "China, South Asia & Southeast Asia",
   },
   {
     slug: "americas",
     name: "Americas",
     flag: "🌎",
-    currency: "USD",
     languages: [languages.en, languages.es, languages.pt],
     defaultLanguage: "en",
     description: "North, Central & South America",
   },
   {
-    slug: "turkey",
-    name: "Turkey",
-    flag: "🇹🇷",
-    currency: "TRY",
-    languages: [languages.tr, languages.en],
-    defaultLanguage: "tr",
-    description: "Türkiye",
+    slug: "africa",
+    name: "Africa",
+    flag: "🌍",
+    languages: [languages.en, languages.fr, languages.ar],
+    defaultLanguage: "en",
+    description: "Sub-Saharan & North Africa",
   },
 ];
 
@@ -123,45 +107,50 @@ export function getRegionBySlug(slug: string): Region | undefined {
 }
 
 export function getDefaultRegion(): Region {
-  return regions[0]; // Global
+  return regions[0];
 }
 
-/* Placeholder country-to-region mapping for suggestion modal */
+/* Country → Region mapping (placeholder for future IP detection) */
 export const countryToRegion: Record<string, string> = {
-  EG: "middle-east",
-  AE: "middle-east",
-  SA: "middle-east",
-  QA: "middle-east",
-  KW: "middle-east",
-  BH: "middle-east",
-  OM: "middle-east",
-  JO: "middle-east",
-  LB: "middle-east",
-  IQ: "middle-east",
-  CN: "china",
-  HK: "china",
-  DE: "europe",
-  FR: "europe",
-  GB: "europe",
-  IT: "europe",
-  ES: "europe",
-  NL: "europe",
-  CH: "europe",
-  AT: "europe",
-  BE: "europe",
-  IN: "south-asia",
-  BD: "south-asia",
-  LK: "south-asia",
-  PK: "south-asia",
-  NG: "africa",
-  KE: "africa",
-  ZA: "africa",
-  GH: "africa",
-  US: "americas",
-  CA: "americas",
-  MX: "americas",
-  BR: "americas",
-  AR: "americas",
-  CO: "americas",
-  TR: "turkey",
+  // Middle East
+  EG: "middle-east", AE: "middle-east", SA: "middle-east", QA: "middle-east",
+  KW: "middle-east", BH: "middle-east", OM: "middle-east", JO: "middle-east",
+  LB: "middle-east", IQ: "middle-east", IR: "middle-east", SY: "middle-east",
+  YE: "middle-east", PS: "middle-east",
+  // Europe
+  GB: "europe", DE: "europe", FR: "europe", IT: "europe", ES: "europe",
+  NL: "europe", PL: "europe", PT: "europe", BE: "europe", AT: "europe",
+  CH: "europe", SE: "europe", NO: "europe", DK: "europe", FI: "europe",
+  IE: "europe", CZ: "europe", RO: "europe", HU: "europe", GR: "europe",
+  RU: "europe", UA: "europe", TR: "europe",
+  // Asia
+  CN: "asia", HK: "asia", TW: "asia", JP: "asia", KR: "asia",
+  IN: "asia", PK: "asia", BD: "asia", LK: "asia", NP: "asia",
+  TH: "asia", VN: "asia", ID: "asia", MY: "asia", SG: "asia",
+  PH: "asia", MM: "asia", KH: "asia",
+  // Americas
+  US: "americas", CA: "americas", MX: "americas", BR: "americas",
+  AR: "americas", CO: "americas", CL: "americas", PE: "americas",
+  VE: "americas", EC: "americas",
+  // Africa
+  NG: "africa", KE: "africa", ZA: "africa", GH: "africa",
+  ET: "africa", TZ: "africa", MA: "africa", TN: "africa",
+  DZ: "africa", SN: "africa", CI: "africa", CM: "africa",
 };
+
+/* Country → suggested language (placeholder) */
+export const countryToLanguage: Record<string, string> = {
+  EG: "ar", AE: "ar", SA: "ar", IR: "fa", IQ: "ar",
+  CN: "zh", HK: "zh", TW: "zh",
+  IN: "hi", PK: "ur", BD: "bn", LK: "ta",
+  TH: "th", VN: "vi", ID: "id",
+  FR: "fr", NL: "nl", PL: "pl", PT: "pt", BR: "pt",
+  RU: "ru", TR: "tr",
+  MX: "es", AR: "es", CO: "es", CL: "es", PE: "es",
+  MA: "fr", TN: "fr", DZ: "ar", SN: "fr",
+};
+
+/* Simulated detection — returns a placeholder country */
+export function getSimulatedDetection(): { countryCode: string; countryName: string } {
+  return { countryCode: "EG", countryName: "Egypt" };
+}
