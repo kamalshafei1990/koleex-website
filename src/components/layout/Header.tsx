@@ -63,8 +63,8 @@ export default function Header() {
           "fixed top-0 left-0 right-0 z-40 h-[68px]",
           "transition-[background-color,border-color,backdrop-filter] duration-[600ms] ease-[cubic-bezier(0.4,0,0.2,1)]",
           scrolled
-            ? "bg-black/92 backdrop-blur-2xl backdrop-saturate-[1.8] border-b border-white/[0.07]"
-            : "bg-transparent border-b border-transparent"
+            ? "bg-black/95 backdrop-blur-2xl backdrop-saturate-[1.8] border-b border-white/[0.07]"
+            : "bg-black border-b border-white/[0.04]"
         )}
       >
         <nav className="max-w-[1200px] mx-auto h-full px-8 flex items-center">
