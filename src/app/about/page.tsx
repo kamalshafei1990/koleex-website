@@ -5,165 +5,398 @@ import Link from "next/link";
 import { useScrollReveal, revealStyle } from "@/lib/useScrollReveal";
 
 /* ---------------------------------------------------------------------------
-   About Hub Page — Each section summarizes a topic with a "Learn more"
-   link to the dedicated sub-page. Alternating layouts for visual variety.
+   About Hub Page — Matching Figma design exactly.
+
+   Layout pattern: 50/50 split sections on WHITE background.
+   Image left (~60%) + Title right (~40%).
+   Some special sections: dark bg (Technology), gradient (CEO Message),
+   card grids (Core Values, Business Segments).
    --------------------------------------------------------------------------- */
 
-/* ── Reusable section components ── */
-
-function HeroSection() {
-  return (
-    <section className="bg-black text-center pt-20 md:pt-28 pb-16 md:pb-24 overflow-hidden">
-      <div className="max-w-[800px] mx-auto px-6">
-        <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/30 mb-5">About Koleex</p>
-        <h1 className="text-[56px] md:text-[80px] font-semibold leading-[1.03] tracking-[-0.045em] text-white">
-          Our Story.
-        </h1>
-        <p className="text-[19px] md:text-[24px] font-normal leading-[1.35] text-[#86868b] mt-4 max-w-[600px] mx-auto">
-          A global industrial technology company built on precision, innovation, and long-term partnerships.
-        </p>
-      </div>
-    </section>
-  );
-}
-
-function SplitLeft({ image, eyebrow, title, desc, href }: { image: string; eyebrow: string; title: string; desc: string; href: string }) {
-  const { ref, visible } = useScrollReveal(0.1);
-  return (
-    <section ref={ref} className="bg-black py-20 md:py-28 border-t border-white/[0.06]">
-      <div className="max-w-[1120px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-        <div style={revealStyle(visible, 0)}>
-          <Image src={image} alt={title} width={1200} height={800} className="w-full h-auto" />
-        </div>
-        <div>
-          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/30 mb-4" style={revealStyle(visible, 80)}>{eyebrow}</p>
-          <h2 className="text-[36px] md:text-[48px] font-semibold leading-[1.08] tracking-[-0.035em] text-white" style={revealStyle(visible, 150)}>{title}</h2>
-          <p className="text-[17px] leading-[1.65] text-white/40 mt-5" style={revealStyle(visible, 230)}>{desc}</p>
-          <div className="mt-8" style={revealStyle(visible, 310)}>
-            <Link href={href} className="text-[17px] text-[#2997ff] hover:underline underline-offset-[3px]">Learn more {">"}</Link>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function SplitRight({ image, eyebrow, title, desc, href }: { image: string; eyebrow: string; title: string; desc: string; href: string }) {
-  const { ref, visible } = useScrollReveal(0.1);
-  return (
-    <section ref={ref} className="bg-[#0a0a0a] py-20 md:py-28 border-t border-white/[0.06]">
-      <div className="max-w-[1120px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-        <div className="lg:order-2" style={revealStyle(visible, 0)}>
-          <Image src={image} alt={title} width={1200} height={800} className="w-full h-auto" />
-        </div>
-        <div className="lg:order-1">
-          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/30 mb-4" style={revealStyle(visible, 80)}>{eyebrow}</p>
-          <h2 className="text-[36px] md:text-[48px] font-semibold leading-[1.08] tracking-[-0.035em] text-white" style={revealStyle(visible, 150)}>{title}</h2>
-          <p className="text-[17px] leading-[1.65] text-white/40 mt-5" style={revealStyle(visible, 230)}>{desc}</p>
-          <div className="mt-8" style={revealStyle(visible, 310)}>
-            <Link href={href} className="text-[17px] text-[#2997ff] hover:underline underline-offset-[3px]">Learn more {">"}</Link>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function FullWidthHero({ image, eyebrow, title, desc, href }: { image: string; eyebrow: string; title: string; desc: string; href: string }) {
-  const { ref, visible } = useScrollReveal(0.1);
-  return (
-    <section ref={ref} className="bg-black text-center overflow-hidden border-t border-white/[0.06]">
-      <div className="pt-16 md:pt-24 px-6">
-        <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/30 mb-4" style={revealStyle(visible, 0)}>{eyebrow}</p>
-        <h2 className="text-[48px] md:text-[64px] font-semibold leading-[1.05] tracking-[-0.04em] text-white" style={revealStyle(visible, 80)}>{title}</h2>
-        <p className="text-[19px] md:text-[21px] font-normal leading-[1.35] text-[#86868b] mt-3 max-w-[600px] mx-auto" style={revealStyle(visible, 160)}>{desc}</p>
-        <div className="mt-5" style={revealStyle(visible, 240)}>
-          <Link href={href} className="text-[17px] text-[#2997ff] hover:underline underline-offset-[3px]">Learn more {">"}</Link>
-        </div>
-      </div>
-      <div className="mt-6" style={revealStyle(visible, 320)}>
-        <Image src={image} alt={title} width={2560} height={1440} className="w-full h-auto block" />
-      </div>
-    </section>
-  );
-}
-
-function CardsSection({ eyebrow, title, desc, href, cards }: { eyebrow: string; title: string; desc: string; href: string; cards: { icon: string; label: string; text: string }[] }) {
+/* ── Reusable: Image-left / Text-right on white bg ── */
+function SplitWhite({
+  image,
+  title,
+  desc,
+  href,
+}: {
+  image: string;
+  title: string;
+  desc: string;
+  href: string;
+}) {
   const { ref, visible } = useScrollReveal(0.08);
   return (
-    <section ref={ref} className="bg-black py-20 md:py-28 border-t border-white/[0.06]">
-      <div className="max-w-[1120px] mx-auto px-6">
-        <div className="text-center mb-14">
-          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/30 mb-4" style={revealStyle(visible, 0)}>{eyebrow}</p>
-          <h2 className="text-[36px] md:text-[48px] font-semibold leading-[1.08] tracking-[-0.035em] text-white" style={revealStyle(visible, 80)}>{title}</h2>
-          <p className="text-[17px] leading-[1.5] text-[#86868b] mt-3 max-w-[500px] mx-auto" style={revealStyle(visible, 160)}>{desc}</p>
+    <section ref={ref} className="bg-white overflow-hidden">
+      <div className="flex flex-col lg:flex-row min-h-[480px]">
+        {/* Image — 60% width, full height, edge-to-edge */}
+        <div className="lg:w-[58%] overflow-hidden" style={revealStyle(visible, 0)}>
+          <Image
+            src={image}
+            alt={title}
+            width={1200}
+            height={800}
+            className="w-full h-full object-cover min-h-[300px] lg:min-h-[480px]"
+          />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {cards.map((c, i) => (
-            <div
-              key={c.label}
-              className="bg-white/[0.03] border border-white/[0.06] rounded-[20px] p-8 transition-all duration-500 hover:bg-white/[0.05] hover:border-white/[0.10] hover:-translate-y-1"
-              style={{
-                opacity: visible ? 1 : 0,
-                transform: visible ? "translateY(0)" : "translateY(24px)",
-                transition: `opacity 0.8s cubic-bezier(0.16,1,0.3,1) ${240 + i * 80}ms, transform 0.8s cubic-bezier(0.16,1,0.3,1) ${240 + i * 80}ms`,
-              }}
+        {/* Text — 40% width, vertically centered */}
+        <div className="lg:w-[42%] flex items-center px-8 md:px-12 lg:px-16 py-12 lg:py-16">
+          <div>
+            <h2
+              className="text-[36px] md:text-[48px] font-bold leading-[1.08] tracking-[-0.03em] text-[#1d1d1f]"
+              style={revealStyle(visible, 100)}
             >
-              <span className="text-2xl block mb-4">{c.icon}</span>
-              <h3 className="text-[17px] font-semibold text-white">{c.label}</h3>
-              <p className="text-[14px] leading-[1.55] text-white/35 mt-2">{c.text}</p>
+              {title}
+            </h2>
+            <p
+              className="text-[15px] md:text-[16px] leading-[1.65] text-[#6e6e73] mt-4 max-w-[420px]"
+              style={revealStyle(visible, 200)}
+            >
+              {desc}
+            </p>
+            <div className="mt-6" style={revealStyle(visible, 300)}>
+              <Link
+                href={href}
+                className="text-[15px] text-[#0066cc] hover:underline underline-offset-[3px]"
+              >
+                Learn more {">"}
+              </Link>
             </div>
-          ))}
-        </div>
-        <div className="text-center mt-10" style={revealStyle(visible, 600)}>
-          <Link href={href} className="text-[17px] text-[#2997ff] hover:underline underline-offset-[3px]">Learn more {">"}</Link>
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-function StatsSection({ eyebrow, title, desc, href, stats }: { eyebrow: string; title: string; desc: string; href: string; stats: { value: string; label: string }[] }) {
-  const { ref, visible } = useScrollReveal(0.1);
+/* ── CEO Message — Gradient dark bg, text left, photo right ── */
+function CEOSection() {
+  const { ref, visible } = useScrollReveal(0.08);
   return (
-    <section ref={ref} className="bg-[#0a0a0a] py-20 md:py-28 border-t border-white/[0.06]">
-      <div className="max-w-[1120px] mx-auto px-6 text-center">
-        <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/30 mb-4" style={revealStyle(visible, 0)}>{eyebrow}</p>
-        <h2 className="text-[36px] md:text-[48px] font-semibold leading-[1.08] tracking-[-0.035em] text-white" style={revealStyle(visible, 80)}>{title}</h2>
-        <p className="text-[17px] leading-[1.5] text-[#86868b] mt-3 max-w-[500px] mx-auto" style={revealStyle(visible, 160)}>{desc}</p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-14">
-          {stats.map((s, i) => (
-            <div
-              key={s.label}
-              style={{
-                opacity: visible ? 1 : 0,
-                transform: visible ? "scale(1)" : "scale(0.9)",
-                transition: `opacity 0.7s cubic-bezier(0.34,1.56,0.64,1) ${240 + i * 80}ms, transform 0.7s cubic-bezier(0.34,1.56,0.64,1) ${240 + i * 80}ms`,
-              }}
+    <section
+      ref={ref}
+      className="overflow-hidden"
+      style={{ background: "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #3a3a3a 100%)" }}
+    >
+      <div className="flex flex-col lg:flex-row min-h-[520px]">
+        {/* Text */}
+        <div className="lg:w-[55%] flex items-center px-8 md:px-12 lg:px-16 py-14 lg:py-20">
+          <div className="max-w-[520px]">
+            <h2
+              className="text-[40px] md:text-[56px] font-bold leading-[1.06] tracking-[-0.035em] text-white"
+              style={revealStyle(visible, 0)}
             >
-              <p className="text-[40px] md:text-[52px] font-bold tracking-[-0.04em] text-white leading-none">{s.value}</p>
-              <p className="text-[13px] text-white/30 mt-2">{s.label}</p>
+              CEO Message
+            </h2>
+            <p
+              className="text-[14px] leading-[1.75] text-white/50 mt-6"
+              style={revealStyle(visible, 100)}
+            >
+              To our valued partners, customers, and leaders of Koleex,
+            </p>
+            <p
+              className="text-[14px] leading-[1.75] text-white/50 mt-4"
+              style={revealStyle(visible, 150)}
+            >
+              At Koleex International Group, every step we take is guided by a shared commitment to progress and excellence. Over the years, we have grown from a family legacy into a global enterprise, but our core values remain unchanged: trust, innovation, and responsibility.
+            </p>
+            <p
+              className="text-[14px] leading-[1.75] text-white/50 mt-4"
+              style={revealStyle(visible, 200)}
+            >
+              Together, we are not only building a stronger company, but also shaping the future of manufacturing. With your support, Koleex will continue to push boundaries, set new standards, and open new opportunities for generations to come.
+            </p>
+            <div className="mt-8" style={revealStyle(visible, 300)}>
+              <Link
+                href="/about/ceo-message"
+                className="text-[15px] text-[#2997ff] hover:underline underline-offset-[3px]"
+              >
+                Read full message {">"}
+              </Link>
             </div>
-          ))}
+          </div>
         </div>
-        <div className="mt-12" style={revealStyle(visible, 600)}>
-          <Link href={href} className="text-[17px] text-[#2997ff] hover:underline underline-offset-[3px]">Learn more {">"}</Link>
+        {/* Photo */}
+        <div className="lg:w-[45%] overflow-hidden" style={revealStyle(visible, 100)}>
+          <Image
+            src="/images/team-office.jpg"
+            alt="CEO"
+            width={1000}
+            height={800}
+            className="w-full h-full object-cover min-h-[400px] lg:min-h-[520px] grayscale"
+          />
         </div>
       </div>
     </section>
   );
 }
 
-function CenteredSection({ eyebrow, title, desc, href, dark = true }: { eyebrow: string; title: string; desc: string; href: string; dark?: boolean }) {
-  const { ref, visible } = useScrollReveal(0.1);
+/* ── Core Values — White bg, image left, cards right ── */
+function ValuesSection() {
+  const { ref, visible } = useScrollReveal(0.06);
+  const values = [
+    { title: "Global Perspective", icon: "⊕", desc: "We think beyond borders to serve a connected, fast-changing world." },
+    { title: "Smart Simplicity", icon: "◎", desc: "We design intelligent systems that are clean, intuitive, and efficient." },
+    { title: "Human Centered Innovation", icon: "◇", desc: "Every feature we create starts with people — their needs, barriers, and experiences." },
+    { title: "Integrity & Trust", icon: "♡", desc: "Our actions are guided by transparency, honesty, and long-term commitment." },
+    { title: "Legacy & Modernity", icon: "□", desc: "We preserve our heritage while building the future with a modern outlook." },
+    { title: "Innovation with Purpose", icon: "△", desc: "We don't chase trends. We solve problems with meaningful technology and design." },
+  ];
+
   return (
-    <section ref={ref} className={`${dark ? "bg-black" : "bg-[#0a0a0a]"} text-center py-20 md:py-28 border-t border-white/[0.06]`}>
-      <div className="max-w-[700px] mx-auto px-6">
-        <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/30 mb-4" style={revealStyle(visible, 0)}>{eyebrow}</p>
-        <h2 className="text-[36px] md:text-[48px] font-semibold leading-[1.08] tracking-[-0.035em] text-white" style={revealStyle(visible, 80)}>{title}</h2>
-        <p className="text-[17px] leading-[1.65] text-white/40 mt-5" style={revealStyle(visible, 160)}>{desc}</p>
-        <div className="mt-8" style={revealStyle(visible, 240)}>
-          <Link href={href} className="text-[17px] text-[#2997ff] hover:underline underline-offset-[3px]">Learn more {">"}</Link>
+    <section ref={ref} className="bg-white overflow-hidden">
+      <div className="flex flex-col lg:flex-row min-h-[520px]">
+        {/* Image */}
+        <div className="lg:w-[45%] overflow-hidden" style={revealStyle(visible, 0)}>
+          <Image
+            src="/images/team-office.jpg"
+            alt="Core Values"
+            width={1000}
+            height={800}
+            className="w-full h-full object-cover min-h-[300px] lg:min-h-[520px]"
+          />
+        </div>
+        {/* Text + Cards */}
+        <div className="lg:w-[55%] px-8 md:px-12 lg:px-14 py-12 lg:py-16 flex flex-col justify-center">
+          <div>
+            <h2 className="text-[40px] md:text-[52px] font-bold leading-[1.06] tracking-[-0.035em] text-[#1d1d1f]" style={revealStyle(visible, 80)}>
+              Core Values
+            </h2>
+            <p className="text-[15px] leading-[1.65] text-[#6e6e73] mt-3 max-w-[450px]" style={revealStyle(visible, 160)}>
+              At Koleex, we believe that values are more than words — they are actions. Our brand is guided by purpose, built with integrity, and shaped to reflect who we truly are.
+            </p>
+            <h3 className="text-[20px] md:text-[24px] font-bold text-[#1d1d1f] mt-8 mb-5" style={revealStyle(visible, 220)}>
+              The Values That Shape Us
+            </h3>
+          </div>
+          {/* 2×3 dark card grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+            {values.map((v, i) => (
+              <div
+                key={v.title}
+                className="bg-[#1d1d1f] rounded-[16px] p-5 transition-all duration-500 hover:-translate-y-1"
+                style={{
+                  opacity: visible ? 1 : 0,
+                  transform: visible ? "translateY(0)" : "translateY(16px)",
+                  transition: `opacity 0.6s cubic-bezier(0.16,1,0.3,1) ${280 + i * 60}ms, transform 0.6s cubic-bezier(0.16,1,0.3,1) ${280 + i * 60}ms`,
+                }}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <h4 className="text-[13px] font-semibold text-white leading-tight pr-2">{v.title}</h4>
+                  <span className="text-white/30 text-[16px] shrink-0">{v.icon}</span>
+                </div>
+                <p className="text-[11px] leading-[1.5] text-white/30">{v.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Business Segments — White bg, image left, text + dark cards right ── */
+function SegmentsSection() {
+  const { ref, visible } = useScrollReveal(0.06);
+  const segments = [
+    { title: "Manufacturing & Production", pct: "—", icon: "⚙️" },
+    { title: "Smart Technologies & Software", pct: "—", icon: "💻" },
+    { title: "Global Trade & Distribution", pct: "—", icon: "🌐" },
+    { title: "Strategic Investment & Innovation", pct: "—", icon: "📈" },
+  ];
+
+  return (
+    <section ref={ref} className="bg-white overflow-hidden">
+      <div className="flex flex-col lg:flex-row min-h-[520px]">
+        {/* Image */}
+        <div className="lg:w-[40%] overflow-hidden" style={revealStyle(visible, 0)}>
+          <Image
+            src="/images/factory-floor.jpg"
+            alt="Business Segments"
+            width={1000}
+            height={800}
+            className="w-full h-full object-cover min-h-[300px] lg:min-h-[520px]"
+          />
+        </div>
+        {/* Text + Cards */}
+        <div className="lg:w-[60%] px-8 md:px-12 lg:px-14 py-12 lg:py-16 flex flex-col justify-center">
+          <h2 className="text-[40px] md:text-[52px] font-bold leading-[1.06] tracking-[-0.035em] text-[#1d1d1f]" style={revealStyle(visible, 80)}>
+            Business Segments
+          </h2>
+          <p className="text-[15px] leading-[1.65] text-[#6e6e73] mt-3 max-w-[550px]" style={revealStyle(visible, 160)}>
+            Through integrated business segments, Koleex advances innovation in manufacturing, smart solutions, international trade, and strategic global investment.
+          </p>
+          <div className="grid grid-cols-2 gap-3 mt-8">
+            {segments.map((s, i) => (
+              <div
+                key={s.title}
+                className="bg-[#1d1d1f] rounded-[16px] p-5 transition-all duration-500 hover:-translate-y-1"
+                style={{
+                  opacity: visible ? 1 : 0,
+                  transform: visible ? "translateY(0)" : "translateY(16px)",
+                  transition: `opacity 0.6s cubic-bezier(0.16,1,0.3,1) ${240 + i * 60}ms, transform 0.6s cubic-bezier(0.16,1,0.3,1) ${240 + i * 60}ms`,
+                }}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">{s.icon}</span>
+                  <span className="text-[20px] font-bold text-white">{s.pct}</span>
+                </div>
+                <h4 className="text-[13px] font-semibold text-white">{s.title}</h4>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6" style={revealStyle(visible, 500)}>
+            <Link href="/about/business-segments" className="text-[15px] text-[#0066cc] hover:underline underline-offset-[3px]">
+              Learn more {">"}
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Technology — Full dark background with robot + bento grid ── */
+function TechnologySection() {
+  const { ref, visible } = useScrollReveal(0.06);
+  return (
+    <section ref={ref} className="bg-black py-16 md:py-24 overflow-hidden">
+      <div className="max-w-[1200px] mx-auto px-6">
+        <div className="flex flex-col lg:flex-row gap-10 items-start">
+          {/* Left: heading + description + robot image */}
+          <div className="lg:w-[45%]">
+            <h2 className="text-[32px] md:text-[40px] font-bold leading-[1.1] tracking-[-0.03em] text-white" style={revealStyle(visible, 0)}>
+              Driven by Innovation.
+              <br />
+              Powered by Technology.
+            </h2>
+            <p className="text-[14px] leading-[1.7] text-white/40 mt-5 max-w-[400px]" style={revealStyle(visible, 100)}>
+              At Koleex, technology is the engine that drives our transformation. We design intelligent solutions that power machines, software, and systems to achieve precision and future-ready performance.
+            </p>
+            <div className="mt-8" style={revealStyle(visible, 200)}>
+              <Image
+                src="/images/hero-robot.jpg"
+                alt="Technology"
+                width={600}
+                height={800}
+                className="w-full h-auto rounded-[16px] opacity-80"
+              />
+            </div>
+          </div>
+          {/* Right: bento grid of tech features */}
+          <div className="lg:w-[55%]">
+            <div className="rounded-[20px] border border-white/[0.06] bg-white/[0.02] p-6 mb-4" style={revealStyle(visible, 150)}>
+              <p className="text-[12px] uppercase tracking-[0.08em] text-white/30 mb-2">Koleex Technology</p>
+              <h3 className="text-[22px] md:text-[28px] font-semibold text-white leading-tight">
+                Koleex Technology and Smart Solutions.
+                <br />
+                <span className="text-white/40">Empowering the Future of Industry.</span>
+              </h3>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+              {[
+                { title: "Custom Operation System", desc: "Build a custom OS for platform optimization." },
+                { title: "AI Powered Machines", desc: "Smart machines powered with AI to enhance performance." },
+                { title: "Smart User Interface", desc: "An intuitive interface designed for ease of use." },
+                { title: "Modular Software Updates", desc: "Seamless feature upgrades and updates." },
+                { title: "Data-Driven Production", desc: "Monitor performance and optimize operations." },
+                { title: "Predictive Maintenance", desc: "Reduce downtime and improve machine uptime." },
+              ].map((feature, i) => (
+                <div
+                  key={feature.title}
+                  className="rounded-[14px] border border-white/[0.06] bg-white/[0.02] p-4 transition-all duration-500 hover:bg-white/[0.04] hover:border-white/[0.10]"
+                  style={{
+                    opacity: visible ? 1 : 0,
+                    transform: visible ? "translateY(0)" : "translateY(12px)",
+                    transition: `opacity 0.5s cubic-bezier(0.16,1,0.3,1) ${300 + i * 50}ms, transform 0.5s cubic-bezier(0.16,1,0.3,1) ${300 + i * 50}ms`,
+                  }}
+                >
+                  <h4 className="text-[12px] font-semibold text-white mb-1.5">{feature.title}</h4>
+                  <p className="text-[10.5px] leading-[1.5] text-white/25">{feature.desc}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-6" style={revealStyle(visible, 600)}>
+              <Link href="/about/technology" className="text-[15px] text-[#2997ff] hover:underline underline-offset-[3px]">
+                Explore our technology {">"}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Market Strategy — White bg, image left, text + icon cards right ── */
+function StrategySection() {
+  const { ref, visible } = useScrollReveal(0.08);
+  const cards = [
+    { title: "Market Research & Local Insights", icon: "🔍" },
+    { title: "Tailored Strategy Design", icon: "📋" },
+    { title: "Channel Activation", icon: "🔗" },
+    { title: "Performance Optimization", icon: "📈" },
+  ];
+
+  return (
+    <section ref={ref} className="bg-white overflow-hidden">
+      <div className="flex flex-col lg:flex-row min-h-[480px]">
+        <div className="lg:w-[42%] overflow-hidden" style={revealStyle(visible, 0)}>
+          <Image src="/images/modern-office.jpg" alt="Market Strategy" width={1000} height={800} className="w-full h-full object-cover min-h-[300px] lg:min-h-[480px]" />
+        </div>
+        <div className="lg:w-[58%] px-8 md:px-12 lg:px-14 py-12 lg:py-16 flex flex-col justify-center">
+          <h2 className="text-[40px] md:text-[52px] font-bold leading-[1.06] tracking-[-0.035em] text-[#1d1d1f]" style={revealStyle(visible, 80)}>
+            Market Strategy
+          </h2>
+          <p className="text-[15px] leading-[1.65] text-[#6e6e73] mt-3 max-w-[480px]" style={revealStyle(visible, 160)}>
+            We move with strategy, not chance — understanding markets, shaping demands, and leading with innovation.
+          </p>
+          <div className="grid grid-cols-2 gap-3 mt-8">
+            {cards.map((c, i) => (
+              <div
+                key={c.title}
+                className="bg-[#1d1d1f] rounded-[16px] p-5 flex items-start gap-3 transition-all duration-500 hover:-translate-y-1"
+                style={{
+                  opacity: visible ? 1 : 0,
+                  transform: visible ? "translateY(0)" : "translateY(12px)",
+                  transition: `opacity 0.6s cubic-bezier(0.16,1,0.3,1) ${240 + i * 60}ms, transform 0.6s cubic-bezier(0.16,1,0.3,1) ${240 + i * 60}ms`,
+                }}
+              >
+                <span className="text-xl shrink-0">{c.icon}</span>
+                <h4 className="text-[13px] font-semibold text-white">{c.title}</h4>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6" style={revealStyle(visible, 500)}>
+            <Link href="/about/future-outlook" className="text-[15px] text-[#0066cc] hover:underline underline-offset-[3px]">Learn more {">"}</Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Global Presence — Dark image left, white text right ── */
+function GlobalSection() {
+  const { ref, visible } = useScrollReveal(0.08);
+  return (
+    <section ref={ref} className="bg-white overflow-hidden">
+      <div className="flex flex-col lg:flex-row min-h-[480px]">
+        <div className="lg:w-[58%] overflow-hidden" style={revealStyle(visible, 0)}>
+          <Image src="/images/digital-globe.jpg" alt="Global Presence" width={1200} height={800} className="w-full h-full object-cover min-h-[300px] lg:min-h-[480px]" />
+        </div>
+        <div className="lg:w-[42%] flex items-center px-8 md:px-12 lg:px-16 py-12 lg:py-16">
+          <div>
+            <h2 className="text-[40px] md:text-[52px] font-bold leading-[1.06] tracking-[-0.035em] text-[#1d1d1f]" style={revealStyle(visible, 100)}>
+              Global Presence
+            </h2>
+            <p className="text-[15px] leading-[1.65] text-[#6e6e73] mt-4 max-w-[380px]" style={revealStyle(visible, 200)}>
+              Koleex operates across multiple continents, establishing strong partnerships and a dynamic presence in the world&apos;s leading markets.
+            </p>
+            <div className="mt-6" style={revealStyle(visible, 300)}>
+              <Link href="/about/global-presence" className="text-[15px] text-[#0066cc] hover:underline underline-offset-[3px]">Learn more {">"}</Link>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -175,140 +408,79 @@ function CenteredSection({ eyebrow, title, desc, href, dark = true }: { eyebrow:
 export default function AboutPage() {
   return (
     <>
-      {/* 1. Hero */}
-      <HeroSection />
+      {/* 1. CEO Message — gradient dark background */}
+      <CEOSection />
 
-      {/* 2. Company Overview */}
-      <SplitLeft
+      {/* 2. History and Heritage — image left, text right, white bg */}
+      <SplitWhite
         image="/images/factory-floor.jpg"
-        eyebrow="Company Overview"
-        title="Industrial technology with a global perspective."
-        desc="Koleex International Group is a technology-driven industrial company with a focus on precision machinery, automation systems, and integrated solutions for manufacturing sectors worldwide."
-        href="/about"
-      />
-
-      {/* 3. History & Heritage */}
-      <SplitRight
-        image="/images/team-office.jpg"
-        eyebrow="History & Heritage"
-        title="From a family tradition to a global name."
-        desc="Koleex began as a focused industrial trading and engineering business, growing steadily through decades of commitment to quality, customer partnership, and continuous improvement."
+        title="History and Heritage"
+        desc="Koleex has grown from a family tradition into a global name, driven by integrity, precision, and a deep respect for the past that shapes our future direction."
         href="/about/history"
       />
 
-      {/* 4. Vision & Mission */}
-      <FullWidthHero
-        image="/images/digital-globe.jpg"
-        eyebrow="Vision & Mission"
-        title="Where we're going."
-        desc="To be a trusted global partner for industrial technology, delivering precision machinery and solutions that empower manufacturers worldwide."
+      {/* 3. Our Vision — image left, text right, white bg */}
+      <SplitWhite
+        image="/images/solar-panels.jpg"
+        title="Our Vision"
+        desc="At Koleex, our vision is to redefine the future of smart industry by fusing innovation with heritage, delivering intelligent tools that shape progress across global markets and generations."
         href="/about/vision-mission"
       />
 
-      {/* 5. Core Values */}
-      <CardsSection
-        eyebrow="Core Values"
-        title="What guides us."
-        desc="The principles that shape every decision, product, and partnership."
-        href="/about/values"
-        cards={[
-          { icon: "◆", label: "Quality First", text: "Products and services that meet the highest standards of precision and reliability." },
-          { icon: "◇", label: "Customer Partnership", text: "Long-term relationships based on trust, understanding, and shared success." },
-          { icon: "●", label: "Innovation", text: "Investing in technology and new approaches to continuously improve." },
-          { icon: "○", label: "Integrity", text: "Honesty, transparency, and accountability in every interaction." },
-          { icon: "■", label: "Global Perspective", text: "Serving customers across regions with local understanding and global capability." },
-          { icon: "□", label: "Sustainable Growth", text: "Growing responsibly, balancing performance with environmental responsibility." },
-        ]}
-      />
+      {/* 4. Core Values — image left, cards right, white bg */}
+      <ValuesSection />
 
-      {/* 6. Corporate Structure */}
-      <SplitLeft
+      {/* 5. Corporate Structure — image left, text right, white bg */}
+      <SplitWhite
         image="/images/modern-office.jpg"
-        eyebrow="Corporate Structure"
-        title="Organized to deliver."
-        desc="Koleex operates through a clear organizational structure designed for efficiency, accountability, and agility — from global leadership to regional operations and specialized business units."
+        title="Corporate Structure"
+        desc="With defined leadership roles and clear departmental responsibilities, our structure empowers teams to innovate and operate with precision and agility."
         href="/about/corporate-structure"
       />
 
-      {/* 7. Business Segments */}
-      <CardsSection
-        eyebrow="Business Segments"
-        title="Four divisions. One purpose."
-        desc="Each segment focuses on a core area of industrial technology."
-        href="/about/business-segments"
-        cards={[
-          { icon: "⚙️", label: "Industrial Machinery", text: "Precision machinery and equipment for manufacturing operations." },
-          { icon: "🤖", label: "Automation Systems", text: "Automation, robotics, and smart production solutions." },
-          { icon: "💻", label: "Technology Solutions", text: "Software, IoT, and digital tools for industrial operations." },
-          { icon: "🔧", label: "Parts & Service", text: "Spare parts, maintenance, and after-sales support worldwide." },
-        ]}
-      />
+      {/* 6. Business Segments — image left, text + cards right */}
+      <SegmentsSection />
 
-      {/* 8. Technology & Innovation */}
-      <SplitRight
-        image="/images/circuit-board.jpg"
-        eyebrow="Technology & Innovation"
-        title="Engineering the future."
-        desc="Koleex invests in research and development to bring new technologies to market — from smart automation and IoT integration to precision engineering and digital solutions for industry."
-        href="/about/technology"
-      />
+      {/* 7. Technology and Innovation — full dark section */}
+      <TechnologySection />
 
-      {/* 9. Global Presence */}
-      <StatsSection
-        eyebrow="Global Presence"
-        title="Operating worldwide."
-        desc="Koleex serves customers across key industrial markets around the world."
-        href="/about/global-presence"
-        stats={[
-          { value: "6", label: "Regions" },
-          { value: "4", label: "Divisions" },
-          { value: "24/7", label: "Support" },
-          { value: "—", label: "Growing Network" },
-        ]}
-      />
+      {/* 8. Market Strategy — image left, text + cards right */}
+      <StrategySection />
 
-      {/* 10. Sustainability */}
-      <SplitLeft
+      {/* 9. Social Responsibility — image left, text right, white bg */}
+      <SplitWhite
         image="/images/wind-turbines.jpg"
-        eyebrow="Sustainability"
-        title="Progress with responsibility."
-        desc="Koleex is committed to operating responsibly — reducing environmental impact, improving operational efficiency, and contributing to the communities where we work."
+        title="Social Responsibility"
+        desc="Koleex believes in creating impact beyond industry, promoting fairness, education, and community empowerment in every region we operate in."
         href="/about/sustainability"
       />
 
-      {/* 11. CEO Message */}
-      <CenteredSection
-        eyebrow="CEO Message"
-        title="A message from our leadership."
-        desc="Our leadership team shares their perspective on where Koleex has been, where it's going, and what drives the company forward every day."
-        href="/about/ceo-message"
-      />
+      {/* 10. Global Presence — globe image left, text right */}
+      <GlobalSection />
 
-      {/* 12. Future Outlook */}
-      <SplitRight
-        image="/images/hero-robot.jpg"
-        eyebrow="Future Outlook"
-        title="What comes next."
-        desc="Koleex is focused on the future — investing in manufacturing innovation, digital integration, regional expansion, and customer excellence to build the next chapter of the company."
+      {/* 11. Future Outlook — image left, text right, white bg */}
+      <SplitWhite
+        image="/images/circuit-board.jpg"
+        title="Future Outlook"
+        desc="Looking ahead, Koleex is focused on manufacturing innovation, digital integration, regional expansion, and customer excellence — building the next chapter of industrial technology."
         href="/about/future-outlook"
       />
 
-      {/* 13. CTA */}
-      <section className="bg-black text-center py-20 md:py-28 border-t border-white/[0.06]">
-        <div className="max-w-[700px] mx-auto px-6">
-          <h2 className="text-[36px] md:text-[48px] font-semibold leading-[1.08] tracking-[-0.035em] text-white">
-            Want to work with us?
-          </h2>
-          <p className="text-[17px] leading-[1.5] text-[#86868b] mt-3">
-            Connect with our team to discuss partnerships, solutions, or career opportunities.
-          </p>
-          <div className="flex items-center justify-center gap-6 mt-8">
-            <Link href="/contact" className="text-[17px] text-[#2997ff] hover:underline underline-offset-[3px]">Contact us {">"}</Link>
-            <Link href="/careers" className="text-[17px] text-[#2997ff] hover:underline underline-offset-[3px]">Careers {">"}</Link>
-            <Link href="/products" className="text-[17px] text-[#2997ff] hover:underline underline-offset-[3px]">Products {">"}</Link>
-          </div>
-        </div>
-      </section>
+      {/* 12. Production Overview — image left, text right, white bg */}
+      <SplitWhite
+        image="/images/hero-robot.jpg"
+        title="Production Overview"
+        desc="At Koleex Group, we showcase our production strength. Each stage reflects advanced technology, precision, and strict quality standards we uphold."
+        href="/products"
+      />
+
+      {/* 13. Clients Portfolio — image left, text right, white bg */}
+      <SplitWhite
+        image="/images/composites.jpg"
+        title="Clients Portfolio"
+        desc="We present the global brands and factories that believe in our products. Each alliance stands as proof of our vision, our innovation, and our enduring values."
+        href="/contact"
+      />
     </>
   );
 }
