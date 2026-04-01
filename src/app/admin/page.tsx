@@ -335,8 +335,9 @@ export default function AdminPage() {
       {/* ═══ THREE PANELS ═══ */}
       <div className="flex-1 flex overflow-hidden">
 
-        {/* ── LEFT: Sections List ── */}
-        <div className={`w-[240px] shrink-0 border-r border-white/[0.06] flex flex-col transition-all duration-300 ${mode === "preview" ? "w-0 overflow-hidden border-none" : ""}`}>
+        {/* ── LEFT: Sections List (hidden in preview mode) ── */}
+        {mode === "edit" && (
+        <div className="w-[240px] shrink-0 border-r border-white/[0.06] flex flex-col">
           <div className="px-3 py-3 border-b border-white/[0.06] flex items-center justify-between">
             <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/25">Sections</span>
             <button onClick={() => setShowLibrary(true)} className="h-6 w-6 flex items-center justify-center rounded-md bg-white/[0.06] text-white/40 hover:text-white hover:bg-white/[0.10] transition-colors">
@@ -345,22 +346,33 @@ export default function AdminPage() {
           </div>
           <div className="flex-1 overflow-y-auto py-1">
             {sections.map((s, idx) => (
-              <div
-                key={s.id}
-                onClick={() => { setSelectedSection(s); iframeRef.current?.contentWindow?.postMessage({ type: "scroll-to-section", sectionId: s.id }, "*"); }}
-                className={`mx-1 mb-0.5 px-3 py-2.5 rounded-lg cursor-pointer transition-colors ${selectedSection?.id === s.id ? "bg-white/[0.08]" : "hover:bg-white/[0.03]"}`}
-              >
-                <div className="flex items-center gap-2">
-                  <GripVertical className="h-3 w-3 text-white/10 shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[12px] font-medium text-white/70 truncate">{s.title || "(untitled)"}</p>
-                    <p className="text-[10px] text-white/20">{s.layout}</p>
+              <div key={s.id}>
+                <div
+                  onClick={() => { setSelectedSection(s); setSettingsTab("content"); iframeRef.current?.contentWindow?.postMessage({ type: "scroll-to-section", sectionId: s.id }, "*"); }}
+                  className={`mx-1 mb-0.5 px-3 py-2 rounded-lg cursor-pointer transition-colors ${selectedSection?.id === s.id ? "bg-white/[0.08] border border-blue-500/20" : "hover:bg-white/[0.03] border border-transparent"}`}
+                >
+                  <div className="flex items-center gap-2">
+                    <GripVertical className="h-3 w-3 text-white/10 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[12px] font-medium text-white/70 truncate">{s.title || "(untitled)"}</p>
+                      <p className="text-[10px] text-white/20">{s.layout}</p>
+                    </div>
+                    <div className="flex items-center gap-0.5 shrink-0">
+                      {!s.visible && <EyeOff className="h-3 w-3 text-red-400/40" />}
+                      <button onClick={(e) => { e.stopPropagation(); moveSection(s.id, "up"); }} className="h-5 w-5 flex items-center justify-center text-white/15 hover:text-white/40" disabled={idx === 0}><ChevronUp className="h-3 w-3" /></button>
+                      <button onClick={(e) => { e.stopPropagation(); moveSection(s.id, "down"); }} className="h-5 w-5 flex items-center justify-center text-white/15 hover:text-white/40" disabled={idx === sections.length - 1}><ChevronDown className="h-3 w-3" /></button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-0.5 shrink-0">
-                    {!s.visible && <EyeOff className="h-3 w-3 text-red-400/40" />}
-                    <button onClick={(e) => { e.stopPropagation(); moveSection(s.id, "up"); }} className="h-5 w-5 flex items-center justify-center text-white/15 hover:text-white/40" disabled={idx === 0}><ChevronUp className="h-3 w-3" /></button>
-                    <button onClick={(e) => { e.stopPropagation(); moveSection(s.id, "down"); }} className="h-5 w-5 flex items-center justify-center text-white/15 hover:text-white/40" disabled={idx === sections.length - 1}><ChevronDown className="h-3 w-3" /></button>
-                  </div>
+                  {/* Section toolbar — shown when selected */}
+                  {selectedSection?.id === s.id && (
+                    <div className="flex items-center gap-1 mt-2 pt-2 border-t border-white/[0.04]">
+                      <button onClick={(e) => { e.stopPropagation(); duplicateSection(s); }} className="h-6 px-2 rounded text-[9px] text-white/25 hover:text-white/50 hover:bg-white/[0.04] transition-colors flex items-center gap-1"><Copy className="h-2.5 w-2.5" />Duplicate</button>
+                      <button onClick={(e) => { e.stopPropagation(); updateSection(s.id, "visible", !s.visible); }} className="h-6 px-2 rounded text-[9px] text-white/25 hover:text-white/50 hover:bg-white/[0.04] transition-colors flex items-center gap-1">
+                        {s.visible ? <><Eye className="h-2.5 w-2.5" />Hide</> : <><EyeOff className="h-2.5 w-2.5" />Show</>}
+                      </button>
+                      <button onClick={(e) => { e.stopPropagation(); deleteSection(s.id); }} className="h-6 px-2 rounded text-[9px] text-red-400/30 hover:text-red-400/60 hover:bg-red-500/5 transition-colors flex items-center gap-1"><Trash2 className="h-2.5 w-2.5" />Delete</button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -372,21 +384,23 @@ export default function AdminPage() {
             )}
           </div>
         </div>
+        )}
 
         {/* ── CENTER: Live Preview ── */}
-        <div className="flex-1 bg-[#0e0e0e] flex items-start justify-center overflow-auto p-4">
-          <div className="transition-all duration-300" style={{ width: vpWidth, maxWidth: "100%" }}>
+        <div className={`flex-1 ${mode === "preview" ? "bg-[#1a1a1a]" : "bg-[#0e0e0e]"} flex items-start justify-center overflow-auto ${mode === "preview" ? "p-0" : "p-4"}`}>
+          <div className="transition-all duration-300" style={{ width: mode === "preview" ? "100%" : vpWidth, maxWidth: "100%" }}>
             <iframe
               ref={iframeRef}
               src="/admin/preview"
-              className="w-full bg-white rounded-lg shadow-2xl"
-              style={{ height: "calc(100vh - 120px)", border: "1px solid rgba(255,255,255,0.06)" }}
+              className={`w-full bg-white ${mode === "preview" ? "rounded-none shadow-none" : "rounded-lg shadow-2xl"}`}
+              style={{ height: mode === "preview" ? "calc(100vh - 52px)" : "calc(100vh - 120px)", border: mode === "preview" ? "none" : "1px solid rgba(255,255,255,0.06)" }}
             />
           </div>
         </div>
 
-        {/* ── RIGHT: Section Settings ── */}
-        <div className={`w-[320px] shrink-0 border-l border-white/[0.06] flex flex-col overflow-hidden transition-all duration-300 ${mode === "preview" ? "w-0 overflow-hidden border-none" : ""}`}>
+        {/* ── RIGHT: Section Settings (hidden in preview mode) ── */}
+        {mode === "edit" && (
+        <div className="w-[320px] shrink-0 border-l border-white/[0.06] flex flex-col overflow-hidden">)
           {!selectedSection ? (
             <div className="flex-1 flex items-center justify-center">
               <p className="text-[13px] text-white/20">Select a section to edit</p>
@@ -505,6 +519,29 @@ export default function AdminPage() {
                               currentUrl={selectedSection.image_url}
                               onSelect={(url) => updateSection(selectedSection.id, "image_url", url || null)}
                             />
+                          </Field>
+                          <Field label="Playback">
+                            <div className="space-y-2">
+                              {[
+                                { key: "autoplay", label: "Autoplay" },
+                                { key: "loop", label: "Loop" },
+                                { key: "muted", label: "Muted" },
+                              ].map((opt) => {
+                                const settings = getSectionSettings(selectedSection);
+                                const val = (settings as Record<string, unknown>)[opt.key] as boolean | undefined;
+                                return (
+                                  <label key={opt.key} className="flex items-center justify-between cursor-pointer group">
+                                    <span className="text-[11px] text-white/30 group-hover:text-white/50">{opt.label}</span>
+                                    <div
+                                      onClick={() => updateSetting(selectedSection.id, opt.key as keyof SectionSettings, !val)}
+                                      className={`h-5 w-9 rounded-full transition-colors relative cursor-pointer ${val ? "bg-blue-500" : "bg-white/[0.08]"}`}
+                                    >
+                                      <div className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${val ? "left-[18px]" : "left-0.5"}`} />
+                                    </div>
+                                  </label>
+                                );
+                              })}
+                            </div>
                           </Field>
                         </SettingsGroup>
                       )}
@@ -648,6 +685,7 @@ export default function AdminPage() {
             </>
           )}
         </div>
+        )}
       </div>
 
       {/* ═══ BLOCK LIBRARY MODAL ═══ */}

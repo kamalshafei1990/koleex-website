@@ -22,14 +22,23 @@ export function BgHeroSection({ section }: { section: SectionRow }) {
 
   return (
     <section className="relative min-h-[80vh] flex overflow-hidden">
-      {/* Background image */}
-      {section.image_url && (
+      {/* Background image or video */}
+      {section.video_url ? (
+        <video
+          src={section.video_url}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      ) : section.image_url ? (
         <img
           src={section.image_url}
           alt={section.image_alt || ""}
           className="absolute inset-0 w-full h-full object-cover"
         />
-      )}
+      ) : null}
 
       {/* Overlay */}
       <div

@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import type { SectionRow } from "@/types/supabase";
+import { getSectionSettings } from "@/lib/section-helpers";
 
 /* ---------------------------------------------------------------------------
-   VideoSection — Supports both:
-   1. Embed URLs (YouTube/Vimeo) → renders in iframe
-   2. Uploaded video files (Supabase Storage) → renders in <video> tag
-
-   Detection: if video_url contains "youtube", "vimeo", or "embed" → iframe
-   Otherwise → native <video> player
+   VideoSection — Supports:
+   1. Embed URLs (YouTube/Vimeo) → iframe
+   2. Uploaded video files → native <video> with autoplay/loop/muted controls
+   3. Video as background (when used in bg-hero or full-image layouts)
    --------------------------------------------------------------------------- */
 
 function isEmbedUrl(url: string): boolean {
@@ -18,6 +17,7 @@ function isEmbedUrl(url: string): boolean {
 
 export function VideoSection({ section }: { section: SectionRow }) {
   const dark = section.background === "dark" || section.background === "black";
+  const settings = getSectionSettings(section);
 
   return (
     <section className={`${dark ? "bg-black" : "bg-white"} py-20 md:py-28 overflow-hidden`}>
@@ -36,7 +36,6 @@ export function VideoSection({ section }: { section: SectionRow }) {
         {section.video_url && (
           <div className="aspect-video rounded-[16px] overflow-hidden bg-black">
             {isEmbedUrl(section.video_url) ? (
-              /* Embed (YouTube/Vimeo) */
               <iframe
                 src={section.video_url}
                 title={section.title || "Video"}
@@ -45,10 +44,12 @@ export function VideoSection({ section }: { section: SectionRow }) {
                 allowFullScreen
               />
             ) : (
-              /* Uploaded video file */
               <video
                 src={section.video_url}
-                controls
+                controls={!settings.autoplay}
+                autoPlay={settings.autoplay}
+                loop={settings.loop}
+                muted={settings.muted || settings.autoplay}
                 playsInline
                 preload="metadata"
                 className="w-full h-full object-contain bg-black"

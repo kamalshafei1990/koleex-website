@@ -54,6 +54,9 @@ export interface SectionSettings {
   paddingTop?: string;
   paddingBottom?: string;
   gap?: string;
+  autoplay?: boolean;
+  loop?: boolean;
+  muted?: boolean;
 }
 
 /* ── Element Types ── */
