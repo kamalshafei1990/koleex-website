@@ -216,23 +216,24 @@ export default function ChooseRegionPage() {
                 {group.title}
               </h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-1 mt-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-10 gap-y-0 mt-5">
                 {group.countries.map((country) => (
-                  <div key={country.name} className="flex items-center gap-2.5 py-2.5">
-                    <span className="text-[18px] shrink-0">{country.flag}</span>
-                    <div>
-                      <span className="text-[14px] font-medium text-[#1d1d1f]">{country.name}</span>
-                      <span className="text-[#d2d2d7]"> — </span>
-                      {country.languages.map((lang, li) => (
-                        <span key={lang.href + lang.label}>
-                          {li > 0 && <span className="text-[#d2d2d7]"> / </span>}
-                          <Link
-                            href={lang.href}
-                            className="text-[13px] text-[#0066cc] hover:underline underline-offset-2"
-                          >
-                            {lang.label}
-                          </Link>
-                        </span>
+                  <div key={country.name} className="py-3 border-b border-[#f0f0f2]">
+                    {/* Country name + flag */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-[16px] shrink-0">{country.flag}</span>
+                      <span className="text-[14px] font-semibold text-[#1d1d1f]">{country.name}</span>
+                    </div>
+                    {/* Languages on separate line */}
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5 pl-7">
+                      {country.languages.map((lang) => (
+                        <Link
+                          key={lang.href + lang.label}
+                          href={lang.href}
+                          className="text-[13px] text-[#0066cc] hover:underline underline-offset-2 hover:text-[#004499] transition-colors duration-200"
+                        >
+                          {lang.label}
+                        </Link>
                       ))}
                     </div>
                   </div>
