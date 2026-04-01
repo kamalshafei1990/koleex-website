@@ -760,54 +760,8 @@ export default function AdminPage() {
                                       <Trash2 className="h-3 w-3" />
                                     </button>
                                   </div>
-                                  {/* Inline content editor based on type */}
-                                  {(el.type === "heading" || el.type === "paragraph") && (
-                                    <input
-                                      value={c.text || ""}
-                                      onChange={(e) => editElement(selectedSection.id, el.id, { ...el.content, text: e.target.value })}
-                                      className="input-field"
-                                      placeholder={el.type === "heading" ? "Heading text" : "Paragraph text"}
-                                    />
-                                  )}
-                                  {el.type === "button" && (
-                                    <div className="grid grid-cols-2 gap-2">
-                                      <input value={c.text || ""} onChange={(e) => editElement(selectedSection.id, el.id, { ...el.content, text: e.target.value })} className="input-field" placeholder="Button text" />
-                                      <input value={c.link || ""} onChange={(e) => editElement(selectedSection.id, el.id, { ...el.content, link: e.target.value })} className="input-field" placeholder="/link" />
-                                    </div>
-                                  )}
-                                  {el.type === "image" && (
-                                    <div>
-                                      <MediaSelector
-                                        currentUrl={c.src || null}
-                                        onSelect={(url) => editElement(selectedSection.id, el.id, { ...el.content, src: url })}
-                                      />
-                                    </div>
-                                  )}
-                                  {el.type === "divider" && (
-                                    <p className="text-[10px] text-white/15">Horizontal divider line</p>
-                                  )}
-                                  {el.type === "spacer" && (
-                                    <input value={c.height || "48px"} onChange={(e) => editElement(selectedSection.id, el.id, { ...el.content, height: e.target.value })} className="input-field" placeholder="48px" />
-                                  )}
-                                  {el.type === "card" && (
-                                    <div className="space-y-2">
-                                      <input value={c.title || ""} onChange={(e) => editElement(selectedSection.id, el.id, { ...el.content, title: e.target.value })} className="input-field" placeholder="Card title" />
-                                      <input value={c.description || ""} onChange={(e) => editElement(selectedSection.id, el.id, { ...el.content, description: e.target.value })} className="input-field" placeholder="Card description" />
-                                      <input value={c.icon || ""} onChange={(e) => editElement(selectedSection.id, el.id, { ...el.content, icon: e.target.value })} className="input-field" placeholder="Icon (emoji)" />
-                                    </div>
-                                  )}
-                                  {el.type === "video" && (
-                                    <input value={c.src || ""} onChange={(e) => editElement(selectedSection.id, el.id, { ...el.content, src: e.target.value })} className="input-field" placeholder="Video URL" />
-                                  )}
-                                  {el.type === "list" && (
-                                    <textarea
-                                      value={((el.content as Record<string, unknown>)?.items as string[] || []).join("\n")}
-                                      onChange={(e) => editElement(selectedSection.id, el.id, { ...el.content, items: e.target.value.split("\n") })}
-                                      className="input-field resize-y"
-                                      rows={3}
-                                      placeholder="One item per line"
-                                    />
-                                  )}
+                                  {/* ── Full element editor by type ── */}
+                                  <ElementEditor el={el} sectionId={selectedSection.id} onEdit={editElement} />
                                 </div>
                               );
                             })}
@@ -960,6 +914,240 @@ export default function AdminPage() {
 }
 
 /* ── Helper Components ── */
+
+/* ── Full Element Editor — edits all properties per element type ── */
+function ElementEditor({ el, sectionId, onEdit }: { el: import("@/types/supabase").ElementRow; sectionId: string; onEdit: (sId: string, eId: string, content: Record<string, unknown>) => void }) {
+  const c = (el.content || {}) as Record<string, unknown>;
+  const upd = (field: string, value: unknown) => onEdit(sectionId, el.id, { ...c, [field]: value });
+  const F = ({ label, children }: { label: string; children: React.ReactNode }) => (
+    <div><label className="text-[9px] text-white/25 mb-0.5 block">{label}</label>{children}</div>
+  );
+
+  switch (el.type) {
+    case "heading":
+      return (
+        <div className="space-y-2">
+          <F label="Text"><input value={(c.text as string) || ""} onChange={(e) => upd("text", e.target.value)} className="input-field" placeholder="Heading text" /></F>
+          <div className="grid grid-cols-2 gap-2">
+            <F label="Level"><select value={(c.level as string) || "h2"} onChange={(e) => upd("level", e.target.value)} className="input-field">{["h1","h2","h3","h4","h5","h6"].map(h => <option key={h} value={h}>{h.toUpperCase()}</option>)}</select></F>
+            <F label="Size"><select value={((el.style as Record<string,unknown>)?.size as string) || "lg"} onChange={(e) => onEdit(sectionId, el.id, c)} className="input-field">{["xl","lg","md","sm"].map(s => <option key={s} value={s}>{s.toUpperCase()}</option>)}</select></F>
+          </div>
+        </div>
+      );
+    case "paragraph":
+      return (
+        <div className="space-y-2">
+          <F label="Text"><textarea value={(c.text as string) || ""} onChange={(e) => upd("text", e.target.value)} className="input-field resize-y" rows={3} placeholder="Paragraph text" /></F>
+        </div>
+      );
+    case "button":
+      return (
+        <div className="space-y-2">
+          <F label="Text"><input value={(c.text as string) || ""} onChange={(e) => upd("text", e.target.value)} className="input-field" placeholder="Button text" /></F>
+          <F label="Link"><input value={(c.link as string) || ""} onChange={(e) => upd("link", e.target.value)} className="input-field" placeholder="/products" /></F>
+          <div className="grid grid-cols-3 gap-1.5">
+            <F label="Style"><select value={(c.style as string) || "solid"} onChange={(e) => upd("style", e.target.value)} className="input-field">{["solid","outline","ghost"].map(s => <option key={s}>{s}</option>)}</select></F>
+            <F label="Shape"><select value={(c.shape as string) || "pill"} onChange={(e) => upd("shape", e.target.value)} className="input-field">{["pill","rounded","square"].map(s => <option key={s}>{s}</option>)}</select></F>
+            <F label="Size"><select value={(c.size as string) || "medium"} onChange={(e) => upd("size", e.target.value)} className="input-field">{["small","medium","large"].map(s => <option key={s}>{s}</option>)}</select></F>
+          </div>
+          <F label="New Tab"><label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={!!c.newTab} onChange={(e) => upd("newTab", e.target.checked)} className="accent-blue-500" /><span className="text-[10px] text-white/30">Open in new tab</span></label></F>
+        </div>
+      );
+    case "image":
+      return (
+        <div className="space-y-2">
+          <F label="Image"><MediaSelector currentUrl={(c.src as string) || null} onSelect={(url) => upd("src", url)} /></F>
+          <F label="Alt Text"><input value={(c.alt as string) || ""} onChange={(e) => upd("alt", e.target.value)} className="input-field" placeholder="Image description" /></F>
+        </div>
+      );
+    case "video":
+      return (
+        <div className="space-y-2">
+          <F label="Video URL"><input value={(c.src as string) || ""} onChange={(e) => upd("src", e.target.value)} className="input-field" placeholder="YouTube/Vimeo URL or upload URL" /></F>
+        </div>
+      );
+    case "card":
+      return (
+        <div className="space-y-2">
+          <F label="Icon (emoji)"><input value={(c.icon as string) || ""} onChange={(e) => upd("icon", e.target.value)} className="input-field" placeholder="⚡" /></F>
+          <F label="Title"><input value={(c.title as string) || ""} onChange={(e) => upd("title", e.target.value)} className="input-field" placeholder="Card title" /></F>
+          <F label="Description"><textarea value={(c.description as string) || ""} onChange={(e) => upd("description", e.target.value)} className="input-field resize-y" rows={2} placeholder="Card description" /></F>
+          <F label="Image"><MediaSelector currentUrl={(c.image as string) || null} onSelect={(url) => upd("image", url)} /></F>
+          <F label="Link"><input value={(c.link as string) || ""} onChange={(e) => upd("link", e.target.value)} className="input-field" placeholder="/page-link" /></F>
+        </div>
+      );
+    case "badge":
+      return (
+        <div className="space-y-2">
+          <F label="Text"><input value={(c.text as string) || ""} onChange={(e) => upd("text", e.target.value)} className="input-field" placeholder="Badge text" /></F>
+          <F label="Variant"><select value={(c.variant as string) || "default"} onChange={(e) => upd("variant", e.target.value)} className="input-field">{["default","primary","success","warning","danger","info"].map(v => <option key={v}>{v}</option>)}</select></F>
+        </div>
+      );
+    case "avatar":
+      return (
+        <div className="space-y-2">
+          <F label="Name"><input value={(c.name as string) || ""} onChange={(e) => upd("name", e.target.value)} className="input-field" placeholder="Person name" /></F>
+          <F label="Role"><input value={(c.role as string) || ""} onChange={(e) => upd("role", e.target.value)} className="input-field" placeholder="Job title" /></F>
+          <F label="Photo"><MediaSelector currentUrl={(c.src as string) || null} onSelect={(url) => upd("src", url)} /></F>
+          <F label="Size"><select value={(c.size as string) || "md"} onChange={(e) => upd("size", e.target.value)} className="input-field">{["sm","md","lg"].map(s => <option key={s}>{s}</option>)}</select></F>
+        </div>
+      );
+    case "stat":
+      return (
+        <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-2">
+            <F label="Value"><input value={(c.value as string) || ""} onChange={(e) => upd("value", e.target.value)} className="input-field" placeholder="100" /></F>
+            <F label="Suffix"><input value={(c.suffix as string) || ""} onChange={(e) => upd("suffix", e.target.value)} className="input-field" placeholder="+" /></F>
+          </div>
+          <F label="Label"><input value={(c.label as string) || ""} onChange={(e) => upd("label", e.target.value)} className="input-field" placeholder="Countries" /></F>
+          <F label="Prefix"><input value={(c.prefix as string) || ""} onChange={(e) => upd("prefix", e.target.value)} className="input-field" placeholder="$" /></F>
+        </div>
+      );
+    case "testimonial":
+      return (
+        <div className="space-y-2">
+          <F label="Quote"><textarea value={(c.quote as string) || ""} onChange={(e) => upd("quote", e.target.value)} className="input-field resize-y" rows={3} placeholder="Client quote" /></F>
+          <div className="grid grid-cols-2 gap-2">
+            <F label="Name"><input value={(c.name as string) || ""} onChange={(e) => upd("name", e.target.value)} className="input-field" placeholder="Client name" /></F>
+            <F label="Role"><input value={(c.role as string) || ""} onChange={(e) => upd("role", e.target.value)} className="input-field" placeholder="Company" /></F>
+          </div>
+          <F label="Rating (1-5)"><input type="number" min={1} max={5} value={(c.rating as number) || 5} onChange={(e) => upd("rating", parseInt(e.target.value))} className="input-field" /></F>
+          <F label="Avatar"><MediaSelector currentUrl={(c.avatar as string) || null} onSelect={(url) => upd("avatar", url)} /></F>
+        </div>
+      );
+    case "feature":
+      return (
+        <div className="space-y-2">
+          <F label="Icon (emoji)"><input value={(c.icon as string) || ""} onChange={(e) => upd("icon", e.target.value)} className="input-field" placeholder="⚡" /></F>
+          <F label="Title"><input value={(c.title as string) || ""} onChange={(e) => upd("title", e.target.value)} className="input-field" placeholder="Feature title" /></F>
+          <F label="Description"><textarea value={(c.description as string) || ""} onChange={(e) => upd("description", e.target.value)} className="input-field resize-y" rows={2} placeholder="Feature description" /></F>
+        </div>
+      );
+    case "pricing":
+      return (
+        <div className="space-y-2">
+          <F label="Plan Name"><input value={(c.name as string) || ""} onChange={(e) => upd("name", e.target.value)} className="input-field" placeholder="Standard" /></F>
+          <div className="grid grid-cols-2 gap-2">
+            <F label="Price"><input value={(c.price as string) || ""} onChange={(e) => upd("price", e.target.value)} className="input-field" placeholder="$99" /></F>
+            <F label="Period"><input value={(c.period as string) || ""} onChange={(e) => upd("period", e.target.value)} className="input-field" placeholder="month" /></F>
+          </div>
+          <F label="Features (one per line)"><textarea value={((c.features as string[]) || []).join("\n")} onChange={(e) => upd("features", e.target.value.split("\n"))} className="input-field resize-y" rows={3} placeholder="Feature 1&#10;Feature 2" /></F>
+          <F label="Button Text"><input value={(c.cta as string) || ""} onChange={(e) => upd("cta", e.target.value)} className="input-field" placeholder="Get Started" /></F>
+          <F label="Highlighted"><label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={!!c.highlighted} onChange={(e) => upd("highlighted", e.target.checked)} className="accent-blue-500" /><span className="text-[10px] text-white/30">Make this plan stand out</span></label></F>
+        </div>
+      );
+    case "faq":
+      return (
+        <div className="space-y-2">
+          <F label="Question"><input value={(c.question as string) || ""} onChange={(e) => upd("question", e.target.value)} className="input-field" placeholder="Your question?" /></F>
+          <F label="Answer"><textarea value={(c.answer as string) || ""} onChange={(e) => upd("answer", e.target.value)} className="input-field resize-y" rows={3} placeholder="The answer..." /></F>
+        </div>
+      );
+    case "social":
+      return (
+        <div className="space-y-2">
+          <F label="Social Links (one per line: platform,url)"><textarea
+            value={((c.links as {platform:string;url:string}[]) || []).map(l => `${l.platform},${l.url}`).join("\n")}
+            onChange={(e) => upd("links", e.target.value.split("\n").filter(Boolean).map(l => { const [platform, ...rest] = l.split(","); return { platform: platform.trim(), url: rest.join(",").trim() }; }))}
+            className="input-field resize-y" rows={4} placeholder="linkedin,https://linkedin.com&#10;twitter,https://x.com" /></F>
+        </div>
+      );
+    case "logo":
+      return (
+        <div className="space-y-2">
+          <F label="Logo Image"><MediaSelector currentUrl={(c.src as string) || null} onSelect={(url) => upd("src", url)} /></F>
+          <F label="Name"><input value={(c.name as string) || ""} onChange={(e) => upd("name", e.target.value)} className="input-field" placeholder="Brand name" /></F>
+          <F label="Max Width"><input value={(c.width as string) || "120px"} onChange={(e) => upd("width", e.target.value)} className="input-field" placeholder="120px" /></F>
+        </div>
+      );
+    case "progress":
+      return (
+        <div className="space-y-2">
+          <F label="Label"><input value={(c.label as string) || ""} onChange={(e) => upd("label", e.target.value)} className="input-field" placeholder="Progress" /></F>
+          <div className="grid grid-cols-2 gap-2">
+            <F label="Value"><input type="number" value={(c.value as number) || 0} onChange={(e) => upd("value", parseInt(e.target.value))} className="input-field" /></F>
+            <F label="Max"><input type="number" value={(c.max as number) || 100} onChange={(e) => upd("max", parseInt(e.target.value))} className="input-field" /></F>
+          </div>
+        </div>
+      );
+    case "tag-list":
+      return (
+        <div className="space-y-2">
+          <F label="Tags (one per line)"><textarea value={((c.tags as string[]) || []).join("\n")} onChange={(e) => upd("tags", e.target.value.split("\n"))} className="input-field resize-y" rows={3} placeholder="Tag 1&#10;Tag 2&#10;Tag 3" /></F>
+        </div>
+      );
+    case "cta-banner":
+      return (
+        <div className="space-y-2">
+          <F label="Title"><input value={(c.title as string) || ""} onChange={(e) => upd("title", e.target.value)} className="input-field" placeholder="Ready to start?" /></F>
+          <F label="Description"><input value={(c.description as string) || ""} onChange={(e) => upd("description", e.target.value)} className="input-field" placeholder="Contact our team." /></F>
+          <div className="grid grid-cols-2 gap-2">
+            <F label="Button Text"><input value={(c.buttonText as string) || ""} onChange={(e) => upd("buttonText", e.target.value)} className="input-field" placeholder="Contact Us" /></F>
+            <F label="Button Link"><input value={(c.buttonLink as string) || ""} onChange={(e) => upd("buttonLink", e.target.value)} className="input-field" placeholder="/contact" /></F>
+          </div>
+          <F label="Dark Background"><label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={!!c.dark} onChange={(e) => upd("dark", e.target.checked)} className="accent-blue-500" /><span className="text-[10px] text-white/30">Use dark background</span></label></F>
+        </div>
+      );
+    case "icon-box":
+      return (
+        <div className="space-y-2">
+          <F label="Icon (emoji)"><input value={(c.icon as string) || ""} onChange={(e) => upd("icon", e.target.value)} className="input-field" placeholder="🎯" /></F>
+          <F label="Title"><input value={(c.title as string) || ""} onChange={(e) => upd("title", e.target.value)} className="input-field" placeholder="Title" /></F>
+          <F label="Description"><textarea value={(c.description as string) || ""} onChange={(e) => upd("description", e.target.value)} className="input-field resize-y" rows={2} placeholder="Description" /></F>
+        </div>
+      );
+    case "gallery":
+      return (
+        <div className="space-y-2">
+          <F label="Columns"><select value={(c.columns as number) || 3} onChange={(e) => upd("columns", parseInt(e.target.value))} className="input-field">{[2,3,4,5,6].map(n => <option key={n} value={n}>{n} columns</option>)}</select></F>
+          <F label="Images (add via Media Library)"><p className="text-[10px] text-white/20">Gallery images coming soon. Use image elements for now.</p></F>
+        </div>
+      );
+    case "table":
+      return (
+        <div className="space-y-2">
+          <F label="Headers (comma-separated)"><input value={((c.headers as string[]) || []).join(",")} onChange={(e) => upd("headers", e.target.value.split(",").map(s => s.trim()))} className="input-field" placeholder="Name,Value,Status" /></F>
+          <F label="Rows (one row per line, comma-separated)"><textarea
+            value={((c.rows as string[][]) || []).map(r => r.join(",")).join("\n")}
+            onChange={(e) => upd("rows", e.target.value.split("\n").map(r => r.split(",").map(s => s.trim())))}
+            className="input-field resize-y" rows={4} placeholder="Item 1,100,Active&#10;Item 2,200,Pending" /></F>
+        </div>
+      );
+    case "accordion":
+      return (
+        <div className="space-y-2">
+          <F label="Items (title|content, one per line)"><textarea
+            value={((c.items as {title:string;content:string}[]) || []).map(i => `${i.title}|${i.content}`).join("\n")}
+            onChange={(e) => upd("items", e.target.value.split("\n").filter(Boolean).map(l => { const [title, ...rest] = l.split("|"); return { title: title.trim(), content: rest.join("|").trim() }; }))}
+            className="input-field resize-y" rows={4} placeholder="Section 1|Content for section 1&#10;Section 2|Content for section 2" /></F>
+        </div>
+      );
+    case "alert":
+      return (
+        <div className="space-y-2">
+          <F label="Message"><input value={(c.text as string) || ""} onChange={(e) => upd("text", e.target.value)} className="input-field" placeholder="Alert message" /></F>
+          <F label="Type"><select value={(c.type as string) || "info"} onChange={(e) => upd("type", e.target.value)} className="input-field">{["info","success","warning","error"].map(t => <option key={t}>{t}</option>)}</select></F>
+        </div>
+      );
+    case "list":
+      return (
+        <div className="space-y-2">
+          <F label="Items (one per line)"><textarea value={((c.items as string[]) || []).join("\n")} onChange={(e) => upd("items", e.target.value.split("\n"))} className="input-field resize-y" rows={4} placeholder="Item 1&#10;Item 2&#10;Item 3" /></F>
+          <F label="Style"><select value={(c.style as string) || "bullet"} onChange={(e) => upd("style", e.target.value)} className="input-field"><option value="bullet">Bullet</option><option value="number">Numbered</option></select></F>
+        </div>
+      );
+    case "divider":
+      return <p className="text-[10px] text-white/15 py-1">Horizontal divider line — no settings needed.</p>;
+    case "spacer":
+      return (
+        <div className="space-y-2">
+          <F label="Height"><input value={(c.height as string) || "48px"} onChange={(e) => upd("height", e.target.value)} className="input-field" placeholder="48px" /></F>
+        </div>
+      );
+    default:
+      return <p className="text-[10px] text-white/20 py-1">No editor available for {el.type}</p>;
+  }
+}
 
 function ElementPickerGroup({ title, items, onAdd }: { title: string; items: { type: string; label: string; preview: React.ReactNode }[]; onAdd: (type: string) => void }) {
   return (
