@@ -150,35 +150,38 @@ const regionGroups: RegionGroup[] = [
   {
     title: "Americas",
     countries: [
-      // North America
       { name: "Canada", flag: "🇨🇦", languages: [{ label: "English", href: "/americas/en" }, { label: "Français", href: "/americas/fr" }] },
       { name: "United States", flag: "🇺🇸", languages: [{ label: "English", href: "/americas/en" }, { label: "Español", href: "/americas/es" }] },
-      // Central America
-      { name: "Costa Rica", flag: "🇨🇷", languages: [{ label: "Español", href: "/americas/es" }, { label: "English", href: "/americas/en" }] },
-      { name: "El Salvador", flag: "🇸🇻", languages: [{ label: "Español", href: "/americas/es" }] },
-      { name: "Guatemala", flag: "🇬🇹", languages: [{ label: "Español", href: "/americas/es" }] },
-      { name: "Honduras", flag: "🇭🇳", languages: [{ label: "Español", href: "/americas/es" }] },
-      { name: "Mexico", flag: "🇲🇽", languages: [{ label: "Español", href: "/americas/es" }, { label: "English", href: "/americas/en" }] },
-      { name: "Nicaragua", flag: "🇳🇮", languages: [{ label: "Español", href: "/americas/es" }] },
-      { name: "Panama", flag: "🇵🇦", languages: [{ label: "Español", href: "/americas/es" }, { label: "English", href: "/americas/en" }] },
-      // Caribbean
-      { name: "Cuba", flag: "🇨🇺", languages: [{ label: "Español", href: "/americas/es" }] },
-      { name: "Dominican Republic", flag: "🇩🇴", languages: [{ label: "Español", href: "/americas/es" }, { label: "English", href: "/americas/en" }] },
-      { name: "Haiti", flag: "🇭🇹", languages: [{ label: "Français", href: "/americas/fr" }, { label: "English", href: "/americas/en" }] },
-      { name: "Jamaica", flag: "🇯🇲", languages: [{ label: "English", href: "/americas/en" }] },
-      { name: "Puerto Rico", flag: "🇵🇷", languages: [{ label: "Español", href: "/americas/es" }, { label: "English", href: "/americas/en" }] },
-      { name: "Trinidad and Tobago", flag: "🇹🇹", languages: [{ label: "English", href: "/americas/en" }] },
-      // South America
+    ],
+  },
+
+  /* ═══ LATIN AMERICA AND THE CARIBBEAN ═══ */
+  {
+    title: "Latin America and the Caribbean",
+    countries: [
       { name: "Argentina", flag: "🇦🇷", languages: [{ label: "Español", href: "/americas/es" }, { label: "English", href: "/americas/en" }] },
       { name: "Bolivia", flag: "🇧🇴", languages: [{ label: "Español", href: "/americas/es" }, { label: "English", href: "/americas/en" }] },
       { name: "Brazil", flag: "🇧🇷", languages: [{ label: "Português", href: "/americas/pt" }, { label: "English", href: "/americas/en" }] },
       { name: "Chile", flag: "🇨🇱", languages: [{ label: "Español", href: "/americas/es" }, { label: "English", href: "/americas/en" }] },
       { name: "Colombia", flag: "🇨🇴", languages: [{ label: "Español", href: "/americas/es" }, { label: "English", href: "/americas/en" }] },
+      { name: "Costa Rica", flag: "🇨🇷", languages: [{ label: "Español", href: "/americas/es" }, { label: "English", href: "/americas/en" }] },
+      { name: "Cuba", flag: "🇨🇺", languages: [{ label: "Español", href: "/americas/es" }] },
+      { name: "Dominican Republic", flag: "🇩🇴", languages: [{ label: "Español", href: "/americas/es" }, { label: "English", href: "/americas/en" }] },
       { name: "Ecuador", flag: "🇪🇨", languages: [{ label: "Español", href: "/americas/es" }, { label: "English", href: "/americas/en" }] },
+      { name: "El Salvador", flag: "🇸🇻", languages: [{ label: "Español", href: "/americas/es" }] },
+      { name: "Guatemala", flag: "🇬🇹", languages: [{ label: "Español", href: "/americas/es" }] },
       { name: "Guyana", flag: "🇬🇾", languages: [{ label: "English", href: "/americas/en" }] },
+      { name: "Haiti", flag: "🇭🇹", languages: [{ label: "Français", href: "/americas/fr" }, { label: "English", href: "/americas/en" }] },
+      { name: "Honduras", flag: "🇭🇳", languages: [{ label: "Español", href: "/americas/es" }] },
+      { name: "Jamaica", flag: "🇯🇲", languages: [{ label: "English", href: "/americas/en" }] },
+      { name: "Mexico", flag: "🇲🇽", languages: [{ label: "Español", href: "/americas/es" }, { label: "English", href: "/americas/en" }] },
+      { name: "Nicaragua", flag: "🇳🇮", languages: [{ label: "Español", href: "/americas/es" }] },
+      { name: "Panama", flag: "🇵🇦", languages: [{ label: "Español", href: "/americas/es" }, { label: "English", href: "/americas/en" }] },
       { name: "Paraguay", flag: "🇵🇾", languages: [{ label: "Español", href: "/americas/es" }, { label: "English", href: "/americas/en" }] },
       { name: "Peru", flag: "🇵🇪", languages: [{ label: "Español", href: "/americas/es" }, { label: "English", href: "/americas/en" }] },
+      { name: "Puerto Rico", flag: "🇵🇷", languages: [{ label: "Español", href: "/americas/es" }, { label: "English", href: "/americas/en" }] },
       { name: "Suriname", flag: "🇸🇷", languages: [{ label: "Nederlands", href: "/americas/nl" }, { label: "English", href: "/americas/en" }] },
+      { name: "Trinidad and Tobago", flag: "🇹🇹", languages: [{ label: "English", href: "/americas/en" }] },
       { name: "Uruguay", flag: "🇺🇾", languages: [{ label: "Español", href: "/americas/es" }, { label: "English", href: "/americas/en" }] },
       { name: "Venezuela", flag: "🇻🇪", languages: [{ label: "Español", href: "/americas/es" }, { label: "English", href: "/americas/en" }] },
     ],
