@@ -51,6 +51,38 @@ export interface SectionSettings {
   contentWidth?: "narrow" | "medium" | "wide" | "full";
   verticalAlign?: "top" | "center" | "bottom";
   columns?: number;
+  paddingTop?: string;
+  paddingBottom?: string;
+  gap?: string;
+}
+
+/* ── Element Types ── */
+
+export type ElementType =
+  | "heading"
+  | "paragraph"
+  | "image"
+  | "button"
+  | "icon"
+  | "card"
+  | "list"
+  | "form"
+  | "video"
+  | "divider"
+  | "container"
+  | "spacer";
+
+export interface ElementRow {
+  id: string;
+  section_id: string;
+  type: ElementType;
+  content: Record<string, unknown> | null;
+  style: Record<string, unknown> | null;
+  settings: Record<string, unknown> | null;
+  order: number;
+  visible: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 /* ── Row types (what comes back from Supabase) ── */
