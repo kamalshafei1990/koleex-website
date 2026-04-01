@@ -11,6 +11,7 @@ import { VideoSection } from "./sections/VideoSection";
 import { CTASection } from "./sections/CTASection";
 import { QuoteSection } from "./sections/QuoteSection";
 import { FullImageSection } from "./sections/FullImageSection";
+import { BgHeroSection } from "./sections/BgHeroSection";
 
 /* ---------------------------------------------------------------------------
    SectionRenderer — Takes an array of SectionRow[] from Supabase and
@@ -31,6 +32,7 @@ const layoutMap: Record<string, React.ComponentType<{ section: SectionRow }>> = 
   cta: CTASection,
   quote: QuoteSection,
   "full-image": FullImageSection,
+  "bg-hero": BgHeroSection,
 };
 
 interface SectionRendererProps {

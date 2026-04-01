@@ -4,14 +4,16 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
 import { getAllPages } from "@/lib/cms";
 import { MediaSelector } from "@/components/cms/MediaSelector";
+import { ButtonEditor } from "@/components/cms/ButtonEditor";
+import { getSectionSettings, getButtonConfig, updateSectionSettings } from "@/lib/section-helpers";
 import {
   Plus, Trash2, Eye, EyeOff, Save, GripVertical, LogIn, Copy,
   ChevronDown, ChevronUp, Monitor, Tablet, Smartphone, Undo2,
   Layout, Type, Image as ImageIcon, Columns, BarChart3, PlayCircle,
   Quote, Clock, Grid3X3, Download, Star, MessageSquare, Layers,
-  ArrowLeft, X, Check, ExternalLink,
+  ArrowLeft, X, Check, ExternalLink, Maximize,
 } from "lucide-react";
-import type { PageRow, SectionRow, SectionLayout, SectionItem } from "@/types/supabase";
+import type { PageRow, SectionRow, SectionLayout, SectionItem, ButtonConfig, SectionSettings } from "@/types/supabase";
 
 /* ---------------------------------------------------------------------------
    Visual Page Builder — Three-panel editor.
@@ -35,6 +37,7 @@ const sectionLibrary: { type: SectionLayout; label: string; icon: React.ReactNod
   { type: "timeline", label: "Timeline", icon: <Clock className="h-4 w-4" />, desc: "Timeline milestones" },
   { type: "brands", label: "Logo Cloud", icon: <Star className="h-4 w-4" />, desc: "Partner/brand logos" },
   { type: "split", label: "Product Showcase", icon: <Layers className="h-4 w-4" />, desc: "Product feature split" },
+  { type: "bg-hero", label: "Background Hero", icon: <Maximize className="h-4 w-4" />, desc: "Full image background with overlay" },
 ];
 
 const bgOptions = [
@@ -124,6 +127,32 @@ export default function AdminPage() {
       setSelectedSection((prev) => prev ? { ...prev, [field]: value } : prev);
     }
     setSaveState("unsaved");
+  }
+
+  function updateSetting(sectionId: string, key: keyof SectionSettings, value: unknown) {
+    const section = sections.find((s) => s.id === sectionId);
+    if (!section) return;
+    const settings = getSectionSettings(section);
+    const newSettings = { ...settings, [key]: value };
+    const newItems = updateSectionSettings(section.items, newSettings);
+    updateSection(sectionId, "items", newItems);
+  }
+
+  function updateButton(sectionId: string, which: "btn1" | "btn2", config: ButtonConfig) {
+    const section = sections.find((s) => s.id === sectionId);
+    if (!section) return;
+    const settings = getSectionSettings(section);
+    const newSettings = { ...settings, [which]: config };
+    const newItems = updateSectionSettings(section.items, newSettings);
+    updateSection(sectionId, "items", newItems);
+    // Also sync to legacy fields for backward compatibility
+    if (which === "btn1") {
+      updateSection(sectionId, "button_text", config.text || null);
+      updateSection(sectionId, "button_link", config.link || null);
+    } else {
+      updateSection(sectionId, "button2_text", config.text || null);
+      updateSection(sectionId, "button2_link", config.link || null);
+    }
   }
 
   function moveSection(id: string, dir: "up" | "down") {
@@ -457,17 +486,64 @@ export default function AdminPage() {
                         )}
                       </SettingsGroup>
 
-                      <SettingsGroup title="Spacing">
-                        <Field label="Text Alignment">
+                      <SettingsGroup title="Text">
+                        <Field label="Alignment">
                           <div className="flex gap-1">
-                            {["left", "center", "right"].map((a) => (
-                              <button key={a} className="flex-1 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] text-[11px] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-colors capitalize">
+                            {(["left", "center", "right"] as const).map((a) => (
+                              <button key={a} onClick={() => updateSetting(selectedSection.id, "textAlign", a)} className={`flex-1 h-8 rounded-lg text-[11px] font-medium transition-all capitalize ${getSectionSettings(selectedSection).textAlign === a ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" : "bg-white/[0.04] border border-white/[0.06] text-white/35 hover:text-white/60"}`}>
                                 {a}
                               </button>
                             ))}
                           </div>
                         </Field>
                       </SettingsGroup>
+
+                      {/* bg-hero specific controls */}
+                      {selectedSection.layout === "bg-hero" && (
+                        <>
+                          <SettingsGroup title="Overlay">
+                            <Field label={`Opacity: ${getSectionSettings(selectedSection).overlayOpacity || 60}%`}>
+                              <input
+                                type="range"
+                                min={0} max={100} step={5}
+                                value={getSectionSettings(selectedSection).overlayOpacity || 60}
+                                onChange={(e) => updateSetting(selectedSection.id, "overlayOpacity", parseInt(e.target.value))}
+                                className="w-full accent-blue-500"
+                              />
+                            </Field>
+                            <Field label="Text Mode">
+                              <div className="flex gap-1">
+                                {(["light", "dark"] as const).map((m) => (
+                                  <button key={m} onClick={() => updateSetting(selectedSection.id, "textMode", m)} className={`flex-1 h-8 rounded-lg text-[11px] font-medium transition-all capitalize ${getSectionSettings(selectedSection).textMode === m ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" : "bg-white/[0.04] border border-white/[0.06] text-white/35 hover:text-white/60"}`}>
+                                    {m === "light" ? "White Text" : "Dark Text"}
+                                  </button>
+                                ))}
+                              </div>
+                            </Field>
+                          </SettingsGroup>
+
+                          <SettingsGroup title="Layout">
+                            <Field label="Content Width">
+                              <div className="flex gap-1">
+                                {(["narrow", "medium", "wide", "full"] as const).map((w) => (
+                                  <button key={w} onClick={() => updateSetting(selectedSection.id, "contentWidth", w)} className={`flex-1 h-7 rounded-lg text-[10px] font-medium transition-all capitalize ${getSectionSettings(selectedSection).contentWidth === w ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" : "bg-white/[0.04] border border-white/[0.06] text-white/35 hover:text-white/60"}`}>
+                                    {w}
+                                  </button>
+                                ))}
+                              </div>
+                            </Field>
+                            <Field label="Vertical Alignment">
+                              <div className="flex gap-1">
+                                {(["top", "center", "bottom"] as const).map((v) => (
+                                  <button key={v} onClick={() => updateSetting(selectedSection.id, "verticalAlign", v)} className={`flex-1 h-8 rounded-lg text-[11px] font-medium transition-all capitalize ${getSectionSettings(selectedSection).verticalAlign === v ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" : "bg-white/[0.04] border border-white/[0.06] text-white/35 hover:text-white/60"}`}>
+                                    {v}
+                                  </button>
+                                ))}
+                              </div>
+                            </Field>
+                          </SettingsGroup>
+                        </>
+                      )}
 
                       <SettingsGroup title="Visibility">
                         <Field label="Show on page">
@@ -485,72 +561,19 @@ export default function AdminPage() {
                   {/* ═══ BUTTONS TAB ═══ */}
                   {settingsTab === "buttons" && (
                     <>
-                      <SettingsGroup title="Primary Button">
-                        <Field label="Text">
-                          <input value={selectedSection.button_text || ""} onChange={(e) => updateSection(selectedSection.id, "button_text", e.target.value || null)} className="input-field" placeholder="Learn more" />
-                        </Field>
-                        <Field label="Link URL">
-                          <input value={selectedSection.button_link || ""} onChange={(e) => updateSection(selectedSection.id, "button_link", e.target.value || null)} className="input-field" placeholder="/products" />
-                        </Field>
-                        {selectedSection.button_text && (
-                          <div className="p-3 rounded-lg bg-white/[0.03] border border-white/[0.04] space-y-2">
-                            <Field label="Style">
-                              <div className="flex gap-1">
-                                {btnStyles.map((s) => (
-                                  <button key={s} className="flex-1 h-7 rounded-md bg-white/[0.04] border border-white/[0.06] text-[10px] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-colors capitalize">{s}</button>
-                                ))}
-                              </div>
-                            </Field>
-                            <Field label="Shape">
-                              <div className="flex gap-1">
-                                {btnShapes.map((s) => (
-                                  <button key={s} className="flex-1 h-7 rounded-md bg-white/[0.04] border border-white/[0.06] text-[10px] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-colors capitalize">{s}</button>
-                                ))}
-                              </div>
-                            </Field>
-                            <Field label="Size">
-                              <div className="flex gap-1">
-                                {btnSizes.map((s) => (
-                                  <button key={s} className="flex-1 h-7 rounded-md bg-white/[0.04] border border-white/[0.06] text-[10px] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-colors capitalize">{s}</button>
-                                ))}
-                              </div>
-                            </Field>
-                          </div>
-                        )}
-                      </SettingsGroup>
-
-                      <SettingsGroup title="Secondary Button">
-                        <Field label="Text">
-                          <input value={selectedSection.button2_text || ""} onChange={(e) => updateSection(selectedSection.id, "button2_text", e.target.value || null)} className="input-field" placeholder="Contact sales" />
-                        </Field>
-                        <Field label="Link URL">
-                          <input value={selectedSection.button2_link || ""} onChange={(e) => updateSection(selectedSection.id, "button2_link", e.target.value || null)} className="input-field" placeholder="/contact" />
-                        </Field>
-                        {selectedSection.button2_text && (
-                          <div className="p-3 rounded-lg bg-white/[0.03] border border-white/[0.04] space-y-2">
-                            <Field label="Style">
-                              <div className="flex gap-1">
-                                {btnStyles.map((s) => (
-                                  <button key={s} className="flex-1 h-7 rounded-md bg-white/[0.04] border border-white/[0.06] text-[10px] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-colors capitalize">{s}</button>
-                                ))}
-                              </div>
-                            </Field>
-                            <Field label="Shape">
-                              <div className="flex gap-1">
-                                {btnShapes.map((s) => (
-                                  <button key={s} className="flex-1 h-7 rounded-md bg-white/[0.04] border border-white/[0.06] text-[10px] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-colors capitalize">{s}</button>
-                                ))}
-                              </div>
-                            </Field>
-                          </div>
-                        )}
-                      </SettingsGroup>
-
-                      {!selectedSection.button_text && !selectedSection.button2_text && (
-                        <div className="text-center py-6">
-                          <p className="text-[12px] text-white/20">Add button text above to configure styles</p>
-                        </div>
-                      )}
+                      <ButtonEditor
+                        label="Primary Button"
+                        config={getButtonConfig(selectedSection, "btn1")}
+                        dark={selectedSection.background === "dark" || selectedSection.background === "black"}
+                        onChange={(config) => updateButton(selectedSection.id, "btn1", config)}
+                      />
+                      <div className="h-px bg-white/[0.04] my-2" />
+                      <ButtonEditor
+                        label="Secondary Button"
+                        config={getButtonConfig(selectedSection, "btn2")}
+                        dark={selectedSection.background === "dark" || selectedSection.background === "black"}
+                        onChange={(config) => updateButton(selectedSection.id, "btn2", config)}
+                      />
                     </>
                   )}
                 </div>

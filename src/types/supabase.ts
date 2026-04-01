@@ -24,7 +24,34 @@ export type SectionLayout =
   | "timeline"
   | "full-image"
   | "split"
-  | "brands";
+  | "brands"
+  | "bg-hero";
+
+export type ButtonStyle = "solid" | "outline" | "ghost";
+export type ButtonShape = "pill" | "rounded" | "square";
+export type ButtonSize = "small" | "medium" | "large";
+export type LinkType = "none" | "page" | "product" | "anchor" | "url" | "file" | "email" | "phone";
+
+export interface ButtonConfig {
+  text: string;
+  linkType: LinkType;
+  link: string;
+  newTab: boolean;
+  style: ButtonStyle;
+  shape: ButtonShape;
+  size: ButtonSize;
+}
+
+export interface SectionSettings {
+  btn1?: ButtonConfig;
+  btn2?: ButtonConfig;
+  overlayOpacity?: number;
+  textAlign?: "left" | "center" | "right";
+  textMode?: "dark" | "light";
+  contentWidth?: "narrow" | "medium" | "wide" | "full";
+  verticalAlign?: "top" | "center" | "bottom";
+  columns?: number;
+}
 
 /* ── Row types (what comes back from Supabase) ── */
 
