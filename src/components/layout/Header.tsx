@@ -79,8 +79,8 @@ export default function Header() {
             <KoleexLogo color="white" height={18} />
           </Link>
 
-          {/* ── Desktop Navigation (centered) ── */}
-          <div className="hidden lg:flex items-center absolute left-1/2 -translate-x-1/2 gap-2">
+          {/* ── Desktop Navigation (centered, with right margin to not overlap tools) ── */}
+          <div className="hidden lg:flex items-center flex-1 justify-center gap-1 mx-8">
             {mainNav.map((item) => {
               const active = isActive(item.href);
 
@@ -140,18 +140,15 @@ export default function Header() {
           </div>
 
           {/* ── Right Tools: Search → Region → Language → Sign In ── */}
-          <div className="flex items-center ml-auto gap-1">
+          <div className="flex items-center ml-auto gap-3">
             {/* Search */}
             <button
               onClick={() => setSearchOpen(true)}
-              className="hidden lg:flex h-9 w-9 items-center justify-center rounded-full text-white/35 hover:text-white/75 hover:bg-white/[0.05] transition-all duration-[400ms]"
+              className="hidden lg:flex h-9 w-9 items-center justify-center rounded-full text-white/40 hover:text-white/80 hover:bg-white/[0.06] transition-all duration-[400ms]"
               aria-label="Search"
             >
               <Search className="h-[16px] w-[16px]" strokeWidth={1.5} />
             </button>
-
-            {/* Divider */}
-            <div className="hidden lg:block w-px h-4 bg-white/[0.06] mx-2" />
 
             {/* Region selector */}
             <div className="hidden lg:block">
@@ -171,12 +168,12 @@ export default function Header() {
             </div>
 
             {/* Divider */}
-            <div className="hidden lg:block w-px h-4 bg-white/[0.06] mx-2" />
+            <div className="hidden lg:block w-px h-4 bg-white/[0.08]" />
 
             {/* Sign In */}
             <Link
               href="/contact"
-              className="hidden lg:flex h-9 items-center gap-2 px-3.5 rounded-full text-[12px] font-medium text-white/40 hover:text-white/70 hover:bg-white/[0.05] transition-all duration-[400ms]"
+              className="hidden lg:flex h-9 items-center gap-2 px-4 rounded-full text-[12px] font-medium text-white/40 hover:text-white/75 hover:bg-white/[0.06] transition-all duration-[400ms]"
             >
               <User className="h-[14px] w-[14px]" strokeWidth={1.5} />
               <span>Sign In</span>
