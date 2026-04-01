@@ -58,14 +58,30 @@ function Hero() {
           <span className="block text-[64px] md:text-[100px] lg:text-[120px] font-bold leading-[0.9] tracking-[-0.05em] text-gradient-hero">About</span>
           <span className="block text-[64px] md:text-[100px] lg:text-[120px] font-bold leading-[0.9] tracking-[-0.05em] text-gradient-silver mt-1">Koleex</span>
         </h1>
-        <p className="text-[17px] md:text-[20px] font-light leading-[1.6] text-white/25 mt-10 max-w-[460px] mx-auto" style={s(520)}>
-          Precision. Innovation. Partnership. Building the future of industrial technology.
+        <p className="text-[17px] md:text-[21px] font-light leading-[1.65] text-white/25 mt-10 max-w-[500px] mx-auto" style={s(520)}>
+          Precision. Innovation. Partnership.
+          <br />
+          <span className="text-white/15">Building the future of industrial technology.</span>
         </p>
+
+        {/* Stats strip */}
+        <div className="flex items-center justify-center gap-6 md:gap-10 mt-16" style={s(680)}>
+          {[{ v: "4", l: "Divisions" }, { v: "6+", l: "Regions" }, { v: "24/7", l: "Support" }].map((stat, i) => (
+            <div key={stat.l} className="text-center">
+              {i > 0 && <div className="hidden" />}
+              <p className="text-[28px] md:text-[36px] font-bold text-white/20 tracking-tight">{stat.v}</p>
+              <p className="text-[10px] uppercase tracking-[0.1em] text-white/10 mt-1">{stat.l}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="absolute bottom-14 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3" style={s(750)}>
-        <span className="text-[10px] font-medium tracking-[0.2em] uppercase text-white/10">Discover</span>
-        <div className="w-px h-10 bg-gradient-to-b from-white/12 to-transparent" />
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4" style={s(800)}>
+        <span className="text-[9px] font-medium tracking-[0.25em] uppercase text-white/8">Scroll to explore</span>
+        <div className="relative w-[1px] h-12">
+          <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent" />
+          <div className="absolute top-0 w-[1px] h-4 bg-white/20" style={{ animation: "scrollLine 2s ease-in-out infinite" }} />
+        </div>
       </div>
     </section>
   );
@@ -75,8 +91,8 @@ function Hero() {
 function CEO() {
   const { ref, visible } = useScrollReveal(0.08);
   return (
-    <section ref={ref} className="overflow-hidden" style={{ background: "linear-gradient(145deg, #0c0c0c 0%, #161616 40%, #1e1e1e 100%)" }}>
-      <div className="flex flex-col lg:flex-row min-h-[560px]">
+    <section ref={ref} className="overflow-hidden" style={{ background: "linear-gradient(145deg, #080808 0%, #111111 40%, #1a1a1a 100%)" }}>
+      <div className="flex flex-col lg:flex-row min-h-[600px]">
         <div className="lg:w-[55%] flex items-center px-8 md:px-16 lg:px-20 py-20">
           <div className="max-w-[480px]">
             <h2 className="text-[40px] md:text-[56px] font-bold leading-[1.04] tracking-[-0.04em] text-white" style={revealStyle(visible, 0)}>CEO Message</h2>
@@ -126,14 +142,17 @@ function History() {
 function Vision() {
   const { ref, visible } = useScrollReveal(0.1);
   return (
-    <section ref={ref} className="bg-[#f9f9f9] py-36 md:py-48 text-center overflow-hidden">
-      <div className="max-w-[780px] mx-auto px-6">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#aeaeb2] mb-6" style={revealStyle(visible, 0)}>Vision & Mission</p>
-        <h2 className="text-[32px] md:text-[50px] font-bold leading-[1.1] tracking-[-0.03em] text-[#1d1d1f]" style={revealStyle(visible, 100)}>
-          To shape a smarter industrial world by connecting innovation with human experience — creating intelligent solutions that inspire, empower, and endure.
+    <section ref={ref} className="bg-[#f9f9f9] py-40 md:py-56 text-center overflow-hidden">
+      <div className="max-w-[820px] mx-auto px-6">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#aeaeb2] mb-8" style={revealStyle(visible, 0)}>Vision & Mission</p>
+        <h2 className="text-[34px] md:text-[56px] font-bold leading-[1.08] tracking-[-0.035em] text-[#1d1d1f]" style={revealStyle(visible, 120)}>
+          To shape a smarter industrial world by connecting innovation with human experience.
         </h2>
-        <div className="mx-auto mt-10 w-14 h-[2px] bg-[#1d1d1f]" style={revealStyle(visible, 250)} />
-        <div className="mt-10" style={revealStyle(visible, 350)}>
+        <p className="text-[18px] md:text-[22px] font-light leading-[1.6] text-[#86868b] mt-8 max-w-[560px] mx-auto" style={revealStyle(visible, 240)}>
+          Creating intelligent solutions that inspire, empower, and endure.
+        </p>
+        <div className="mx-auto mt-12 w-16 h-[2px] bg-[#1d1d1f]/20" style={revealStyle(visible, 360)} />
+        <div className="mt-10" style={revealStyle(visible, 440)}>
           <Link href="/about/vision-mission" className="inline-flex items-center gap-2 text-[14px] font-medium text-[#0066cc] hover:underline underline-offset-[3px]">Know more {arrow}</Link>
         </div>
       </div>
@@ -153,12 +172,12 @@ function Values() {
     { t: "Innovation with Purpose", d: "Solving real problems with meaningful technology.", i: "△" },
   ];
   return (
-    <section ref={ref} className="bg-white py-28 md:py-36 overflow-hidden">
+    <section ref={ref} className="bg-white py-32 md:py-44 overflow-hidden">
       <div className="max-w-[1000px] mx-auto px-6">
-        <div className="text-center mb-16">
+        <div className="text-center mb-20">
           <h2 className="text-[36px] md:text-[52px] font-bold tracking-[-0.035em] text-[#1d1d1f]" style={revealStyle(visible, 0)}>Core Values</h2>
-          <div className="mx-auto mt-5 w-10 h-[2px] bg-[#1d1d1f]" style={revealStyle(visible, 80)} />
-          <p className="text-[16px] text-[#86868b] mt-5 max-w-[400px] mx-auto" style={revealStyle(visible, 140)}>The principles that guide every decision at Koleex.</p>
+          <div className="mx-auto mt-6 w-10 h-[2px] bg-[#1d1d1f]/20" style={revealStyle(visible, 80)} />
+          <p className="text-[16px] text-[#86868b] mt-6 max-w-[420px] mx-auto leading-[1.6]" style={revealStyle(visible, 140)}>The principles that guide every decision at Koleex.</p>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
           {items.map((v, i) => (
@@ -212,11 +231,11 @@ function Segments() {
     { t: "Strategic Investment & Innovation", img: "/images/modern-office.jpg" },
   ];
   return (
-    <section ref={ref} className="bg-[#f9f9f9] py-28 md:py-36 overflow-hidden">
+    <section ref={ref} className="bg-[#f9f9f9] py-32 md:py-44 overflow-hidden">
       <div className="max-w-[1040px] mx-auto px-6">
-        <div className="text-center mb-16">
+        <div className="text-center mb-20">
           <h2 className="text-[36px] md:text-[52px] font-bold tracking-[-0.035em] text-[#1d1d1f]" style={revealStyle(visible, 0)}>Business Segments</h2>
-          <div className="mx-auto mt-5 w-10 h-[2px] bg-[#1d1d1f]" style={revealStyle(visible, 80)} />
+          <div className="mx-auto mt-6 w-10 h-[2px] bg-[#1d1d1f]/20" style={revealStyle(visible, 80)} />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {items.map((s, i) => (
@@ -244,7 +263,7 @@ function Technology() {
   const { ref, visible } = useScrollReveal(0.06);
   const features = ["Custom OS", "AI Machines", "Smart UI", "Modular Updates", "Data Production", "Predictive Maintenance", "IoT Integration"];
   return (
-    <section ref={ref} className="bg-black py-32 md:py-40 overflow-hidden">
+    <section ref={ref} className="bg-black py-36 md:py-48 overflow-hidden">
       <div className="max-w-[1040px] mx-auto px-6">
         <div className="flex flex-col lg:flex-row gap-16">
           <div className="lg:w-[42%]">
@@ -425,16 +444,16 @@ function Production() {
 function Future() {
   const { ref, visible } = useScrollReveal(0.1);
   return (
-    <section ref={ref} className="bg-[#f9f9f9] py-36 md:py-48 text-center overflow-hidden">
-      <div className="max-w-[700px] mx-auto px-6">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#aeaeb2] mb-6" style={revealStyle(visible, 0)}>Future Outlook</p>
-        <h2 className="text-[36px] md:text-[56px] font-bold leading-[1.06] tracking-[-0.035em] text-[#1d1d1f]" style={revealStyle(visible, 120)}>
+    <section ref={ref} className="bg-[#f9f9f9] py-44 md:py-56 text-center overflow-hidden">
+      <div className="max-w-[720px] mx-auto px-6">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#aeaeb2] mb-8" style={revealStyle(visible, 0)}>Future Outlook</p>
+        <h2 className="text-[40px] md:text-[64px] font-bold leading-[1.04] tracking-[-0.04em] text-[#1d1d1f]" style={revealStyle(visible, 120)}>
           The next chapter begins now.
         </h2>
-        <p className="text-[16px] leading-[1.65] text-[#86868b] mt-6" style={revealStyle(visible, 240)}>
-          Manufacturing innovation. Digital integration. Regional expansion. Customer excellence.
+        <p className="text-[18px] md:text-[22px] font-light leading-[1.6] text-[#86868b] mt-8" style={revealStyle(visible, 260)}>
+          Manufacturing innovation. Digital integration.<br className="hidden md:block" /> Regional expansion. Customer excellence.
         </p>
-        <div className="mx-auto mt-10 w-12 h-[2px] bg-[#1d1d1f]" style={revealStyle(visible, 360)} />
+        <div className="mx-auto mt-12 w-14 h-[2px] bg-[#1d1d1f]/20" style={revealStyle(visible, 380)} />
         <div className="mt-10" style={revealStyle(visible, 440)}>
           <Link href="/about/future-outlook" className="inline-flex items-center gap-2 text-[14px] font-medium text-[#0066cc] hover:underline underline-offset-[3px]">Know more {arrow}</Link>
         </div>
