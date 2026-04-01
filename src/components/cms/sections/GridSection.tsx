@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { CmsImage } from "../CmsImage";
 import Link from "next/link";
 import type { SectionRow } from "@/types/supabase";
 
@@ -21,7 +21,7 @@ export function GridSection({ section }: { section: SectionRow }) {
             <div key={i} className="group rounded-[14px] overflow-hidden bg-white hover:-translate-y-1 hover:shadow-lg transition-all duration-500">
               {item.image && (
                 <div className="aspect-[4/3] overflow-hidden">
-                  <Image src={item.image} alt={item.title} width={600} height={450} className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-700" />
+                  <CmsImage src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-700" />
                 </div>
               )}
               <div className="p-4">

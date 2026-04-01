@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { CmsImage } from "../CmsImage";
 import Link from "next/link";
 import type { SectionRow } from "@/types/supabase";
 
@@ -37,7 +37,7 @@ export function HeroSection({ section }: { section: SectionRow }) {
       </div>
       {section.image_url && (
         <div className="mt-6">
-          <Image src={section.image_url} alt={section.image_alt || section.title || ""} width={2560} height={1440} className="w-full h-auto block" />
+          <CmsImage src={section.image_url} alt={section.image_alt || section.title || ""} className="w-full h-auto block" />
         </div>
       )}
     </section>

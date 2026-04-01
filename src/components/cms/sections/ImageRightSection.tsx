@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { CmsImage } from "../CmsImage";
 import Link from "next/link";
 import type { SectionRow } from "@/types/supabase";
 
@@ -12,7 +12,7 @@ export function ImageRightSection({ section }: { section: SectionRow }) {
       <div className="flex flex-col lg:flex-row-reverse min-h-[420px]">
         {section.image_url && (
           <div className="lg:w-[52%] overflow-hidden">
-            <Image src={section.image_url} alt={section.image_alt || section.title || ""} width={1200} height={800} className="w-full h-full object-cover min-h-[260px] lg:min-h-[420px]" />
+            <CmsImage src={section.image_url} alt={section.image_alt || section.title || ""} className="w-full h-full object-cover min-h-[260px] lg:min-h-[420px]" />
           </div>
         )}
         <div className="lg:w-[48%] flex items-center px-8 md:px-14 lg:px-16 py-12 lg:py-0">
