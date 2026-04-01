@@ -2,24 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { SectionRenderer } from "@/components/cms/SectionRenderer";
-import type { SectionRow } from "@/types/supabase";
+import { ElementRenderer } from "@/components/cms/ElementRenderer";
+import type { SectionRow, ElementRow } from "@/types/supabase";
 
 /* ---------------------------------------------------------------------------
-   Admin Preview — Renders sections received via postMessage from parent.
-   Loaded in an iframe by the visual editor.
+   Admin Preview — Renders sections + elements via postMessage from parent.
    --------------------------------------------------------------------------- */
 
 export default function PreviewPage() {
   const [sections, setSections] = useState<SectionRow[]>([]);
-  const [viewport, setViewport] = useState("desktop");
+  const [elements, setElements] = useState<Record<string, ElementRow[]>>({});
 
   useEffect(() => {
     function handleMessage(e: MessageEvent) {
       if (e.data?.type === "preview-update") {
         setSections(e.data.sections || []);
-      }
-      if (e.data?.type === "viewport-change") {
-        setViewport(e.data.viewport || "desktop");
+        if (e.data.elements) setElements(e.data.elements);
       }
       if (e.data?.type === "scroll-to-section") {
         const el = document.getElementById(`section-${e.data.sectionId}`);
@@ -27,7 +25,6 @@ export default function PreviewPage() {
       }
     }
     window.addEventListener("message", handleMessage);
-    // Tell parent we're ready
     window.parent.postMessage({ type: "preview-ready" }, "*");
     return () => window.removeEventListener("message", handleMessage);
   }, []);
@@ -42,16 +39,24 @@ export default function PreviewPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {sections.map((section) => (
-        <div key={section.id} id={`section-${section.id}`} className="relative group">
-          {/* Hover overlay for click-to-select */}
-          <div
-            className="absolute inset-0 z-10 border-2 border-transparent group-hover:border-blue-500/30 cursor-pointer transition-colors duration-200"
-            onClick={() => window.parent.postMessage({ type: "select-section", sectionId: section.id }, "*")}
-          />
-          <SectionRenderer sections={[section]} />
-        </div>
-      ))}
+      {sections.map((section) => {
+        const sectionElements = elements[section.id] || [];
+        return (
+          <div key={section.id} id={`section-${section.id}`} className="relative group">
+            <div
+              className="absolute inset-0 z-10 border-2 border-transparent group-hover:border-blue-500/30 cursor-pointer transition-colors duration-200"
+              onClick={() => window.parent.postMessage({ type: "select-section", sectionId: section.id }, "*")}
+            />
+            <SectionRenderer sections={[section]} />
+            {/* Render child elements below the section's built-in content */}
+            {sectionElements.length > 0 && (
+              <div className="max-w-[1000px] mx-auto px-6 py-8 space-y-6">
+                <ElementRenderer elements={sectionElements} />
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

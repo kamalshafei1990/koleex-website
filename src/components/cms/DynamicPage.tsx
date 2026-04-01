@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { getPageWithSections } from "@/lib/cms";
+import { getElementsBySectionId } from "@/lib/elements";
 import { SectionRenderer } from "./SectionRenderer";
-import type { SectionRow } from "@/types/supabase";
+import { ElementRenderer } from "./ElementRenderer";
+import type { SectionRow, ElementRow } from "@/types/supabase";
 
 /* ---------------------------------------------------------------------------
-   DynamicPage — Loads sections from Supabase by page slug.
-   Shows a loading state while fetching, then renders sections.
-   If Supabase fails or returns empty, renders the static fallback.
+   DynamicPage — Loads sections + elements from Supabase by page slug.
+   Shows static fallback while loading or if CMS is empty/fails.
    --------------------------------------------------------------------------- */
 
 interface DynamicPageProps {
@@ -18,6 +19,7 @@ interface DynamicPageProps {
 
 export function DynamicPage({ slug, fallback }: DynamicPageProps) {
   const [sections, setSections] = useState<SectionRow[] | null>(null);
+  const [elements, setElements] = useState<Record<string, ElementRow[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -30,6 +32,15 @@ export function DynamicPage({ slug, fallback }: DynamicPageProps) {
         if (!cancelled) {
           if (data && data.length > 0) {
             setSections(data);
+            // Load elements for each section
+            const elementsMap: Record<string, ElementRow[]> = {};
+            await Promise.all(
+              data.map(async (section) => {
+                const els = await getElementsBySectionId(section.id);
+                if (els.length > 0) elementsMap[section.id] = els;
+              })
+            );
+            if (!cancelled) setElements(elementsMap);
           } else {
             setError(true);
           }
@@ -45,12 +56,24 @@ export function DynamicPage({ slug, fallback }: DynamicPageProps) {
     return () => { cancelled = true; };
   }, [slug]);
 
-  // Loading — show nothing (static content renders instantly below)
   if (loading) return <>{fallback}</>;
-
-  // Error or empty — show static fallback
   if (error || !sections) return <>{fallback}</>;
 
-  // Success — render CMS sections
-  return <SectionRenderer sections={sections} />;
+  return (
+    <>
+      {sections.map((section) => {
+        const sectionElements = elements[section.id] || [];
+        return (
+          <div key={section.id}>
+            <SectionRenderer sections={[section]} />
+            {sectionElements.length > 0 && (
+              <div className="max-w-[1000px] mx-auto px-6 py-8 space-y-6">
+                <ElementRenderer elements={sectionElements} />
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </>
+  );
 }

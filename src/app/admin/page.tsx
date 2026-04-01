@@ -94,17 +94,18 @@ export default function AdminPage() {
       });
   }, [selectedPage]);
 
-  // Send sections to preview iframe
+  // Send sections + elements to preview iframe
   const updatePreview = useCallback(() => {
     iframeRef.current?.contentWindow?.postMessage({
       type: "preview-update",
       sections: sections.filter((s) => s.visible),
+      elements: sectionElements,
     }, "*");
-  }, [sections]);
+  }, [sections, sectionElements]);
 
   useEffect(() => {
     updatePreview();
-  }, [sections, updatePreview]);
+  }, [sections, sectionElements, updatePreview]);
 
   // Listen for messages from preview
   useEffect(() => {
