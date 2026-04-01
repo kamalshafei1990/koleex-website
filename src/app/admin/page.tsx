@@ -136,10 +136,40 @@ export default function AdminPage() {
         }
         if (action === "delete") deleteSection(sectionId);
       }
+      // Element actions from preview canvas
+      if (e.data?.type === "select-element") {
+        const { sectionId, elementId } = e.data;
+        const s = sections.find(sec => sec.id === sectionId);
+        if (s) { setSelectedSection(s); setSettingsTab("elements"); setExpandedElement(elementId); loadElements(sectionId); }
+      }
+      if (e.data?.type === "element-action") {
+        const { sectionId, elementId, action } = e.data;
+        if (action === "duplicate") {
+          const el = (sectionElements[sectionId] || []).find(e => e.id === elementId);
+          if (el) addElement(sectionId, el.type as import("@/types/supabase").ElementType);
+        }
+        if (action === "delete") removeElement(sectionId, elementId);
+      }
+      if (e.data?.type === "element-update") {
+        const { sectionId, elementId, updates } = e.data;
+        if (updates.settings) {
+          updateElement(elementId, { settings: updates.settings });
+          setSectionElements(prev => ({
+            ...prev,
+            [sectionId]: (prev[sectionId] || []).map(el => el.id === elementId ? { ...el, ...updates } : el),
+          }));
+          setSaveState("unsaved");
+        }
+      }
+      if (e.data?.type === "add-element-request") {
+        const { sectionId } = e.data;
+        const s = sections.find(sec => sec.id === sectionId);
+        if (s) { setSelectedSection(s); setSettingsTab("elements"); setShowElementPicker(sectionId); loadElements(sectionId); }
+      }
     }
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [sections, updatePreview]);
+  }, [sections, sectionElements, updatePreview]);
 
   function handleLogin() {
     if (password === ADMIN_PASSWORD) {

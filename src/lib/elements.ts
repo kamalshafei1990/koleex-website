@@ -8,7 +8,7 @@ import type { ElementRow, ElementType } from "@/types/supabase";
 export async function getElementsBySectionId(sectionId: string): Promise<ElementRow[]> {
   const { data, error } = await supabase
     .from("elements")
-    .select("*")
+    .select("id, section_id, type, content, style, settings, order, visible, created_at, updated_at")
     .eq("section_id", sectionId)
     .eq("visible", true)
     .order("order", { ascending: true });
@@ -17,7 +17,11 @@ export async function getElementsBySectionId(sectionId: string): Promise<Element
     console.error("[Elements] Fetch error:", error.message);
     return [];
   }
-  return (data as ElementRow[]) || [];
+  // Map zone from settings.zone for backward compat
+  return ((data || []) as ElementRow[]).map(el => ({
+    ...el,
+    zone: ((el.settings as Record<string, unknown>)?.zone as string) || "a",
+  }));
 }
 
 export async function createElement(
@@ -74,14 +78,14 @@ export async function createElement(
       order: order ?? 99,
       visible: true,
     })
-    .select()
+    .select("id, section_id, type, content, style, settings, order, visible, created_at, updated_at")
     .single();
 
   if (error) {
     console.error("[Elements] Create error:", error.message);
     return null;
   }
-  return data as ElementRow;
+  return { ...data, zone: "a" } as ElementRow;
 }
 
 export async function updateElement(

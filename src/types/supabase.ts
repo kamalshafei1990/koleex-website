@@ -132,7 +132,7 @@ export interface ElementRow {
   settings: Record<string, unknown> | null;
   order: number;
   visible: boolean;
-  zone?: string; // "a", "b", "c", "d" — which column/zone the element is in
+  zone?: string; // Virtual field — derived from settings.zone, not a DB column
   created_at: string;
   updated_at: string;
 }
