@@ -1,8 +1,10 @@
-"use client";
-
 import Link from "next/link";
-import { useEffect } from "react";
-import { KoleexLogo } from "@/components/ui/KoleexLogo";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Choose Your Country or Region",
+  description: "Select your country or region to visit the Koleex website in your local language.",
+};
 
 /* ---------------------------------------------------------------------------
    Choose Your Country or Region — With country flags.
@@ -20,6 +22,12 @@ interface RegionGroup {
 }
 
 const regionGroups: RegionGroup[] = [
+  {
+    title: "Global",
+    countries: [
+      { name: "Global", flag: "🌐", languages: [{ label: "English", href: "/" }] },
+    ],
+  },
   {
     title: "Middle East & Africa",
     countries: [
@@ -116,39 +124,11 @@ const regionGroups: RegionGroup[] = [
       { name: "Venezuela", flag: "🇻🇪", languages: [{ label: "Español", href: "/americas/es" }] },
     ],
   },
-  {
-    title: "Global",
-    countries: [
-      { name: "Global", flag: "🌐", languages: [{ label: "English", href: "/" }] },
-    ],
-  },
 ];
 
 export default function ChooseRegionPage() {
-  useEffect(() => {
-    const header = document.querySelector("header");
-    const footer = document.querySelector("footer");
-    const main = document.querySelector("main");
-    if (header) header.style.display = "none";
-    if (footer) footer.style.display = "none";
-    if (main) { main.style.paddingTop = "0"; main.style.background = "white"; }
-    return () => {
-      if (header) header.style.display = "";
-      if (footer) footer.style.display = "";
-      if (main) { main.style.paddingTop = ""; main.style.background = ""; }
-    };
-  }, []);
-
   return (
     <div className="min-h-screen bg-white text-[#1d1d1f]">
-      {/* Header */}
-      <div className="border-b border-[#e8e8ed]">
-        <div className="max-w-[1200px] mx-auto px-6 md:px-8 py-5 flex items-center justify-between">
-          <Link href="/"><KoleexLogo color="dark" height={16} /></Link>
-          <Link href="/" className="text-[13px] text-[#0066cc] hover:underline underline-offset-2">Go to Global site →</Link>
-        </div>
-      </div>
-
       {/* Content */}
       <div className="max-w-[1200px] mx-auto px-6 md:px-8 py-14 md:py-20">
         <h1 className="text-[36px] md:text-[52px] font-bold leading-[1.06] tracking-[-0.035em] text-[#1d1d1f]">
@@ -191,17 +171,6 @@ export default function ChooseRegionPage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="border-t border-[#e8e8ed] mt-10">
-        <div className="max-w-[1200px] mx-auto px-6 md:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-[12px] text-[#aeaeb2]">© {new Date().getFullYear()} Koleex International Group. All rights reserved.</p>
-          <div className="flex items-center gap-5 text-[12px]">
-            <Link href="/privacy" className="text-[#86868b] hover:text-[#1d1d1f] transition-colors">Privacy</Link>
-            <Link href="/terms" className="text-[#86868b] hover:text-[#1d1d1f] transition-colors">Terms</Link>
-            <Link href="/contact" className="text-[#86868b] hover:text-[#1d1d1f] transition-colors">Contact</Link>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
