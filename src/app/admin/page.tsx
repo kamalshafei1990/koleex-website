@@ -609,7 +609,7 @@ export default function AdminPage() {
                       </SettingsGroup>
 
                       {/* Image */}
-                      {["hero", "image-left", "image-right", "full-image", "grid", "split"].includes(selectedSection.layout) && (
+                      {["hero", "bg-hero", "image-left", "image-right", "full-image", "grid", "split"].includes(selectedSection.layout) && (
                         <SettingsGroup title="Image">
                           <MediaSelector
                             currentUrl={selectedSection.image_url}
