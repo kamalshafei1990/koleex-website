@@ -3,9 +3,10 @@
 import { CmsImage } from "../CmsImage";
 import Link from "next/link";
 import type { SectionRow } from "@/types/supabase";
+import { getContentItems } from "@/lib/section-helpers";
 
 export function GridSection({ section }: { section: SectionRow }) {
-  const items = section.items || [];
+  const items = getContentItems(section);
 
   return (
     <section className={`${section.background === "light" ? "bg-[#f5f5f7]" : "bg-white"} py-24 md:py-32 overflow-hidden`}>

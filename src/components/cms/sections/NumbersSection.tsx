@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import type { SectionRow } from "@/types/supabase";
+import { getContentItems } from "@/lib/section-helpers";
 
 export function NumbersSection({ section }: { section: SectionRow }) {
   const dark = section.background === "dark" || section.background === "black";
-  const items = section.items || [];
+  const items = getContentItems(section);
 
   return (
     <section className={`${dark ? "bg-black" : "bg-white"} py-24 md:py-32 text-center overflow-hidden`}>

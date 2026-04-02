@@ -698,9 +698,12 @@ export default function AdminPage() {
                       {["cards", "grid", "numbers", "brands", "timeline"].includes(selectedSection.layout) && (
                         <SettingsGroup title="Items">
                           <ItemsEditor
-                            items={selectedSection.items || []}
+                            items={(selectedSection.items || []).filter((i) => i.title !== "_settings")}
                             layout={selectedSection.layout}
-                            onChange={(items) => updateSection(selectedSection.id, "items", items)}
+                            onChange={(contentItems) => {
+                              const settingsEntry = (selectedSection.items || []).find((i) => i.title === "_settings");
+                              updateSection(selectedSection.id, "items", settingsEntry ? [...contentItems, settingsEntry] : contentItems);
+                            }}
                           />
                         </SettingsGroup>
                       )}
