@@ -181,14 +181,7 @@ export default function AdminPage() {
   function updateSection(id: string, field: string, value: unknown) {
     setSections((prev) => {
       const updated = prev.map((s) => (s.id === id ? { ...s, [field]: value } : s));
-      // Force preview update immediately
-      setTimeout(() => {
-        iframeRef.current?.contentWindow?.postMessage({
-          type: "preview-update",
-          sections: updated.filter(s => s.visible),
-          elements: sectionElements,
-        }, "*");
-      }, 50);
+      sendPreviewUpdate(updated);
       return updated;
     });
     if (selectedSection?.id === id) {
@@ -229,11 +222,23 @@ export default function AdminPage() {
         ...prev,
         [sectionId]: (prev[sectionId] || []).map(e => e.id === elementId ? { ...e, content } : e),
       };
-      // Force preview update
-      setTimeout(() => iframeRef.current?.contentWindow?.postMessage({ type: "preview-update", sections: sections.filter(s => s.visible), elements: updated }, "*"), 50);
+      sendPreviewUpdate(sections);
       return updated;
     });
     setSaveState("unsaved");
+  }
+
+  const previewTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function sendPreviewUpdate(updatedSections: SectionRow[]) {
+    if (previewTimerRef.current) clearTimeout(previewTimerRef.current);
+    previewTimerRef.current = setTimeout(() => {
+      iframeRef.current?.contentWindow?.postMessage({
+        type: "preview-update",
+        sections: updatedSections.filter(s => s.visible),
+        elements: sectionElements,
+      }, "*");
+    }, 200); // debounce 200ms
   }
 
   function updateSetting(sectionId: string, key: keyof SectionSettings, value: unknown) {
@@ -243,21 +248,12 @@ export default function AdminPage() {
     const newSettings = { ...currentSettings, [key]: value };
     const newItems = updateSectionSettings(section.items, newSettings);
 
-    // Update sections state with new items
     setSections(prev => {
       const updated = prev.map(s => s.id === sectionId ? { ...s, items: newItems } : s);
-      // Force immediate preview update
-      setTimeout(() => {
-        iframeRef.current?.contentWindow?.postMessage({
-          type: "preview-update",
-          sections: updated.filter(s => s.visible),
-          elements: sectionElements,
-        }, "*");
-      }, 50);
+      sendPreviewUpdate(updated);
       return updated;
     });
 
-    // Update selected section if it's the one being changed
     if (selectedSection?.id === sectionId) {
       setSelectedSection(prev => prev ? { ...prev, items: newItems } : prev);
     }
@@ -1112,20 +1108,53 @@ export default function AdminPage() {
 /* Inline icon picker with emoji grid */
 function InlineIconPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [open, setOpen] = useState(false);
+  const [tab, setTab] = useState<"emoji" | "upload">(value?.startsWith("http") ? "upload" : "emoji");
   const emojis = ["⚡","🎯","🔧","⚙️","💡","🏭","🤖","💻","🌐","📊","🔬","🛡️","📦","🚀","✅","⭐","🏢","👥","📈","🔗","📋","🎨","🔒","💎","🌍","⏱️","📡","🧠","🔌","🏗️","📱","🖥️","◆","◇","●","○","■","□","▲","△","⊕","⊗","◎","◉","♦","★","☆","✦"];
+  const isImage = value?.startsWith("http") || value?.startsWith("/");
+
   return (
     <div className="relative">
       <div className="flex items-center gap-2">
-        <button onClick={() => setOpen(!open)} className="h-9 w-9 rounded-lg bg-white/[0.06] border border-white/[0.08] flex items-center justify-center text-[20px] hover:bg-white/[0.10] transition-colors shrink-0">
-          {value || "⚡"}
+        <button onClick={() => setOpen(!open)} className="h-9 w-9 rounded-lg bg-white/[0.06] border border-white/[0.08] flex items-center justify-center hover:bg-white/[0.10] transition-colors shrink-0 overflow-hidden">
+          {isImage ? <img src={value} alt="" className="h-full w-full object-contain" /> : <span className="text-[20px]">{value || "⚡"}</span>}
         </button>
-        <input value={value || ""} onChange={(e) => onChange(e.target.value)} className="input-field flex-1" placeholder="Type or pick →" />
+        <input value={isImage ? "" : (value || "")} onChange={(e) => onChange(e.target.value)} className="input-field flex-1" placeholder="Emoji or click to pick" />
+        {value && <button onClick={() => onChange("")} className="text-[9px] text-red-400/40 hover:text-red-400 shrink-0">✕</button>}
       </div>
       {open && (
-        <div className="absolute top-full left-0 right-0 mt-1 z-50 p-2 bg-[#1a1a1a] border border-white/[0.08] rounded-xl shadow-2xl grid grid-cols-8 gap-1">
-          {emojis.map((e) => (
-            <button key={e} onClick={() => { onChange(e); setOpen(false); }} className="h-7 w-7 rounded flex items-center justify-center text-[14px] hover:bg-white/[0.08] transition-colors">{e}</button>
-          ))}
+        <div className="absolute top-full left-0 right-0 mt-1 z-50 bg-[#1a1a1a] border border-white/[0.08] rounded-xl shadow-2xl overflow-hidden">
+          {/* Tabs */}
+          <div className="flex border-b border-white/[0.06]">
+            <button onClick={() => setTab("emoji")} className={`flex-1 py-2 text-[10px] font-medium ${tab === "emoji" ? "text-white bg-white/[0.04]" : "text-white/30"}`}>Emoji</button>
+            <button onClick={() => setTab("upload")} className={`flex-1 py-2 text-[10px] font-medium ${tab === "upload" ? "text-white bg-white/[0.04]" : "text-white/30"}`}>Upload</button>
+          </div>
+          {tab === "emoji" ? (
+            <div className="p-2 grid grid-cols-8 gap-1 max-h-[160px] overflow-y-auto">
+              {emojis.map((e) => (
+                <button key={e} onClick={() => { onChange(e); setOpen(false); }} className="h-7 w-7 rounded flex items-center justify-center text-[14px] hover:bg-white/[0.08] transition-colors">{e}</button>
+              ))}
+            </div>
+          ) : (
+            <div className="p-3 space-y-2">
+              <label className="flex items-center justify-center h-16 rounded-lg border border-dashed border-white/[0.10] text-[11px] text-white/30 hover:text-white/60 hover:border-white/[0.20] cursor-pointer transition-all">
+                Upload JPG, PNG, or SVG
+                <input type="file" accept="image/*,.svg" className="hidden" onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const { uploadMedia } = await import("@/lib/media");
+                  const result = await uploadMedia(file);
+                  if (result) { onChange(result.url); setOpen(false); }
+                  else alert("Upload failed");
+                }} />
+              </label>
+              {isImage && (
+                <div className="flex items-center gap-2">
+                  <img src={value} alt="" className="h-8 w-8 rounded object-contain bg-white" />
+                  <span className="text-[9px] text-white/20 truncate flex-1">{value}</span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

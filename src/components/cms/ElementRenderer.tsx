@@ -150,19 +150,27 @@ function CardElement({ el }: { el: ElementRow }) {
       {/* Image */}
       {d.image && <CmsImage src={d.image} alt={d.title || ""} className={`w-full h-[180px] object-cover mb-4 rounded-xl`} />}
 
-      {/* Icon with optional background */}
+      {/* Icon — emoji or uploaded image */}
       {d.icon && (
         <div className="mb-3">
-          {iconBgShape !== "none" ? (
-            <div
-              className={`inline-flex items-center justify-center ${iconBgShape === "circle" ? "rounded-full" : iconBgShape === "rounded" ? "rounded-xl" : "rounded-full px-3"}`}
-              style={{ backgroundColor: iconBgColor, padding: "10px" }}
-            >
-              <span style={{ fontSize: iconSize, color: iconColor, lineHeight: 1 }}>{d.icon}</span>
-            </div>
-          ) : (
-            <span style={{ fontSize: iconSize, color: iconColor, lineHeight: 1 }}>{d.icon}</span>
-          )}
+          {(() => {
+            const isImg = (d.icon as string).startsWith("http") || (d.icon as string).startsWith("/");
+            const iconEl = isImg
+              ? <img src={d.icon as string} alt="" style={{ width: iconSize, height: iconSize }} className="object-contain" />
+              : <span style={{ fontSize: iconSize, color: iconColor, lineHeight: 1 }}>{d.icon}</span>;
+
+            if (iconBgShape !== "none") {
+              return (
+                <div
+                  className={`inline-flex items-center justify-center ${iconBgShape === "circle" ? "rounded-full" : iconBgShape === "rounded" ? "rounded-xl" : "rounded-full px-3"}`}
+                  style={{ backgroundColor: iconBgColor, padding: "10px" }}
+                >
+                  {iconEl}
+                </div>
+              );
+            }
+            return iconEl;
+          })()}
         </div>
       )}
 
