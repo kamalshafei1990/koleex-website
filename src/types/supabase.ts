@@ -51,6 +51,7 @@ export interface SectionSettings {
   contentWidth?: "narrow" | "medium" | "wide" | "full";
   verticalAlign?: "top" | "center" | "bottom";
   columns?: number;
+  rows?: number;
   paddingTop?: string;
   paddingBottom?: string;
   gap?: string;

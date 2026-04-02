@@ -144,12 +144,13 @@ export default function PreviewPage() {
             {/* Canvas elements — using columns/gap from settings */}
             {sectionElements.length > 0 && (() => {
               const cols = settings.columns || 1;
+              const rows = settings.rows || 0;
               const gap = settings.gap || "24px";
               const pt = settings.paddingTop || "32px";
               const pb = settings.paddingBottom || "32px";
               return (
               <div className="max-w-[1000px] mx-auto px-6" style={{ paddingTop: pt, paddingBottom: pb }}>
-                <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap }}>
+                <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gridTemplateRows: rows ? `repeat(${rows}, auto)` : undefined, gap }}>
                     {sectionElements.map((el) => (
                       <CanvasElement
                         key={el.id}

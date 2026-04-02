@@ -111,6 +111,7 @@ function CardElement({ el }: { el: ElementRow }) {
     iconColor?: string; iconBgColor?: string; iconBgShape?: string; iconSize?: string;
     titleColor?: string; descColor?: string; cardStyle?: string;
     badge?: string; badgeColor?: string; price?: string;
+    cardPadding?: string; cardHeight?: string; imageHeight?: string;
   };
 
   // Card style presets
@@ -137,7 +138,7 @@ function CardElement({ el }: { el: ElementRow }) {
 
   const inner = (
     <div
-      className={`p-6 hover:-translate-y-1 transition-all duration-500 ${presetStyles[d.cardStyle || "default"]}`}
+      className={`hover:-translate-y-1 transition-all duration-500 ${presetStyles[d.cardStyle || "default"]}`}
       style={{
         backgroundColor: bgColor,
         borderColor: borderClr,
@@ -145,10 +146,16 @@ function CardElement({ el }: { el: ElementRow }) {
         borderStyle: "solid",
         borderRadius: radius,
         color: textColor,
+        padding: d.cardPadding || "24px",
+        minHeight: d.cardHeight && d.cardHeight !== "auto" ? d.cardHeight : undefined,
       }}
     >
       {/* Image */}
-      {d.image && <CmsImage src={d.image} alt={d.title || ""} className={`w-full h-[180px] object-cover mb-4 rounded-xl`} />}
+      {d.image && d.imageHeight !== "0px" && (
+        <div className="overflow-hidden mb-4 rounded-xl" style={{ height: d.imageHeight || "180px" }}>
+          <CmsImage src={d.image} alt={d.title || ""} className="w-full h-full object-cover" />
+        </div>
+      )}
 
       {/* Icon — emoji or uploaded image */}
       {d.icon && (

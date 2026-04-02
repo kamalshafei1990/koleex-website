@@ -704,6 +704,20 @@ export default function AdminPage() {
                           </div>
                         </Field>
 
+                        {/* Rows */}
+                        <Field label="Rows">
+                          <div className="flex items-center gap-2">
+                            <button onClick={() => { const cur = getSectionSettings(selectedSection).rows || 0; if (cur > 0) updateSetting(selectedSection.id, "rows", cur - 1); }}
+                              className="h-8 w-8 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-all text-[14px] font-bold">−</button>
+                            <div className="flex-1 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-[13px] font-semibold text-white/60">
+                              {getSectionSettings(selectedSection).rows || "Auto"}
+                            </div>
+                            <button onClick={() => { const cur = getSectionSettings(selectedSection).rows || 0; if (cur < 10) updateSetting(selectedSection.id, "rows", cur + 1); }}
+                              className="h-8 w-8 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-all text-[14px] font-bold">+</button>
+                          </div>
+                          <p className="text-[8px] text-white/15 mt-1">0 = auto rows based on content</p>
+                        </Field>
+
                         {/* Quick presets */}
                         <Field label="Presets">
                           <div className="grid grid-cols-4 gap-1">
@@ -1222,6 +1236,69 @@ function ElementEditor({ el, sectionId, onEdit }: { el: import("@/types/supabase
           <F label="Badge"><input value={(c.badge as string) || ""} onChange={(e) => upd("badge", e.target.value)} className="input-field" placeholder="NEW, FEATURED, etc." /></F>
           <F label="Price"><input value={(c.price as string) || ""} onChange={(e) => upd("price", e.target.value)} className="input-field" placeholder="$99.00" /></F>
           <F label="Link"><input value={(c.link as string) || ""} onChange={(e) => upd("link", e.target.value)} className="input-field" placeholder="/page-link" /></F>
+
+          {/* Card Templates */}
+          <div className="pt-2 border-t border-white/[0.04]">
+            <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-white/15 mb-2">Quick Templates</p>
+            <div className="grid grid-cols-3 gap-1">
+              {([
+                { label: "Clean", bg: "#f5f5f7", text: "#1d1d1f", desc: "#86868b", border: "transparent", radius: "18px", style: "default" },
+                { label: "White", bg: "#ffffff", text: "#1d1d1f", desc: "#86868b", border: "#e8e8ed", radius: "16px", style: "outlined" },
+                { label: "Dark", bg: "#1d1d1f", text: "#ffffff", desc: "rgba(255,255,255,0.5)", border: "rgba(255,255,255,0.06)", radius: "18px", style: "default" },
+                { label: "Glass", bg: "rgba(255,255,255,0.06)", text: "#ffffff", desc: "rgba(255,255,255,0.4)", border: "rgba(255,255,255,0.08)", radius: "20px", style: "glass" },
+                { label: "Shadow", bg: "#ffffff", text: "#1d1d1f", desc: "#86868b", border: "transparent", radius: "20px", style: "elevated" },
+                { label: "Minimal", bg: "transparent", text: "#1d1d1f", desc: "#86868b", border: "transparent", radius: "0px", style: "flat" },
+              ]).map((t) => (
+                <button key={t.label} onClick={() => {
+                  upd("cardBg", t.bg); upd("cardTextColor", t.text); upd("descColor", t.desc);
+                  upd("cardBorderColor", t.border); upd("cardRadius", t.radius); upd("cardStyle", t.style);
+                  upd("titleColor", t.text);
+                }}
+                  className="p-2 rounded-lg border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.06] hover:border-white/[0.12] transition-all">
+                  <div className="h-6 rounded-md mb-1" style={{ backgroundColor: t.bg, border: `1px solid ${t.border}` }} />
+                  <p className="text-[8px] text-white/25 text-center">{t.label}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Card Size */}
+          <div className="pt-2 border-t border-white/[0.04]">
+            <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-white/15 mb-2">Card Size</p>
+            <F label="Padding">
+              <div className="flex gap-1">
+                {(["compact","default","spacious"] as const).map((s) => {
+                  const padMap: Record<string, string> = { compact: "12px", default: "24px", spacious: "40px" };
+                  return (
+                    <button key={s} onClick={() => upd("cardPadding", padMap[s])}
+                      className={`flex-1 h-7 rounded-md text-[9px] font-medium capitalize transition-all ${(c.cardPadding as string || "24px") === padMap[s] ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" : "bg-white/[0.04] border border-white/[0.06] text-white/25"}`}>{s}</button>
+                  );
+                })}
+              </div>
+            </F>
+            <F label="Height">
+              <div className="flex gap-1">
+                {(["auto","small","medium","large"] as const).map((s) => {
+                  const hMap: Record<string, string> = { auto: "auto", small: "180px", medium: "280px", large: "400px" };
+                  return (
+                    <button key={s} onClick={() => upd("cardHeight", hMap[s])}
+                      className={`flex-1 h-7 rounded-md text-[9px] font-medium capitalize transition-all ${(c.cardHeight as string || "auto") === hMap[s] ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" : "bg-white/[0.04] border border-white/[0.06] text-white/25"}`}>{s}</button>
+                  );
+                })}
+              </div>
+            </F>
+            <F label="Image Height">
+              <div className="flex gap-1">
+                {(["none","small","medium","large"] as const).map((s) => {
+                  const hMap: Record<string, string> = { none: "0px", small: "120px", medium: "180px", large: "260px" };
+                  return (
+                    <button key={s} onClick={() => upd("imageHeight", hMap[s])}
+                      className={`flex-1 h-7 rounded-md text-[9px] font-medium capitalize transition-all ${(c.imageHeight as string || "180px") === hMap[s] ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" : "bg-white/[0.04] border border-white/[0.06] text-white/25"}`}>{s}</button>
+                  );
+                })}
+              </div>
+            </F>
+          </div>
 
           {/* Card Style */}
           <div className="pt-2 border-t border-white/[0.04]">
