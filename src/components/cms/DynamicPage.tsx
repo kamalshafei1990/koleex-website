@@ -5,9 +5,8 @@ import { getPageWithSections } from "@/lib/cms";
 import { getElementsBySectionId } from "@/lib/elements";
 import { SectionRenderer } from "./SectionRenderer";
 import { ElementRenderer } from "./ElementRenderer";
-import { ZoneRenderer } from "./ZoneRenderer";
 import { getSectionSettings } from "@/lib/section-helpers";
-import type { SectionRow, ElementRow, ZoneLayout } from "@/types/supabase";
+import type { SectionRow, ElementRow } from "@/types/supabase";
 
 /* ---------------------------------------------------------------------------
    DynamicPage — Loads sections + elements from Supabase by page slug.
@@ -65,22 +64,39 @@ export function DynamicPage({ slug, fallback }: DynamicPageProps) {
     <>
       {sections.map((section) => {
         const sectionElements = elements[section.id] || [];
+        const settings = getSectionSettings(section);
+
+        // ELEMENTS MODE: when section has elements, render them in a grid
+        // with the section's background — SectionRenderer is skipped.
+        if (sectionElements.length > 0) {
+          const cols = settings.columns || 1;
+          const rows = settings.rows || 0;
+          const gap = settings.gap || "24px";
+          const pt = settings.paddingTop || "48px";
+          const pb = settings.paddingBottom || "48px";
+          const bg = section.background;
+          const bgClass = bg === "dark" ? "bg-[#1d1d1f]" : bg === "black" ? "bg-black" : bg === "light" ? "bg-[#f5f5f7]" : "bg-white";
+          return (
+            <section key={section.id} className={bgClass}>
+              <div className="max-w-[1000px] mx-auto px-6" style={{ paddingTop: pt, paddingBottom: pb }}>
+                <div style={{
+                  display: "grid",
+                  gridTemplateColumns: `repeat(${cols}, 1fr)`,
+                  gridTemplateRows: rows ? `repeat(${rows}, auto)` : undefined,
+                  gap,
+                  alignItems: "center",
+                }}>
+                  <ElementRenderer elements={sectionElements} />
+                </div>
+              </div>
+            </section>
+          );
+        }
+
+        // SECTION MODE: no elements → render built-in section content
         return (
           <div key={section.id}>
             <SectionRenderer sections={[section]} />
-            {sectionElements.length > 0 && (() => {
-              const settings = getSectionSettings(section);
-              const zoneLayout = settings.zoneLayout || "1-col";
-              return (
-                <div className="max-w-[1000px] mx-auto px-6 py-8">
-                  {zoneLayout === "1-col" ? (
-                    <div className="space-y-6"><ElementRenderer elements={sectionElements} /></div>
-                  ) : (
-                    <ZoneRenderer elements={sectionElements} layout={zoneLayout as ZoneLayout} />
-                  )}
-                </div>
-              );
-            })()}
           </div>
         );
       })}

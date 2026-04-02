@@ -4,9 +4,8 @@ import { useEffect, useState, useCallback } from "react";
 import { SectionRenderer } from "@/components/cms/SectionRenderer";
 import { ElementRenderer } from "@/components/cms/ElementRenderer";
 import { CanvasElement } from "@/components/cms/CanvasElement";
-import { ZoneRenderer } from "@/components/cms/ZoneRenderer";
 import { getSectionSettings } from "@/lib/section-helpers";
-import type { SectionRow, ElementRow, ZoneLayout } from "@/types/supabase";
+import type { SectionRow, ElementRow } from "@/types/supabase";
 
 /* ---------------------------------------------------------------------------
    Admin Preview — Visual canvas with section toolbar + canvas elements.
@@ -90,7 +89,6 @@ export default function PreviewPage() {
         const isSelected = selectedSectionId === section.id;
         const isHovered = hoveredSectionId === section.id;
         const settings = getSectionSettings(section);
-        const zoneLayout = settings.zoneLayout || "1-col";
 
         return (
           <div
@@ -131,56 +129,81 @@ export default function PreviewPage() {
               </div>
             )}
 
-            {/* Section built-in content (title, subtitle, image, buttons) */}
-            <div className="relative">
-              <SectionRenderer sections={[section]} />
+            {/* ── RENDER MODE: Elements OR Section built-in ── */}
+            {sectionElements.length > 0 ? (
+              /* ELEMENTS MODE: section has elements → render them in a grid container
+                 with the section's background. SectionRenderer is skipped so elements
+                 ARE the content and can be arranged side-by-side with the grid. */
+              (() => {
+                const cols = settings.columns || 1;
+                const rows = settings.rows || 0;
+                const gap = settings.gap || "24px";
+                const pt = settings.paddingTop || "48px";
+                const pb = settings.paddingBottom || "48px";
+                const bg = section.background;
+                const bgClass = bg === "dark" ? "bg-[#1d1d1f]" : bg === "black" ? "bg-black" : bg === "light" ? "bg-[#f5f5f7]" : "bg-white";
+                return (
+                  <div className={bgClass}>
+                    <div className="max-w-[1000px] mx-auto px-6" style={{ paddingTop: pt, paddingBottom: pb }}>
+                      <div style={{
+                        display: "grid",
+                        gridTemplateColumns: `repeat(${cols}, 1fr)`,
+                        gridTemplateRows: rows ? `repeat(${rows}, auto)` : undefined,
+                        gap,
+                        alignItems: "center",
+                      }}>
+                        {sectionElements.map((el) => (
+                          <CanvasElement
+                            key={el.id}
+                            element={el}
+                            isSelected={selectedElementId === el.id}
+                            onSelect={() => { setSelectedElementId(el.id); window.parent.postMessage({ type: "select-element", sectionId: section.id, elementId: el.id }, "*"); }}
+                            onUpdate={(updates) => handleElementUpdate(section.id, el.id, updates)}
+                            onDuplicate={() => handleElementDuplicate(section.id, el.id)}
+                            onDelete={() => handleElementDelete(section.id, el.id)}
+                          >
+                            <ElementRenderer elements={[el]} />
+                          </CanvasElement>
+                        ))}
+                      </div>
+                    </div>
 
-              {/* Inline editable overlay for section title */}
-              {isSelected && section.title && (
-                <InlineEditOverlay sectionId={section.id} onBlur={handleTextBlur} />
-              )}
-            </div>
-
-            {/* Canvas elements — using columns/gap from settings */}
-            {sectionElements.length > 0 && (() => {
-              const cols = settings.columns || 1;
-              const rows = settings.rows || 0;
-              const gap = settings.gap || "24px";
-              const pt = settings.paddingTop || "32px";
-              const pb = settings.paddingBottom || "32px";
-              return (
-              <div className="max-w-[1000px] mx-auto px-6" style={{ paddingTop: pt, paddingBottom: pb }}>
-                <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gridTemplateRows: rows ? `repeat(${rows}, auto)` : undefined, gap }}>
-                    {sectionElements.map((el) => (
-                      <CanvasElement
-                        key={el.id}
-                        element={el}
-                        isSelected={selectedElementId === el.id}
-                        onSelect={() => { setSelectedElementId(el.id); window.parent.postMessage({ type: "select-element", sectionId: section.id, elementId: el.id }, "*"); }}
-                        onUpdate={(updates) => handleElementUpdate(section.id, el.id, updates)}
-                        onDuplicate={() => handleElementDuplicate(section.id, el.id)}
-                        onDelete={() => handleElementDelete(section.id, el.id)}
-                      >
-                        <ElementRenderer elements={[el]} />
-                      </CanvasElement>
-                    ))}
+                    {/* Add element button */}
+                    {isSelected && (
+                      <div className="max-w-[1000px] mx-auto px-6 pb-4 flex justify-center">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); window.parent.postMessage({ type: "add-element-request", sectionId: section.id }, "*"); }}
+                          className="h-8 px-5 rounded-xl border-2 border-dashed border-[#e8e8ed] text-[11px] text-[#aeaeb2] hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50/50 transition-all duration-200"
+                        >
+                          + Add Element
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()
+            ) : (
+              /* SECTION MODE: no elements → render section's built-in content */
+              <>
+                <div className="relative">
+                  <SectionRenderer sections={[section]} />
+                  {isSelected && section.title && (
+                    <InlineEditOverlay sectionId={section.id} onBlur={handleTextBlur} />
+                  )}
                 </div>
-              </div>
-              );
-            })()}
 
-            {/* Add element button — always visible when section is selected */}
-            {isSelected && (
-              <div className="max-w-[1000px] mx-auto px-6 py-4 flex justify-center">
-                <button
-                  onClick={(e) => { e.stopPropagation(); window.parent.postMessage({ type: "add-element-request", sectionId: section.id }, "*"); }}
-                  className={`h-9 px-5 rounded-xl border-2 border-dashed text-[12px] hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50 transition-all duration-200 ${
-                    sectionElements.length === 0 ? "border-[#d2d2d7] text-[#86868b] py-8" : "border-[#e8e8ed] text-[#aeaeb2]"
-                  }`}
-                >
-                  + Add Element
-                </button>
-              </div>
+                {/* Add element button — empty section */}
+                {isSelected && (
+                  <div className="max-w-[1000px] mx-auto px-6 py-8 flex justify-center">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); window.parent.postMessage({ type: "add-element-request", sectionId: section.id }, "*"); }}
+                      className="h-10 px-6 rounded-xl border-2 border-dashed border-[#d2d2d7] text-[13px] text-[#86868b] hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50 transition-all duration-200"
+                    >
+                      + Add Element
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         );
