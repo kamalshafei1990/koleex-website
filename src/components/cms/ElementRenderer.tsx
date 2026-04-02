@@ -449,6 +449,16 @@ function TableElement({ el }: { el: ElementRow }) {
   );
 }
 
+function MapElement({ el }: { el: ElementRow }) {
+  const d = (el.content || {}) as { src?: string; height?: string };
+  if (!d.src) return <div className="h-[300px] bg-[#f5f5f7] rounded-xl flex items-center justify-center text-[#86868b] text-[13px]">📍 No map URL</div>;
+  return (
+    <div className="rounded-xl overflow-hidden" style={{ height: d.height || "300px" }}>
+      <iframe src={d.src} className="w-full h-full border-0" allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+    </div>
+  );
+}
+
 /* ── Master renderer ── */
 const elementMap: Record<string, React.ComponentType<{ el: ElementRow }>> = {
   heading: HeadingElement, paragraph: ParagraphElement, image: ImageElement,
@@ -459,7 +469,7 @@ const elementMap: Record<string, React.ComponentType<{ el: ElementRow }>> = {
   faq: FaqElement, social: SocialElement, logo: LogoElement,
   progress: ProgressElement, "tag-list": TagListElement, "cta-banner": CtaBannerElement,
   "icon-box": IconBoxElement, gallery: GalleryElement, accordion: AccordionElement,
-  alert: AlertElement, table: TableElement,
+  alert: AlertElement, table: TableElement, map: MapElement,
 };
 
 export function ElementRenderer({ elements }: { elements: ElementRow[] }) {

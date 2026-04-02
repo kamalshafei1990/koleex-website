@@ -169,12 +169,14 @@ export default function PreviewPage() {
               );
             })()}
 
-            {/* Add element button — shows when section is selected and empty */}
-            {isSelected && sectionElements.length === 0 && (
-              <div className="max-w-[1000px] mx-auto px-6 py-12 flex justify-center">
+            {/* Add element button — always visible when section is selected */}
+            {isSelected && (
+              <div className="max-w-[1000px] mx-auto px-6 py-4 flex justify-center">
                 <button
                   onClick={(e) => { e.stopPropagation(); window.parent.postMessage({ type: "add-element-request", sectionId: section.id }, "*"); }}
-                  className="h-10 px-5 rounded-xl border-2 border-dashed border-[#d2d2d7] text-[13px] text-[#86868b] hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50 transition-all duration-200"
+                  className={`h-9 px-5 rounded-xl border-2 border-dashed text-[12px] hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50 transition-all duration-200 ${
+                    sectionElements.length === 0 ? "border-[#d2d2d7] text-[#86868b] py-8" : "border-[#e8e8ed] text-[#aeaeb2]"
+                  }`}
                 >
                   + Add Element
                 </button>

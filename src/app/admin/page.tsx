@@ -190,9 +190,9 @@ export default function AdminPage() {
     setSaveState("unsaved");
   }
 
-  // Load elements when section is selected
-  async function loadElements(sectionId: string) {
-    if (sectionElements[sectionId]) return; // already loaded
+  // Load elements when section is selected (always refresh from DB)
+  async function loadElements(sectionId: string, force = false) {
+    if (sectionElements[sectionId] && !force) return;
     const els = await getElementsBySectionId(sectionId);
     setSectionElements(prev => ({ ...prev, [sectionId]: els }));
   }
@@ -201,18 +201,25 @@ export default function AdminPage() {
     const existing = sectionElements[sectionId] || [];
     const el = await createElement(sectionId, type, undefined, existing.length + 1);
     if (el) {
-      setSectionElements(prev => ({ ...prev, [sectionId]: [...(prev[sectionId] || []), el] }));
+      setSectionElements(prev => {
+        const updated = { ...prev, [sectionId]: [...(prev[sectionId] || []), el] };
+        sendPreviewUpdateWithElements(sections, updated);
+        return updated;
+      });
     }
     setShowElementPicker(null);
+    setSaveState("unsaved");
   }
 
   async function removeElement(sectionId: string, elementId: string) {
     if (!confirm("Delete this element?")) return;
     await deleteElement(elementId);
-    setSectionElements(prev => ({
-      ...prev,
-      [sectionId]: (prev[sectionId] || []).filter(e => e.id !== elementId),
-    }));
+    setSectionElements(prev => {
+      const updated = { ...prev, [sectionId]: (prev[sectionId] || []).filter(e => e.id !== elementId) };
+      sendPreviewUpdateWithElements(sections, updated);
+      return updated;
+    });
+    setSaveState("unsaved");
   }
 
   async function editElement(sectionId: string, elementId: string, content: Record<string, unknown>) {
@@ -247,22 +254,37 @@ export default function AdminPage() {
   }
 
   function updateSetting(sectionId: string, key: keyof SectionSettings, value: unknown) {
-    const section = sections.find((s) => s.id === sectionId);
-    if (!section) return;
-    const currentSettings = getSectionSettings(section);
-    const newSettings = { ...currentSettings, [key]: value };
-    const newItems = updateSectionSettings(section.items, newSettings);
-
     setSections(prev => {
+      const section = prev.find(s => s.id === sectionId);
+      if (!section) return prev;
+      const currentSettings = getSectionSettings(section);
+      const newSettings = { ...currentSettings, [key]: value };
+      const newItems = updateSectionSettings(section.items, newSettings);
       const updated = prev.map(s => s.id === sectionId ? { ...s, items: newItems } : s);
       sendPreviewUpdate(updated);
+      if (selectedSection?.id === sectionId) {
+        setSelectedSection(p => p ? { ...p, items: newItems } : p);
+      }
       return updated;
     });
+    setSaveState("unsaved");
+  }
 
-    if (selectedSection?.id === sectionId) {
-      setSelectedSection(prev => prev ? { ...prev, items: newItems } : prev);
-    }
-
+  // Batch update multiple settings at once (fixes double-call stale closure bug)
+  function updateSettings(sectionId: string, updates: Partial<SectionSettings>) {
+    setSections(prev => {
+      const section = prev.find(s => s.id === sectionId);
+      if (!section) return prev;
+      const currentSettings = getSectionSettings(section);
+      const newSettings = { ...currentSettings, ...updates };
+      const newItems = updateSectionSettings(section.items, newSettings);
+      const updated = prev.map(s => s.id === sectionId ? { ...s, items: newItems } : s);
+      sendPreviewUpdate(updated);
+      if (selectedSection?.id === sectionId) {
+        setSelectedSection(p => p ? { ...p, items: newItems } : p);
+      }
+      return updated;
+    });
     setSaveState("unsaved");
   }
 
@@ -717,7 +739,7 @@ export default function AdminPage() {
                               const curRows = getSectionSettings(selectedSection).rows || 0;
                               const isActive = curCols === l.cols && curRows === l.rows;
                               return (
-                                <button key={l.label} onClick={() => { updateSetting(selectedSection.id, "columns", l.cols); updateSetting(selectedSection.id, "rows", l.rows); }}
+                                <button key={l.label} onClick={() => updateSettings(selectedSection.id, { columns: l.cols, rows: l.rows })}
                                   className={`p-1.5 rounded-lg border transition-all ${isActive ? "border-blue-500/40 bg-blue-500/10" : "border-white/[0.05] bg-white/[0.02] hover:border-white/[0.12]"}`}>
                                   {l.preview}
                                   <p className="text-[7px] text-white/20 mt-0.5 text-center">{l.label}</p>
@@ -899,8 +921,7 @@ export default function AdminPage() {
                                             await updateElement(el.id, { style: newStyle });
                                             setSectionElements(prev => {
                                               const updated = { ...prev, [selectedSection.id]: (prev[selectedSection.id] || []).map(e => e.id === el.id ? { ...e, style: newStyle } : e) };
-                                              // Force preview update with new elements
-                                              setTimeout(() => iframeRef.current?.contentWindow?.postMessage({ type: "preview-update", sections: sections.filter(s => s.visible), elements: updated }, "*"), 50);
+                                              sendPreviewUpdateWithElements(sections, updated);
                                               return updated;
                                             });
                                             setSaveState("unsaved");
@@ -1175,15 +1196,21 @@ function ElementEditor({ el, sectionId, onEdit }: { el: import("@/types/supabase
   const F = ({ label, children }: { label: string; children: React.ReactNode }) => (
     <div><label className="text-[9px] text-white/25 mb-0.5 block">{label}</label>{children}</div>
   );
-  // Color picker with text input
-  const ColorField = ({ label, field, placeholder }: { label: string; field: string; placeholder: string }) => (
-    <F label={label}>
-      <div className="flex items-center gap-1.5">
-        <input type="color" value={(c[field] as string) || placeholder} onChange={(e) => upd(field, e.target.value)} className="w-7 h-7 rounded-md border border-white/[0.08] bg-transparent cursor-pointer p-0.5 shrink-0" />
-        <input value={(c[field] as string) || ""} onChange={(e) => upd(field, e.target.value)} className="input-field flex-1" placeholder={placeholder} />
-      </div>
-    </F>
-  );
+  // Color picker with text input — handles hex, rgba, and transparent
+  const ColorField = ({ label, field, placeholder }: { label: string; field: string; placeholder: string }) => {
+    const val = (c[field] as string) || "";
+    // color input only accepts hex — convert or use placeholder
+    const isHex = /^#[0-9a-fA-F]{6}$/.test(val) || /^#[0-9a-fA-F]{3}$/.test(val);
+    const hexVal = isHex ? val : /^#[0-9a-fA-F]{6}$/.test(placeholder) ? placeholder : "#888888";
+    return (
+      <F label={label}>
+        <div className="flex items-center gap-1.5">
+          <input type="color" value={hexVal} onChange={(e) => upd(field, e.target.value)} className="w-7 h-7 rounded-md border border-white/[0.08] bg-transparent cursor-pointer p-0.5 shrink-0" />
+          <input value={val} onChange={(e) => upd(field, e.target.value)} className="input-field flex-1" placeholder={placeholder} />
+        </div>
+      </F>
+    );
+  };
 
   switch (el.type) {
     case "heading":
@@ -1518,6 +1545,13 @@ function ElementEditor({ el, sectionId, onEdit }: { el: import("@/types/supabase
         <div className="space-y-2">
           <F label="Message"><input value={(c.text as string) || ""} onChange={(e) => upd("text", e.target.value)} className="input-field" placeholder="Alert message" /></F>
           <F label="Type"><select value={(c.type as string) || "info"} onChange={(e) => upd("type", e.target.value)} className="input-field">{["info","success","warning","error"].map(t => <option key={t}>{t}</option>)}</select></F>
+        </div>
+      );
+    case "map":
+      return (
+        <div className="space-y-2">
+          <F label="Google Maps Embed URL"><input value={(c.src as string) || ""} onChange={(e) => upd("src", e.target.value)} className="input-field" placeholder="https://www.google.com/maps/embed?..." /></F>
+          <F label="Height"><input value={(c.height as string) || "300px"} onChange={(e) => upd("height", e.target.value)} className="input-field" placeholder="300px" /></F>
         </div>
       );
     case "list":
