@@ -222,7 +222,8 @@ export default function AdminPage() {
         ...prev,
         [sectionId]: (prev[sectionId] || []).map(e => e.id === elementId ? { ...e, content } : e),
       };
-      sendPreviewUpdate(sections);
+      // Send fresh elements to preview
+      sendPreviewUpdateWithElements(sections, updated);
       return updated;
     });
     setSaveState("unsaved");
@@ -231,12 +232,16 @@ export default function AdminPage() {
   const previewTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function sendPreviewUpdate(updatedSections: SectionRow[]) {
+    sendPreviewUpdateWithElements(updatedSections, sectionElements);
+  }
+
+  function sendPreviewUpdateWithElements(updatedSections: SectionRow[], elems: Record<string, import("@/types/supabase").ElementRow[]>) {
     if (previewTimerRef.current) clearTimeout(previewTimerRef.current);
     previewTimerRef.current = setTimeout(() => {
       iframeRef.current?.contentWindow?.postMessage({
         type: "preview-update",
         sections: updatedSections.filter(s => s.visible),
-        elements: sectionElements,
+        elements: elems,
       }, "*");
     }, 200); // debounce 200ms
   }
@@ -689,54 +694,41 @@ export default function AdminPage() {
                   {/* ═══ STYLE TAB ═══ */}
                   {settingsTab === "style" && (
                     <>
-                      {/* Element Layout — columns, rows, gap */}
+                      {/* Element Layout — simplified grid controls */}
                       <SettingsGroup title="Element Layout">
-                        {/* Columns */}
-                        <Field label="Columns">
-                          <div className="flex items-center gap-2">
-                            <button onClick={() => { const cur = getSectionSettings(selectedSection).columns || 1; if (cur > 1) updateSetting(selectedSection.id, "columns", cur - 1); }}
-                              className="h-8 w-8 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-all text-[14px] font-bold">−</button>
-                            <div className="flex-1 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-[13px] font-semibold text-white/60">
-                              {getSectionSettings(selectedSection).columns || 1}
-                            </div>
-                            <button onClick={() => { const cur = getSectionSettings(selectedSection).columns || 1; if (cur < 6) updateSetting(selectedSection.id, "columns", cur + 1); }}
-                              className="h-8 w-8 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-all text-[14px] font-bold">+</button>
-                          </div>
-                        </Field>
+                        <p className="text-[9px] text-white/20 mb-3 leading-relaxed">
+                          How elements inside this section are arranged. Add an image + text, set columns to 2, and they&apos;ll sit side by side.
+                        </p>
 
-                        {/* Rows */}
-                        <Field label="Rows">
-                          <div className="flex items-center gap-2">
-                            <button onClick={() => { const cur = getSectionSettings(selectedSection).rows || 0; if (cur > 0) updateSetting(selectedSection.id, "rows", cur - 1); }}
-                              className="h-8 w-8 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-all text-[14px] font-bold">−</button>
-                            <div className="flex-1 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-[13px] font-semibold text-white/60">
-                              {getSectionSettings(selectedSection).rows || "Auto"}
-                            </div>
-                            <button onClick={() => { const cur = getSectionSettings(selectedSection).rows || 0; if (cur < 10) updateSetting(selectedSection.id, "rows", cur + 1); }}
-                              className="h-8 w-8 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition-all text-[14px] font-bold">+</button>
-                          </div>
-                          <p className="text-[8px] text-white/15 mt-1">0 = auto rows based on content</p>
-                        </Field>
-
-                        {/* Quick presets */}
-                        <Field label="Presets">
-                          <div className="grid grid-cols-4 gap-1">
+                        {/* Grid layout with visual presets */}
+                        <Field label="Layout">
+                          <div className="grid grid-cols-4 gap-1.5">
                             {([
-                              { value: "1-col", label: "1", cols: 1, preview: <div className="h-4 bg-blue-400/30 rounded-sm" /> },
-                              { value: "2-col", label: "2", cols: 2, preview: <div className="flex gap-px h-4"><div className="flex-1 bg-blue-400/30 rounded-sm" /><div className="flex-1 bg-blue-400/30 rounded-sm" /></div> },
-                              { value: "3-col", label: "3", cols: 3, preview: <div className="flex gap-px h-4"><div className="flex-1 bg-blue-400/30 rounded-sm" /><div className="flex-1 bg-blue-400/30 rounded-sm" /><div className="flex-1 bg-blue-400/30 rounded-sm" /></div> },
-                              { value: "4-col", label: "4", cols: 4, preview: <div className="flex gap-px h-4"><div className="flex-1 bg-blue-400/30 rounded-sm" /><div className="flex-1 bg-blue-400/30 rounded-sm" /><div className="flex-1 bg-blue-400/30 rounded-sm" /><div className="flex-1 bg-blue-400/30 rounded-sm" /></div> },
-                            ] as { value: string; label: string; cols: number; preview: React.ReactNode }[]).map((l) => (
-                              <button key={l.value} onClick={() => { updateSetting(selectedSection.id, "columns", l.cols); updateSetting(selectedSection.id, "zoneLayout", l.value); }}
-                                className={`p-1.5 rounded-lg border transition-all ${(getSectionSettings(selectedSection).columns || 1) === l.cols ? "border-blue-500/30 bg-blue-500/10" : "border-white/[0.05] bg-white/[0.02] hover:border-white/[0.10]"}`}>
-                                {l.preview}
-                              </button>
-                            ))}
+                              { cols: 1, rows: 0, label: "Stack", preview: <div className="space-y-px"><div className="h-1.5 bg-blue-400/30 rounded-sm" /><div className="h-1.5 bg-blue-400/20 rounded-sm" /><div className="h-1.5 bg-blue-400/15 rounded-sm" /></div> },
+                              { cols: 2, rows: 0, label: "2 Side", preview: <div className="flex gap-px h-5"><div className="flex-1 bg-blue-400/30 rounded-sm" /><div className="flex-1 bg-blue-400/20 rounded-sm" /></div> },
+                              { cols: 3, rows: 0, label: "3 Grid", preview: <div className="flex gap-px h-5"><div className="flex-1 bg-blue-400/30 rounded-sm" /><div className="flex-1 bg-blue-400/25 rounded-sm" /><div className="flex-1 bg-blue-400/20 rounded-sm" /></div> },
+                              { cols: 4, rows: 0, label: "4 Grid", preview: <div className="flex gap-px h-5"><div className="flex-1 bg-blue-400/30 rounded-sm" /><div className="flex-1 bg-blue-400/25 rounded-sm" /><div className="flex-1 bg-blue-400/20 rounded-sm" /><div className="flex-1 bg-blue-400/15 rounded-sm" /></div> },
+                              { cols: 2, rows: 2, label: "2×2", preview: <div className="grid grid-cols-2 gap-px h-5"><div className="bg-blue-400/30 rounded-sm" /><div className="bg-blue-400/25 rounded-sm" /><div className="bg-blue-400/20 rounded-sm" /><div className="bg-blue-400/15 rounded-sm" /></div> },
+                              { cols: 3, rows: 2, label: "3×2", preview: <div className="grid grid-cols-3 gap-px h-5"><div className="bg-blue-400/30 rounded-sm" /><div className="bg-blue-400/25 rounded-sm" /><div className="bg-blue-400/20 rounded-sm" /><div className="bg-blue-400/15 rounded-sm" /><div className="bg-blue-400/20 rounded-sm" /><div className="bg-blue-400/25 rounded-sm" /></div> },
+                              { cols: 2, rows: 3, label: "2×3", preview: <div className="grid grid-cols-2 gap-px h-5"><div className="bg-blue-400/30 rounded-sm" /><div className="bg-blue-400/25 rounded-sm" /><div className="bg-blue-400/20 rounded-sm" /><div className="bg-blue-400/15 rounded-sm" /><div className="bg-blue-400/20 rounded-sm" /><div className="bg-blue-400/25 rounded-sm" /></div> },
+                              { cols: 4, rows: 2, label: "4×2", preview: <div className="grid grid-cols-4 gap-px h-5"><div className="bg-blue-400/30 rounded-sm" /><div className="bg-blue-400/25 rounded-sm" /><div className="bg-blue-400/20 rounded-sm" /><div className="bg-blue-400/15 rounded-sm" /><div className="bg-blue-400/20 rounded-sm" /><div className="bg-blue-400/25 rounded-sm" /><div className="bg-blue-400/20 rounded-sm" /><div className="bg-blue-400/15 rounded-sm" /></div> },
+                            ] as { cols: number; rows: number; label: string; preview: React.ReactNode }[]).map((l) => {
+                              const curCols = getSectionSettings(selectedSection).columns || 1;
+                              const curRows = getSectionSettings(selectedSection).rows || 0;
+                              const isActive = curCols === l.cols && curRows === l.rows;
+                              return (
+                                <button key={l.label} onClick={() => { updateSetting(selectedSection.id, "columns", l.cols); updateSetting(selectedSection.id, "rows", l.rows); }}
+                                  className={`p-1.5 rounded-lg border transition-all ${isActive ? "border-blue-500/40 bg-blue-500/10" : "border-white/[0.05] bg-white/[0.02] hover:border-white/[0.12]"}`}>
+                                  {l.preview}
+                                  <p className="text-[7px] text-white/20 mt-0.5 text-center">{l.label}</p>
+                                </button>
+                              );
+                            })}
                           </div>
                         </Field>
 
-                        {/* Gap / Spacing */}
-                        <Field label="Gap between elements">
+                        {/* Gap */}
+                        <Field label="Spacing">
                           <div className="flex gap-1">
                             {(["0", "8", "16", "24", "32", "48"] as const).map((g) => (
                               <button key={g} onClick={() => updateSetting(selectedSection.id, "gap", g + "px")}
@@ -1178,8 +1170,19 @@ function InlineIconPicker({ value, onChange }: { value: string; onChange: (v: st
 function ElementEditor({ el, sectionId, onEdit }: { el: import("@/types/supabase").ElementRow; sectionId: string; onEdit: (sId: string, eId: string, content: Record<string, unknown>) => void }) {
   const c = (el.content || {}) as Record<string, unknown>;
   const upd = (field: string, value: unknown) => onEdit(sectionId, el.id, { ...c, [field]: value });
+  // Batch update — merges multiple fields at once (fixes template bug)
+  const updMulti = (fields: Record<string, unknown>) => onEdit(sectionId, el.id, { ...c, ...fields });
   const F = ({ label, children }: { label: string; children: React.ReactNode }) => (
     <div><label className="text-[9px] text-white/25 mb-0.5 block">{label}</label>{children}</div>
+  );
+  // Color picker with text input
+  const ColorField = ({ label, field, placeholder }: { label: string; field: string; placeholder: string }) => (
+    <F label={label}>
+      <div className="flex items-center gap-1.5">
+        <input type="color" value={(c[field] as string) || placeholder} onChange={(e) => upd(field, e.target.value)} className="w-7 h-7 rounded-md border border-white/[0.08] bg-transparent cursor-pointer p-0.5 shrink-0" />
+        <input value={(c[field] as string) || ""} onChange={(e) => upd(field, e.target.value)} className="input-field flex-1" placeholder={placeholder} />
+      </div>
+    </F>
   );
 
   switch (el.type) {
@@ -1250,9 +1253,7 @@ function ElementEditor({ el, sectionId, onEdit }: { el: import("@/types/supabase
                 { label: "Minimal", bg: "transparent", text: "#1d1d1f", desc: "#86868b", border: "transparent", radius: "0px", style: "flat" },
               ]).map((t) => (
                 <button key={t.label} onClick={() => {
-                  upd("cardBg", t.bg); upd("cardTextColor", t.text); upd("descColor", t.desc);
-                  upd("cardBorderColor", t.border); upd("cardRadius", t.radius); upd("cardStyle", t.style);
-                  upd("titleColor", t.text);
+                  updMulti({ cardBg: t.bg, cardTextColor: t.text, descColor: t.desc, cardBorderColor: t.border, cardRadius: t.radius, cardStyle: t.style, titleColor: t.text });
                 }}
                   className="p-2 rounded-lg border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.06] hover:border-white/[0.12] transition-all">
                   <div className="h-6 rounded-md mb-1" style={{ backgroundColor: t.bg, border: `1px solid ${t.border}` }} />
@@ -1312,14 +1313,24 @@ function ElementEditor({ el, sectionId, onEdit }: { el: import("@/types/supabase
               </div>
             </F>
             <div className="grid grid-cols-2 gap-2 mt-2">
-              <F label="Card BG"><input value={(c.cardBg as string) || ""} onChange={(e) => upd("cardBg", e.target.value)} className="input-field" placeholder="#f5f5f7" /></F>
-              <F label="Border"><input value={(c.cardBorderColor as string) || ""} onChange={(e) => upd("cardBorderColor", e.target.value)} className="input-field" placeholder="transparent" /></F>
+              <ColorField label="Background" field="cardBg" placeholder="#f5f5f7" />
+              <ColorField label="Border" field="cardBorderColor" placeholder="#e8e8ed" />
             </div>
             <div className="grid grid-cols-2 gap-2 mt-2">
-              <F label="Title Color"><input value={(c.titleColor as string) || ""} onChange={(e) => upd("titleColor", e.target.value)} className="input-field" placeholder="#1d1d1f" /></F>
-              <F label="Desc Color"><input value={(c.descColor as string) || ""} onChange={(e) => upd("descColor", e.target.value)} className="input-field" placeholder="#86868b" /></F>
+              <ColorField label="Title Color" field="titleColor" placeholder="#1d1d1f" />
+              <ColorField label="Desc Color" field="descColor" placeholder="#86868b" />
             </div>
-            <F label="Radius"><input value={(c.cardRadius as string) || ""} onChange={(e) => upd("cardRadius", e.target.value)} className="input-field" placeholder="18px" /></F>
+            <F label="Radius">
+              <div className="flex gap-1">
+                {(["none","small","medium","large"] as const).map((s) => {
+                  const rMap: Record<string, string> = { none: "0px", small: "8px", medium: "16px", large: "24px" };
+                  return (
+                    <button key={s} onClick={() => upd("cardRadius", rMap[s])}
+                      className={`flex-1 h-7 rounded-md text-[9px] font-medium capitalize transition-all ${(c.cardRadius as string || "18px") === rMap[s] ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" : "bg-white/[0.04] border border-white/[0.06] text-white/25"}`}>{s}</button>
+                  );
+                })}
+              </div>
+            </F>
           </div>
 
           {/* Icon Style */}
@@ -1327,8 +1338,18 @@ function ElementEditor({ el, sectionId, onEdit }: { el: import("@/types/supabase
             <div className="pt-2 border-t border-white/[0.04]">
               <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-white/15 mb-2">Icon Style</p>
               <div className="grid grid-cols-2 gap-2">
-                <F label="Icon Color"><input value={(c.iconColor as string) || ""} onChange={(e) => upd("iconColor", e.target.value)} className="input-field" placeholder="#0066cc" /></F>
-                <F label="Icon Size"><input value={(c.iconSize as string) || ""} onChange={(e) => upd("iconSize", e.target.value)} className="input-field" placeholder="28px" /></F>
+                <ColorField label="Icon Color" field="iconColor" placeholder="#0066cc" />
+                <F label="Icon Size">
+                  <div className="flex gap-1">
+                    {(["small","medium","large"] as const).map((s) => {
+                      const sMap: Record<string, string> = { small: "20px", medium: "28px", large: "40px" };
+                      return (
+                        <button key={s} onClick={() => upd("iconSize", sMap[s])}
+                          className={`flex-1 h-7 rounded-md text-[9px] font-medium capitalize transition-all ${(c.iconSize as string || "28px") === sMap[s] ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" : "bg-white/[0.04] border border-white/[0.06] text-white/25"}`}>{s}</button>
+                      );
+                    })}
+                  </div>
+                </F>
               </div>
               <F label="Icon BG Shape">
                 <div className="flex gap-1">
@@ -1339,9 +1360,9 @@ function ElementEditor({ el, sectionId, onEdit }: { el: import("@/types/supabase
                 </div>
               </F>
               {(c.iconBgShape as string) && (c.iconBgShape as string) !== "none" && (
-                <F label="Icon BG Color"><input value={(c.iconBgColor as string) || ""} onChange={(e) => upd("iconBgColor", e.target.value)} className="input-field" placeholder="#f0f0f5" /></F>
+                <ColorField label="Icon BG Color" field="iconBgColor" placeholder="#f0f0f5" />
               )}
-              <F label="Badge Color"><input value={(c.badgeColor as string) || ""} onChange={(e) => upd("badgeColor", e.target.value)} className="input-field" placeholder="#0066cc" /></F>
+              {(c.badge as string) && <ColorField label="Badge Color" field="badgeColor" placeholder="#0066cc" />}
             </div>
           )}
         </div>
