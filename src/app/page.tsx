@@ -1,18 +1,16 @@
-"use client";
-
-import { DynamicPage } from "@/components/cms/DynamicPage";
 import { StaticHome } from "@/components/home/StaticHome";
 
 /* ---------------------------------------------------------------------------
-   Homepage — CMS-driven with static fallback.
+   Homepage — Apple.com-style 11-section static layout.
 
-   1. Tries to load sections from Supabase (pages.slug = "home")
-   2. Renders them via SectionRenderer (layout-based)
-   3. If Supabase fails or returns empty, shows StaticHome
+   Note: the CMS (DynamicPage) integration is temporarily disabled so the
+   new Apple-style design is visible immediately. To re-enable CMS editing,
+   run scripts/seed-home.ts to sync Supabase with the new layout, then
+   swap this file back to:
+
+     <DynamicPage slug="home" fallback={<StaticHome />} />
    --------------------------------------------------------------------------- */
 
 export default function HomePage() {
-  return (
-    <DynamicPage slug="home" fallback={<StaticHome />} />
-  );
+  return <StaticHome />;
 }
