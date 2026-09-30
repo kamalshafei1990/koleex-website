@@ -15,6 +15,7 @@
    found" for the hour (30/09/2026). Only the Hub's own 404 means "gone".
    --------------------------------------------------------------------------- */
 
+import { createHmac } from "node:crypto";
 import { draftMode } from "next/headers";
 import type { HubCatalog, HubCompany, HubDivision, HubJob, HubPage, HubPageSummary, HubProduct, HubProductList } from "@/types/hub";
 
@@ -55,6 +56,37 @@ async function hubGet<T>(path: string, tags: HubTag[], opts: { fresh?: boolean }
     if (res.status >= 500 && !last) { await new Promise((r) => setTimeout(r, 400)); continue; }
     throw new Error(`The Hub answered ${res.status} (${where}).`);
   }
+}
+
+/** Send something to the Hub (a visitor's message). Never retried — a
+ *  second send could file the message twice; the visitor can send again.
+ *  503 while the key is not set, 502 when the Hub does not answer. */
+export async function hubPost(path: string, body: unknown): Promise<{ status: number; data: Record<string, unknown> | null }> {
+  const key = bridgeKey();
+  if (!key) return { status: 503, data: null };
+  try {
+    const res = await fetch(`${HUB_URL}/api/website/v1${path}`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
+    });
+    const data = (await res.json().catch(() => null)) as Record<string, unknown> | null;
+    if (!res.ok) console.error(`[hub] POST ${path} answered ${res.status}`);
+    return { status: res.status, data };
+  } catch (e) {
+    console.error(`[hub] POST ${path} failed: ${e instanceof Error ? e.name : "error"}`);
+    return { status: 502, data: null };
+  }
+}
+
+/** Where a visitor writes from, as the Hub may know it: a keyed hash of the
+ *  address (the bridge key), never the address — enough to slow a flood from
+ *  one place, useless to anyone without the key. */
+export function hubPlaceHash(address: string): string | null {
+  const key = bridgeKey();
+  return key && address ? createHmac("sha256", key).update(address).digest("hex") : null;
 }
 
 /** Divisions → categories → subcategories, with how many products each shows. */

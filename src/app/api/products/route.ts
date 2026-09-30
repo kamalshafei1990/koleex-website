@@ -1,12 +1,14 @@
 /* ---------------------------------------------------------------------------
    GET /api/products?division=|category=|subcategory=&page=N — the next page
    of a product list, for "Show more" (page 1 comes with the static page).
+   GET /api/products?slug=<slug> — one product's card: the contact form
+   names the product a quotation is asked for (?product= on /contact).
    Reads the Hub through lib/hub, cached under the "products" tag, so a
    visitor never reaches the Hub; answers public product cards only.
    --------------------------------------------------------------------------- */
 
 import { NextResponse } from "next/server";
-import { hubProducts } from "@/lib/hub";
+import { hubProducts, hubProductsBySlugs } from "@/lib/hub";
 import { PRODUCT_PAGE_SIZE, toCard } from "@/lib/product-list";
 import { isLang } from "@/i18n/config";
 
@@ -25,6 +27,18 @@ export async function GET(req: Request) {
   const subcategory = slug("subcategory");
   const page = Math.floor(Number(sp.get("page")));
   const lang = isLang(sp.get("lang")) ? (sp.get("lang") as string) : "en";
+  const one = slug("slug");
+  if (one) {
+    try {
+      const list = await hubProductsBySlugs([one]);
+      return NextResponse.json(
+        { items: list.items.map((p) => toCard(p, lang)) },
+        { headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=600" } },
+      );
+    } catch {
+      return NextResponse.json({ error: "Products could not be loaded." }, { status: 502, headers: { "Cache-Control": "no-store" } });
+    }
+  }
   if ((!division && !category && !subcategory) || !Number.isFinite(page) || page < 2 || page > 500) {
     return NextResponse.json({ error: "Bad request." }, { status: 400 });
   }

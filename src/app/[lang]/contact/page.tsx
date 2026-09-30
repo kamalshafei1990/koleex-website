@@ -1,72 +1,75 @@
-import { EnglishOnly } from "@/components/i18n/EnglishOnly";
 import { PageHero } from "@/components/ui/PageHero";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
-import { EmailUs } from "@/components/contact/EmailUs";
+import { ContactForm } from "@/components/contact/ContactForm";
 import { hubCompany } from "@/lib/hub";
+import { translate } from "@/i18n/words";
 import type { Metadata } from "next";
 
 /* ---------------------------------------------------------------------------
-   Contact — the company's real details, from the Hub's own record (the
-   address, phones and email its quotations and invoices print, and the
-   cities where it has a presence). Replaced the made-up offices (Zurich,
-   Austin, Singapore, Munich) and a form that sent nothing (30/09/2026); the
-   form returns with the leads step, into the Hub's Contacts.
+   Contact — the form beside the company's real details. A message or a
+   quotation request (?product=<slug> from a product's page) reaches the
+   Hub as a potential customer in its Customers app, and the team there is
+   told (the leads step, 01/10/2026). The details — address, phones, email,
+   the cities where it works — are the Hub's own record, the ones its
+   quotations and invoices print. Every word of the page follows its
+   language; the details stay as the Hub keeps them.
    --------------------------------------------------------------------------- */
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: "Contact",
-  description: "Get in touch with Koleex International Group — sales, quotations and support.",
-};
+interface Props { params: Promise<{ lang: string }> }
 
-async function ContactPage() {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { lang } = await params;
+  return {
+    title: translate("Contact", lang),
+    description: translate("Get in touch with Koleex International Group — sales, quotations and support.", lang),
+  };
+}
+
+export default async function ContactPage({ params }: Props) {
+  const { lang } = await params;
+  const t = (s: string) => translate(s, lang);
   const company = await hubCompany();
   return (
     <>
       <PageHero
-        title="Get in Touch"
-        subtitle="Tell us what you produce and what you need — our team will help you choose the right machines."
+        title={t("Get in Touch")}
+        subtitle={t("Tell us what you produce and what you need — our team will help you choose the right machines.")}
       />
 
       <Section>
         <Container>
-          {company ? (
-            <div className="grid gap-16 lg:grid-cols-2">
-              <AnimatedSection>
+          <div className="grid gap-16 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+            <AnimatedSection>
+              <ContactForm companyEmail={company?.email ?? null} />
+            </AnimatedSection>
+
+            <AnimatedSection>
+              {company ? (
                 <div className="flex flex-col gap-8">
                   <div>
-                    <h2 className="text-title text-white mb-2">Write or call us</h2>
-                    <p className="text-white/50">A quotation, a question about a machine, or a partnership — we answer in English, Arabic and Chinese.</p>
+                    <h2 className="text-title text-white mb-2">{t("Write or call us")}</h2>
+                    <p className="text-white/50">{t("A quotation, a question about a machine, or a partnership — we answer in English, Arabic and Chinese.")}</p>
                   </div>
                   <div>
-                    <h3 className="text-overline">Email</h3>
-                    <p className="mt-2 text-lg text-white" dir="ltr">{company.email}</p>
+                    <h3 className="text-overline">{t("Email")}</h3>
+                    <p className="mt-2 text-lg text-white" dir="ltr"><a href={`mailto:${company.email}`} className="hover:underline underline-offset-4">{company.email}</a></p>
                   </div>
                   <div>
-                    <h3 className="text-overline">Phone</h3>
+                    <h3 className="text-overline">{t("Phone")}</h3>
                     <p className="mt-2 text-lg text-white" dir="ltr"><a href={`tel:${company.tel.replace(/[^+\d]/g, "")}`} className="hover:underline underline-offset-4">{company.tel}</a></p>
                     <p className="mt-1 text-lg text-white" dir="ltr"><a href={`tel:${company.mobile.replace(/[^+\d]/g, "")}`} className="hover:underline underline-offset-4">{company.mobile}</a></p>
                   </div>
                   <div>
-                    <EmailUs email={company.email} className="inline-flex h-[48px] items-center justify-center rounded-full bg-white px-8 text-[14px] font-medium text-black hover:bg-white/90">
-                      Email us
-                    </EmailUs>
-                  </div>
-                </div>
-              </AnimatedSection>
-
-              <AnimatedSection>
-                <div className="flex flex-col gap-8">
-                  <div>
-                    <h3 className="text-overline">Main base</h3>
+                    <h3 className="text-overline">{t("Main base")}</h3>
                     <p className="mt-2 text-white">{company.base}</p>
                     <p className="mt-2 text-base leading-relaxed text-white/50">{company.address}</p>
                   </div>
                   <div>
-                    <h3 className="text-overline">Where we work</h3>
+                    <h3 className="text-overline">{t("Where we work")}</h3>
                     <ul className="mt-3 flex flex-wrap gap-2">
                       {company.offices.map((city) => (
                         <li key={city} className="rounded-full border border-white/10 px-4 py-1.5 text-sm text-white/70">{city}</li>
@@ -74,19 +77,13 @@ async function ContactPage() {
                     </ul>
                   </div>
                 </div>
-              </AnimatedSection>
-            </div>
-          ) : (
-            <p className="py-16 text-center text-body-large !text-white/40">Our contact details will appear here shortly.</p>
-          )}
+              ) : (
+                <p className="text-white/40">{t("Our contact details will appear here shortly.")}</p>
+              )}
+            </AnimatedSection>
+          </div>
         </Container>
       </Section>
     </>
   );
-}
-
-/* English only for now: in another language it reads as English, under a
-   note (components/i18n/EnglishOnly). */
-export default async function Page({ params }: { params: Promise<{ lang: string }> }) {
-  return <EnglishOnly lang={(await params).lang}><ContactPage /></EnglishOnly>;
 }

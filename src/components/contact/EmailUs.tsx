@@ -1,10 +1,9 @@
 "use client";
 
-/* "Email us" — a quotation request from a product page (?product=<slug>) or
-   an application from Careers (?job=<id>) arrives with its subject already
-   written. The contact form itself comes with the leads step (the Hub's
-   Contacts); until then nothing a visitor types is lost in a form that goes
-   nowhere. */
+/* "Email us" — an application from Careers (?job=<id>) arrives with its
+   subject already written, until applications reach HR online. (A quotation
+   request, ?product=<slug>, has the contact form now, which files it in the
+   Hub; the subject is still written for anyone who emails instead.) */
 
 import { useEffect, useState } from "react";
 
