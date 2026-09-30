@@ -2,6 +2,8 @@
 // Navigation data for the Koleex International Group website
 // ---------------------------------------------------------------------------
 
+import { localize, nameIn } from "@/i18n/config";
+
 export interface NavItem {
   label: string;
   href: string;
@@ -42,16 +44,17 @@ export const mainNav: NavItem[] = [
 
 /** The Hub's divisions as the mega menu and the footer show them: divisions
  *  that have products, and their categories that have products. */
-export function productsMenuFrom(divisions: Array<{ slug: string; name: string; tagline: string | null; description: string | null; productCount: number; categories: Array<{ slug: string; name: string; productCount: number }> }>): MegaMenuItem[] {
+type Named = { name: string; zh?: string | null; ar?: string | null };
+export function productsMenuFrom(divisions: Array<Named & { slug: string; tagline: string | null; description: string | null; productCount: number; categories: Array<Named & { slug: string; productCount: number }> }>, lang = "en"): MegaMenuItem[] {
   return divisions
     .filter((d) => d.productCount > 0)
     .map((d) => ({
-      division: d.name,
+      division: nameIn(d, lang),
       slug: d.slug,
-      description: d.tagline ?? d.description ?? "",
+      description: lang === "en" ? d.tagline ?? d.description ?? "" : "",
       categories: d.categories
         .filter((c) => c.productCount > 0)
-        .map((c) => ({ name: c.name, slug: c.slug, href: `/products/${d.slug}/${c.slug}` })),
+        .map((c) => ({ name: nameIn(c, lang), slug: c.slug, href: localize(`/products/${d.slug}/${c.slug}`, lang) })),
     }));
 }
 

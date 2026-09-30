@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { hubPage } from "@/lib/hub";
 import { PageDocView } from "@/components/page-builder/PageDocView";
 import { textIn } from "@/types/page-doc";
+import { contentLang } from "@/i18n/config";
+import { EnglishOnly } from "@/components/i18n/EnglishOnly";
 import { SectionRenderer } from "./SectionRenderer";
 import { ElementRenderer } from "./ElementRenderer";
 import { getSectionSettings } from "@/lib/section-helpers";
@@ -18,24 +20,28 @@ import type { SectionRow, ElementRow } from "@/types/supabase";
 interface DynamicPageProps {
   slug: string;
   fallback: React.ReactNode;
+  /** The page's language (the Page Builder's words in it, else English). */
+  lang?: string;
 }
 
 /** A page's title and description for search engines: the Page Builder's
  *  (English), else the page's own, else the given ones. */
-export async function pageMetadata(slug: string, fallback: Metadata): Promise<Metadata> {
+export async function pageMetadata(slug: string, fallback: Metadata, lang = "en"): Promise<Metadata> {
   const data = await hubPage(slug);
-  const title = textIn(data?.doc?.seo.title, "en") || data?.page.title || (fallback.title as string | undefined);
-  const description = textIn(data?.doc?.seo.description, "en") || data?.page.description || (fallback.description as string | undefined);
+  const c = contentLang(lang);
+  const title = textIn(data?.doc?.seo.title, c) || data?.page.title || (fallback.title as string | undefined);
+  const description = textIn(data?.doc?.seo.description, c) || data?.page.description || (fallback.description as string | undefined);
   return { ...fallback, title, description };
 }
 
-export async function DynamicPage({ slug, fallback }: DynamicPageProps) {
+export async function DynamicPage({ slug, fallback, lang = "en" }: DynamicPageProps) {
   const data = await hubPage(slug);
   /* Built and published in the Hub's Page Builder (or its draft, in the
      signed preview). */
-  if (data?.doc) return <PageDocView doc={data.doc} />;
+  if (data?.doc) return <PageDocView doc={data.doc} lang={lang} />;
   const rows = (data?.sections ?? []).filter((s) => s.visible !== false);
-  if (rows.length === 0) return <>{fallback}</>;
+  /* The built-in page and the old editor's sections are English only. */
+  if (rows.length === 0) return <EnglishOnly lang={lang}>{fallback}</EnglishOnly>;
   const sections = rows as unknown as SectionRow[];
   /* Each section's visible elements, in order; the zone comes from their
      settings, as the builder stores it. */
@@ -49,7 +55,7 @@ export async function DynamicPage({ slug, fallback }: DynamicPageProps) {
   }
 
   return (
-    <>
+    <EnglishOnly lang={lang}>
       {sections.map((section) => {
         const sectionElements = elements[section.id] || [];
         const settings = getSectionSettings(section);
@@ -89,6 +95,6 @@ export async function DynamicPage({ slug, fallback }: DynamicPageProps) {
           </div>
         );
       })}
-    </>
+    </EnglishOnly>
   );
 }

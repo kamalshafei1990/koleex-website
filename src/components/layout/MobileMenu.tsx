@@ -7,6 +7,8 @@ import { X, ChevronDown, Search, Globe, MapPin, Sparkles, User } from "lucide-re
 import { cn } from "@/lib/utils";
 import { mainNav, type MegaMenuItem } from "@/data/navigation";
 import { KoleexLogo } from "@/components/ui/KoleexLogo";
+import { useLang } from "@/i18n/LangProvider";
+import { arrowOf, isLang } from "@/i18n/config";
 
 /* ---------------------------------------------------------------------------
    MobileMenu — Premium full-screen dark menu.
@@ -29,7 +31,8 @@ interface MobileMenuProps {
 }
 
 export default function MobileMenu({ isOpen, onClose, items }: MobileMenuProps) {
-  const pathname = usePathname();
+  const pathname = usePathname() || "/";
+  const { lang, t, L } = useLang();
   const [productsExpanded, setProductsExpanded] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -46,9 +49,11 @@ export default function MobileMenu({ isOpen, onClose, items }: MobileMenuProps) 
     return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
 
+  const parts = pathname.split("/");
+  const bare = isLang(parts[1]) ? `/${parts.slice(2).join("/")}` : pathname;
   const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname.startsWith(href);
+    if (href === "/") return bare === "/";
+    return bare.startsWith(href);
   };
 
   return (
@@ -78,13 +83,13 @@ export default function MobileMenu({ isOpen, onClose, items }: MobileMenuProps) 
       >
         {/* ── Header bar ── */}
         <div className="flex items-center justify-between px-6 h-[52px] shrink-0">
-          <Link href="/" onClick={onClose} className="opacity-80">
+          <Link href={L("/")} onClick={onClose} className="opacity-80">
             <KoleexLogo color="white" height={15} />
           </Link>
           <button
             onClick={onClose}
             className="h-10 w-10 flex items-center justify-center rounded-full bg-white/[0.06] text-white/70 hover:text-white hover:bg-white/[0.10] transition-all duration-300"
-            aria-label="Close menu"
+            aria-label={t("Close menu")}
           >
             <X className="h-[18px] w-[18px]" strokeWidth={1.5} />
           </button>
@@ -102,7 +107,7 @@ export default function MobileMenu({ isOpen, onClose, items }: MobileMenuProps) 
                     <button
                       onClick={() => setProductsExpanded(!productsExpanded)}
                       className={cn(
-                        "flex items-center justify-between w-full h-[52px] text-left",
+                        "flex items-center justify-between w-full h-[52px] text-start",
                         "transition-all duration-[400ms]",
                       )}
                       style={{
@@ -115,7 +120,7 @@ export default function MobileMenu({ isOpen, onClose, items }: MobileMenuProps) 
                         "text-[28px] md:text-[32px] font-semibold tracking-[-0.02em]",
                         active ? "text-white" : "text-white/80"
                       )}>
-                        {item.label}
+                        {t(item.label)}
                       </span>
                       <ChevronDown
                         className={cn(
@@ -137,7 +142,7 @@ export default function MobileMenu({ isOpen, onClose, items }: MobileMenuProps) 
                         {items.map((division) => (
                           <div key={division.slug}>
                             <Link
-                              href={`/products/${division.slug}`}
+                              href={L(`/products/${division.slug}`)}
                               className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/20 hover:text-white/40 transition-colors duration-300"
                               onClick={onClose}
                             >
@@ -159,11 +164,11 @@ export default function MobileMenu({ isOpen, onClose, items }: MobileMenuProps) 
                           </div>
                         ))}
                         <Link
-                          href="/products"
+                          href={L("/products")}
                           className="inline-block text-[14px] font-medium text-white/35 hover:text-white/60 transition-colors duration-300"
                           onClick={onClose}
                         >
-                          View all products →
+                          {t("All Products")} {arrowOf(lang)}
                         </Link>
                       </div>
                     </div>
@@ -177,7 +182,7 @@ export default function MobileMenu({ isOpen, onClose, items }: MobileMenuProps) 
               return (
                 <div key={item.href}>
                   <Link
-                    href={item.href}
+                    href={L(item.href)}
                     className="flex items-center justify-between h-[52px]"
                     onClick={onClose}
                     style={{
@@ -190,7 +195,7 @@ export default function MobileMenu({ isOpen, onClose, items }: MobileMenuProps) 
                       "text-[28px] md:text-[32px] font-semibold tracking-[-0.02em]",
                       active ? "text-white" : "text-white/80"
                     )}>
-                      {item.label}
+                      {t(item.label)}
                     </span>
                     {active && (
                       <div className="h-2 w-2 rounded-full bg-white/40" />
@@ -215,19 +220,19 @@ export default function MobileMenu({ isOpen, onClose, items }: MobileMenuProps) 
           <div className="grid grid-cols-4 gap-3">
             <button className="flex flex-col items-center gap-2 py-3 rounded-[12px] bg-white/[0.04] hover:bg-white/[0.07] transition-colors duration-300">
               <Search className="h-[18px] w-[18px] text-white/35" strokeWidth={1.5} />
-              <span className="text-[10px] font-medium text-white/25">Search</span>
+              <span className="text-[10px] font-medium text-white/25">{t("Search")}</span>
             </button>
-            <button className="flex flex-col items-center gap-2 py-3 rounded-[12px] bg-white/[0.04] hover:bg-white/[0.07] transition-colors duration-300">
+            <Link href={L("/choose-region")} onClick={onClose} className="flex flex-col items-center gap-2 py-3 rounded-[12px] bg-white/[0.04] hover:bg-white/[0.07] transition-colors duration-300">
               <Globe className="h-[18px] w-[18px] text-white/35" strokeWidth={1.5} />
-              <span className="text-[10px] font-medium text-white/25">Region</span>
-            </button>
+              <span className="text-[10px] font-medium text-white/25">{t("Region")}</span>
+            </Link>
             <button className="flex flex-col items-center gap-2 py-3 rounded-[12px] bg-white/[0.04] hover:bg-white/[0.07] transition-colors duration-300">
               <Sparkles className="h-[18px] w-[18px] text-white/35" strokeWidth={1.5} />
               <span className="text-[10px] font-medium text-white/25">AI</span>
             </button>
             <button className="flex flex-col items-center gap-2 py-3 rounded-[12px] bg-white/[0.04] hover:bg-white/[0.07] transition-colors duration-300">
               <User className="h-[18px] w-[18px] text-white/35" strokeWidth={1.5} />
-              <span className="text-[10px] font-medium text-white/25">Sign In</span>
+              <span className="text-[10px] font-medium text-white/25">{t("Sign In")}</span>
             </button>
           </div>
         </div>

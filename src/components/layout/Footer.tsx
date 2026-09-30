@@ -2,16 +2,20 @@ import Link from "next/link";
 import { footerGroups, type FooterGroup, type MegaMenuItem } from "@/data/navigation";
 import { siteConfig } from "@/data/site";
 import { KoleexLogo } from "@/components/ui/KoleexLogo";
+import { localize } from "@/i18n/config";
+import { translate } from "@/i18n/words";
 
 /* ---------------------------------------------------------------------------
    Footer — Premium dark footer with refined spacing and typography.
    --------------------------------------------------------------------------- */
 
-export default function Footer({ productsMenu }: { productsMenu: MegaMenuItem[] }) {
+export default function Footer({ productsMenu, lang = "en" }: { productsMenu: MegaMenuItem[]; lang?: string }) {
+  const t = (s: string) => translate(s, lang);
+  const L = (href: string) => localize(href, lang);
   /* Products first, from the Hub's divisions; then the site's own groups. */
   const groups: FooterGroup[] = [
-    { title: "Products", links: [...productsMenu.slice(0, 5).map((d) => ({ label: d.division, href: `/products/${d.slug}` })), { label: "All Products", href: "/products" }] },
-    ...footerGroups,
+    { title: t("Products"), links: [...productsMenu.slice(0, 5).map((d) => ({ label: d.division, href: L(`/products/${d.slug}`) })), { label: t("All Products"), href: L("/products") }] },
+    ...footerGroups.map((g) => ({ title: t(g.title), links: g.links.map((l) => ({ label: t(l.label), href: L(l.href) })) })),
   ];
   return (
     <footer className="bg-black">
@@ -41,16 +45,16 @@ export default function Footer({ productsMenu }: { productsMenu: MegaMenuItem[] 
 
             <div>
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/20 mb-6">
-                Contact
+                {t("Contact")}
               </h3>
               <ul className="space-y-3">
                 <li>
-                  <a href={`mailto:${siteConfig.contact.email}`} className="text-[13px] text-white/40 hover:text-white/70 transition-colors duration-400">
+                  <a dir="ltr" href={`mailto:${siteConfig.contact.email}`} className="text-[13px] text-white/40 hover:text-white/70 transition-colors duration-400">
                     {siteConfig.contact.email}
                   </a>
                 </li>
                 <li>
-                  <a href={`tel:${siteConfig.contact.phone.replace(/\s/g,"")}`} className="text-[13px] text-white/40 hover:text-white/70 transition-colors duration-400">
+                  <a dir="ltr" href={`tel:${siteConfig.contact.phone.replace(/\s/g,"")}`} className="text-[13px] text-white/40 hover:text-white/70 transition-colors duration-400">
                     {siteConfig.contact.phone}
                   </a>
                 </li>

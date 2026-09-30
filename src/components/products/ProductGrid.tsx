@@ -5,6 +5,7 @@ import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { Button } from "@/components/ui/Button";
 import { NoProducts, ProductCard } from "@/components/products/ProductCard";
 import type { ProductCardData, ProductFilter } from "@/lib/product-list";
+import { useLang } from "@/i18n/LangProvider";
 
 /* A product list: the first page comes with the (static) page, and "Show
    more" brings the next ones from /api/products, as many as there are. */
@@ -14,6 +15,7 @@ export function ProductGrid({ items: first, total, filter, emptyText }: {
   filter: ProductFilter;
   emptyText: string;
 }) {
+  const { lang, t } = useLang();
   const [items, setItems] = useState(first);
   const [page, setPage] = useState(1);
   const [state, setState] = useState<"idle" | "loading" | "failed" | "done">("idle");
@@ -25,6 +27,7 @@ export function ProductGrid({ items: first, total, filter, emptyText }: {
     try {
       const sp = new URLSearchParams(Object.entries(filter).filter((e): e is [string, string] => !!e[1]));
       sp.set("page", String(page + 1));
+      sp.set("lang", lang);
       const res = await fetch(`/api/products?${sp}`);
       if (!res.ok) throw new Error(String(res.status));
       const next = ((await res.json()) as { items?: ProductCardData[] }).items ?? [];
@@ -44,15 +47,15 @@ export function ProductGrid({ items: first, total, filter, emptyText }: {
     <>
       <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((p) => (
-          <AnimatedSection key={p.slug}><ProductCard product={p} /></AnimatedSection>
+          <AnimatedSection key={p.slug}><ProductCard product={p} lang={lang} /></AnimatedSection>
         ))}
       </div>
       {left > 0 && state !== "done" ? (
         <div className="mt-12 flex flex-col items-center gap-3">
-          <p className="text-sm text-white/40">Showing {items.length} of {total}</p>
-          {state === "failed" ? <p className="text-sm text-white/60">More products could not be loaded. Try again.</p> : null}
+          <p className="text-sm text-white/40">{t("Showing {n} of {total}", { n: items.length, total })}</p>
+          {state === "failed" ? <p className="text-sm text-white/60">{t("More products could not be loaded. Try again.")}</p> : null}
           <Button onClick={more} disabled={state === "loading"} variant="secondary" size="md" aria-busy={state === "loading"}>
-            {state === "loading" ? "Loading…" : `Show ${Math.min(left, 24)} more`}
+            {state === "loading" ? t("Loading…") : t("Show {n} more", { n: Math.min(left, 24) })}
           </Button>
         </div>
       ) : null}

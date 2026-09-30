@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import type { MegaMenuItem } from "@/data/navigation";
+import { useLang } from "@/i18n/LangProvider";
+import { arrowOf } from "@/i18n/config";
 
 /* ---------------------------------------------------------------------------
    MegaMenu — Guidelines-aligned dark dropdown.
@@ -17,6 +19,7 @@ interface MegaMenuProps {
 }
 
 export default function MegaMenu({ isOpen, onClose, items }: MegaMenuProps) {
+  const { lang, t, L } = useLang();
   return (
     <>
       <div
@@ -42,7 +45,7 @@ export default function MegaMenu({ isOpen, onClose, items }: MegaMenuProps) {
               {items.map((division) => (
                 <div key={division.slug}>
                   <Link
-                    href={`/products/${division.slug}`}
+                    href={L(`/products/${division.slug}`)}
                     className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/30 hover:text-white/50 transition-colors duration-300"
                     onClick={onClose}
                   >
@@ -67,11 +70,11 @@ export default function MegaMenu({ isOpen, onClose, items }: MegaMenuProps) {
 
             <div className="mt-8 pt-5 border-t border-white/[0.06]">
               <Link
-                href="/products"
+                href={L("/products")}
                 className="text-[14px] font-medium text-silver-dark hover:text-silver transition-colors duration-300"
                 onClick={onClose}
               >
-                Explore all products →
+                {t("All Products")} {arrowOf(lang)}
               </Link>
             </div>
           </div>

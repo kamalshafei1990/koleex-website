@@ -7,7 +7,13 @@ import { ProductCard } from "@/components/products/ProductCard";
 import { hubProducts, hubProductsBySlugs } from "@/lib/hub";
 import { toCard } from "@/lib/product-list";
 import { cn } from "@/lib/utils";
-import { paragraphsOf, textIn, type PageButton, type PageDoc, type PageLang, type PageSection, type ProductsSection } from "@/types/page-doc";
+import { paragraphsOf, textIn as textInContent, type I18nText, type PageButton, type PageDoc, type PageSection, type ProductsSection } from "@/types/page-doc";
+import { contentLang, dirOf, localize } from "@/i18n/config";
+
+/* Any of the site's languages: its own words where the page has them
+   (English, Arabic, Chinese), else the English. */
+type PageLang = string;
+const textIn = (t: I18nText | null | undefined, lang: string) => textInContent(t, contentLang(lang));
 
 /* ---------------------------------------------------------------------------
    PageDocView — a page built in the Hub's Page Builder, drawn with the
@@ -27,7 +33,7 @@ function Cta({ button, lang, primary, light }: { button: PageButton | null; lang
       : light ? "border border-black/15 text-black/70 hover:border-black/30 hover:text-black" : "border border-white/15 text-white/70 hover:border-white/25 hover:text-white",
   );
   return button.href.startsWith("/")
-    ? <Link href={button.href} className={cls}>{label}</Link>
+    ? <Link href={localize(button.href, lang)} className={cls}>{label}</Link>
     : <a href={button.href} className={cls} rel="noopener noreferrer" target={button.href.startsWith("https://") ? "_blank" : undefined}>{label}</a>;
 }
 
@@ -46,14 +52,14 @@ async function ProductsBlock({ s, lang }: { s: ProductsSection; lang: PageLang }
   const list = s.source === "manual"
     ? await hubProductsBySlugs(s.slugs)
     : await hubProducts({ featured: s.source === "featured", category: s.source === "category" ? s.category ?? undefined : undefined, pageSize: s.limit });
-  const items = list.items.slice(0, s.source === "manual" ? 12 : s.limit).map(toCard);
+  const items = list.items.slice(0, s.source === "manual" ? 12 : s.limit).map((x) => toCard(x, lang));
   if (!items.length) return null;
   return (
     <Section background={light ? "light" : "black"}>
       <Container>
         <SectionHeading title={textIn(s.title, lang) || undefined} subtitle={textIn(s.subtitle, lang) || undefined} light={light} />
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((p) => <ProductCard key={p.slug} product={p} />)}
+          {items.map((p) => <ProductCard key={p.slug} product={p} lang={lang} />)}
         </div>
       </Container>
     </Section>
@@ -205,7 +211,7 @@ function SectionView({ s, lang }: { s: PageSection; lang: PageLang }) {
 export function PageDocView({ doc, lang = "en" }: { doc: PageDoc; lang?: PageLang }) {
   const sections = doc.sections.filter((s) => !s.hidden);
   return (
-    <div dir={lang === "ar" ? "rtl" : "ltr"} lang={lang}>
+    <div dir={dirOf(lang)} lang={lang}>
       {sections.map((s) => (s.type === "products" ? <ProductsBlock key={s.id} s={s} lang={lang} /> : <SectionView key={s.id} s={s} lang={lang} />))}
     </div>
   );

@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { Search, X, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLang } from "@/i18n/LangProvider";
 
 /* ---------------------------------------------------------------------------
    SearchOverlay — Full-screen search modal with glass backdrop.
@@ -30,6 +31,7 @@ const trending = [
 ];
 
 export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
+  const { t, L } = useLang();
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -100,11 +102,11 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
               {quickLinks.map((item) => (
                 <Link
                   key={item.label}
-                  href={item.href}
+                  href={L(item.href)}
                   onClick={onClose}
                   className="px-4 py-2 text-[13px] font-medium text-text-secondary bg-surface-secondary rounded-full hover:bg-gray-200 transition-premium"
                 >
-                  {item.label}
+                  {t(item.label)}
                 </Link>
               ))}
             </div>

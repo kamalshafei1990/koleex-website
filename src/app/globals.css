@@ -676,3 +676,20 @@ body {
 .btn-glow:hover::after {
   opacity: 1;
 }
+
+/* ── Languages (i18n/config): Arabic-script pages use an Arabic face and no
+      letter-spacing (spacing breaks the joined letters); Chinese pages a
+      Chinese face. The system's own fonts — nothing is downloaded. ── */
+html[lang="ar"] body,
+html[lang="fa"] body,
+html[lang="ur"] body {
+  font-family: "SF Arabic", "Geeza Pro", "Segoe UI", "Noto Sans Arabic", Tahoma, sans-serif;
+}
+html[lang="ar"] body *,
+html[lang="fa"] body *,
+html[lang="ur"] body * {
+  letter-spacing: 0 !important;
+}
+html[lang="zh"] body {
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+}

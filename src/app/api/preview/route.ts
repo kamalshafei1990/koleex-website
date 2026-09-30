@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------------------
-   GET /api/preview?slug=&exp=&sig= — the Hub's Page Builder opens a page's
+   GET /api/preview?slug=&exp=&sig=&lang= — the Hub's Page Builder opens a page's
    DRAFT here. The link is signed by the Hub with the shared bridge key
    (HMAC over "preview:<slug>:<exp>") and lasts 10 minutes; a good one turns
    on Next's draft mode for this browser and opens the page, which then
@@ -9,6 +9,7 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { draftMode } from "next/headers";
 import { NextResponse } from "next/server";
+import { isLang } from "@/i18n/config";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -22,6 +23,9 @@ export async function GET(req: Request) {
   const slug = sp.get("slug") ?? "";
   const exp = Number(sp.get("exp"));
   const sig = sp.get("sig") ?? "";
+  /* The language the editor was writing in (not signed: it only picks which
+     language of the same draft opens). */
+  const lang = isLang(sp.get("lang")) ? (sp.get("lang") as string) : "en";
   const now = Math.floor(Date.now() / 1000);
   if (!SLUG_RE.test(slug) || !Number.isInteger(exp) || exp < now || exp > now + 660 || !/^[0-9a-f]{64}$/.test(sig)) {
     return NextResponse.json({ error: "This preview link is not valid (or has expired)." }, { status: 401 });
@@ -31,5 +35,5 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "This preview link is not valid (or has expired)." }, { status: 401 });
   }
   (await draftMode()).enable();
-  return NextResponse.redirect(new URL(slug === "home" ? "/" : `/${slug}`, req.url), { headers: { "Cache-Control": "no-store" } });
+  return NextResponse.redirect(new URL(slug === "home" ? `/${lang}` : `/${lang}/${slug}`, req.url), { headers: { "Cache-Control": "no-store" } });
 }

@@ -6,7 +6,10 @@ import { usePathname } from "next/navigation";
 import { Search, Globe, Menu, X, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { mainNav, type MegaMenuItem } from "@/data/navigation";
-import { getDefaultRegion, type Region, type Language } from "@/data/regions";
+import { getDefaultRegion, getRegionBySlug, type Region } from "@/data/regions";
+import { useLang } from "@/i18n/LangProvider";
+import { isLang } from "@/i18n/config";
+import LangSwitch from "./LangSwitch";
 import { KoleexLogo } from "@/components/ui/KoleexLogo";
 import MegaMenu from "./MegaMenu";
 import MobileMenu from "./MobileMenu";
@@ -22,15 +25,22 @@ import RegionSuggestionModal from "./RegionSuggestionModal";
    --------------------------------------------------------------------------- */
 
 export default function Header({ productsMenu }: { productsMenu: MegaMenuItem[] }) {
-  const pathname = usePathname();
+  const pathname = usePathname() || "/";
+  const { t, L } = useLang();
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  /* The region the visitor chose (koleex_region, set by the middleware from
+     ?region=); Global until then. Read after mount — the page is the same
+     for every region. */
   const [currentRegion, setCurrentRegion] = useState<Region>(getDefaultRegion());
-  const [currentLanguage, setCurrentLanguage] = useState<Language>(getDefaultRegion().languages[0]);
-  const [showSuggestion, setShowSuggestion] = useState(true);
+  useEffect(() => {
+    const m = /(?:^|; )koleex_region=([^;]*)/.exec(document.cookie);
+    const r = m ? getRegionBySlug(decodeURIComponent(m[1])) : undefined;
+    if (r) setCurrentRegion(r);
+  }, []);
 
   const closeMegaMenu = useCallback(() => setMegaMenuOpen(false), []);
   const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
@@ -45,15 +55,12 @@ export default function Header({ productsMenu }: { productsMenu: MegaMenuItem[] 
     return () => window.removeEventListener("scroll", onScroll);
   }, [megaMenuOpen]);
 
-  const handleRegionChange = (region: Region) => {
-    setCurrentRegion(region);
-    const defaultLang = region.languages.find((l) => l.code === region.defaultLanguage);
-    if (defaultLang) setCurrentLanguage(defaultLang);
-  };
-
+  /* The path without its language, to mark the section the visitor is in. */
+  const parts = pathname.split("/");
+  const bare = isLang(parts[1]) ? `/${parts.slice(2).join("/")}` : pathname;
   const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname.startsWith(href);
+    if (href === "/") return bare === "/";
+    return bare.startsWith(href);
   };
 
   return (
@@ -71,7 +78,7 @@ export default function Header({ productsMenu }: { productsMenu: MegaMenuItem[] 
 
           {/* ── Logo (far left) ── */}
           <Link
-            href="/"
+            href={L("/")}
             className="shrink-0 opacity-80 hover:opacity-100 transition-opacity duration-[400ms]"
           >
             <KoleexLogo color="white" height={18} />
@@ -100,7 +107,7 @@ export default function Header({ productsMenu }: { productsMenu: MegaMenuItem[] 
                           : "text-white/50 hover:text-white/90"
                       )}
                     >
-                      {item.label}
+                      {t(item.label)}
                       {active && (
                         <span className="absolute bottom-[16px] left-4 right-4 h-[1.5px] bg-white/40 rounded-full" />
                       )}
@@ -115,7 +122,7 @@ export default function Header({ productsMenu }: { productsMenu: MegaMenuItem[] 
               return (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  href={L(item.href)}
                   className={cn(
                     "group relative px-4 h-[68px] flex items-center",
                     "text-[13px] font-normal tracking-[0.01em]",
@@ -125,7 +132,7 @@ export default function Header({ productsMenu }: { productsMenu: MegaMenuItem[] 
                       : "text-white/50 hover:text-white/90"
                   )}
                 >
-                  {item.label}
+                  {t(item.label)}
                   {active && (
                     <span className="absolute bottom-[16px] left-4 right-4 h-[1.5px] bg-white/40 rounded-full" />
                   )}
@@ -138,47 +145,45 @@ export default function Header({ productsMenu }: { productsMenu: MegaMenuItem[] 
           </div>
 
           {/* ── Right Tools: Search → Region → Language → Sign In ── */}
-          <div className="flex items-center ml-auto gap-3">
+          <div className="flex items-center ms-auto gap-3">
             {/* Search */}
             <button
               onClick={() => setSearchOpen(true)}
               className="hidden lg:flex h-9 w-9 items-center justify-center rounded-full text-white/40 hover:text-white/80 hover:bg-white/[0.06] transition-all duration-[400ms]"
-              aria-label="Search"
+              aria-label={t("Search")}
             >
               <Search className="h-[16px] w-[16px]" strokeWidth={1.5} />
             </button>
 
             {/* Region — links to choose-region page */}
             <Link
-              href="/choose-region"
+              href={L("/choose-region")}
               className="hidden lg:flex items-center gap-[6px] h-9 px-3 rounded-full text-[12px] font-medium text-white/40 hover:text-white/75 hover:bg-white/[0.06] transition-all duration-[400ms]"
             >
               <Globe className="h-[14px] w-[14px]" strokeWidth={1.5} />
-              <span>{currentRegion.name}</span>
+              <span>{t(currentRegion.name)}</span>
             </Link>
 
             {/* Language */}
-            <span className="hidden lg:inline text-[11px] font-medium text-white/25 px-1">
-              {currentLanguage.code.toUpperCase()}
-            </span>
+            <LangSwitch region={currentRegion} />
 
             {/* Divider */}
             <div className="hidden lg:block w-px h-4 bg-white/[0.08]" />
 
             {/* Sign In */}
             <Link
-              href="/contact"
+              href={L("/contact")}
               className="hidden lg:flex h-9 items-center gap-2 px-4 rounded-full text-[12px] font-medium text-white/40 hover:text-white/75 hover:bg-white/[0.06] transition-all duration-[400ms]"
             >
               <User className="h-[14px] w-[14px]" strokeWidth={1.5} />
-              <span>Sign In</span>
+              <span>{t("Sign In")}</span>
             </Link>
 
             {/* Mobile hamburger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="lg:hidden h-10 w-10 flex items-center justify-center rounded-full text-white/50 hover:text-white transition-colors duration-[400ms]"
-              aria-label="Menu"
+              aria-label={t("Menu")}
             >
               {mobileMenuOpen ? (
                 <X className="h-[18px] w-[18px]" strokeWidth={1.5} />
@@ -195,13 +200,7 @@ export default function Header({ productsMenu }: { productsMenu: MegaMenuItem[] 
       <MobileMenu isOpen={mobileMenuOpen} onClose={closeMobileMenu} items={productsMenu} />
       <SearchOverlay isOpen={searchOpen} onClose={closeSearch} />
 
-      {showSuggestion && (
-        <RegionSuggestionModal
-          currentRegion={currentRegion}
-          onAccept={(region) => { handleRegionChange(region); setShowSuggestion(false); }}
-          onDismiss={() => setShowSuggestion(false)}
-        />
-      )}
+      <RegionSuggestionModal currentRegion={currentRegion} />
     </>
   );
 }

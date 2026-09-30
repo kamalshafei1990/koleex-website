@@ -8,6 +8,7 @@
 import { NextResponse } from "next/server";
 import { hubProducts } from "@/lib/hub";
 import { PRODUCT_PAGE_SIZE, toCard } from "@/lib/product-list";
+import { isLang } from "@/i18n/config";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,7 @@ export async function GET(req: Request) {
   const category = slug("category");
   const subcategory = slug("subcategory");
   const page = Math.floor(Number(sp.get("page")));
+  const lang = isLang(sp.get("lang")) ? (sp.get("lang") as string) : "en";
   if ((!division && !category && !subcategory) || !Number.isFinite(page) || page < 2 || page > 500) {
     return NextResponse.json({ error: "Bad request." }, { status: 400 });
   }
@@ -34,7 +36,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Products could not be loaded." }, { status: 502, headers: { "Cache-Control": "no-store" } });
   }
   return NextResponse.json(
-    { items: list.items.map(toCard), total: list.total, page: list.page },
+    { items: list.items.map((p) => toCard(p, lang)), total: list.total, page: list.page },
     { headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=600" } },
   );
 }

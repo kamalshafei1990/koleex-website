@@ -52,10 +52,10 @@ export interface HubProduct {
     highlights: string[];
     compliance: { ce: boolean | null; rohs: boolean | null; ipRating: string | null; countryOfOrigin: string | null; warranty: string | null };
     warrantyMonths: number | null;
-    models: Array<{ id: string; code: string; name: string | null; tagline: string | null; primary: boolean; photo: string | null }>;
+    models: Array<{ id: string; code: string; name: string | null; tagline: string | null; nameI18n?: Record<string, string> | null; taglineI18n?: Record<string, string> | null; primary: boolean; photo: string | null }>;
   };
   seo: { brand: string | null; excerpt: string | null; metaTitle: string | null; metaDescription: string | null; ogImageUrl: string | null };
-  preview: { mainImageUrl: string | null; galleryUrls: string[]; brand: string | null };
+  preview: { mainImageUrl: string | null; galleryUrls: string[]; brand: string | null; translations?: Array<{ locale: string; product_name: string | null; tagline: string | null; excerpt: string | null; description: string | null }> };
 }
 
 export interface HubPageSummary { slug: string; name: string; title: string | null; description: string | null; updatedAt: string | null; version?: number }
