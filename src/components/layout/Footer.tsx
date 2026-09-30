@@ -4,12 +4,15 @@ import { siteConfig } from "@/data/site";
 import { KoleexLogo } from "@/components/ui/KoleexLogo";
 import { localize } from "@/i18n/config";
 import { translate } from "@/i18n/words";
+import { hubCompany } from "@/lib/hub";
 
 /* ---------------------------------------------------------------------------
    Footer — Premium dark footer with refined spacing and typography.
    --------------------------------------------------------------------------- */
 
-export default function Footer({ productsMenu, lang = "en" }: { productsMenu: MegaMenuItem[]; lang?: string }) {
+export default async function Footer({ productsMenu, lang = "en" }: { productsMenu: MegaMenuItem[]; lang?: string }) {
+  /* The company's details from the Hub's own record — nothing shows until it answers. */
+  const company = await hubCompany();
   const t = (s: string) => translate(s, lang);
   const L = (href: string) => localize(href, lang);
   /* Products first, from the Hub's divisions; then the site's own groups. */
@@ -48,19 +51,26 @@ export default function Footer({ productsMenu, lang = "en" }: { productsMenu: Me
                 {t("Contact")}
               </h3>
               <ul className="space-y-3">
-                <li>
-                  <a dir="ltr" href={`mailto:${siteConfig.contact.email}`} className="text-[13px] text-white/40 hover:text-white/70 transition-colors duration-400">
-                    {siteConfig.contact.email}
-                  </a>
-                </li>
-                <li>
-                  <a dir="ltr" href={`tel:${siteConfig.contact.phone.replace(/\s/g,"")}`} className="text-[13px] text-white/40 hover:text-white/70 transition-colors duration-400">
-                    {siteConfig.contact.phone}
-                  </a>
-                </li>
-                <li className="text-[12px] text-white/20 leading-relaxed pt-1">
-                  {siteConfig.contact.address.slice(1).join(", ")}
-                </li>
+                {company ? (
+                  <>
+                    <li>
+                      <a dir="ltr" href={`mailto:${company.email}`} className="text-[13px] text-white/40 hover:text-white/70 transition-colors duration-400">
+                        {company.email}
+                      </a>
+                    </li>
+                    <li>
+                      <a dir="ltr" href={`tel:${company.tel.replace(/[^+\d]/g, "")}`} className="text-[13px] text-white/40 hover:text-white/70 transition-colors duration-400">
+                        {company.tel}
+                      </a>
+                    </li>
+                    <li>
+                      <a dir="ltr" href={`tel:${company.mobile.replace(/[^+\d]/g, "")}`} className="text-[13px] text-white/40 hover:text-white/70 transition-colors duration-400">
+                        {company.mobile}
+                      </a>
+                    </li>
+                    <li dir="ltr" className="text-[12px] text-white/20 leading-relaxed pt-1">{company.base}</li>
+                  </>
+                ) : null}
               </ul>
             </div>
           </div>
@@ -72,7 +82,7 @@ export default function Footer({ productsMenu, lang = "en" }: { productsMenu: Me
         <div className="max-w-[980px] mx-auto px-5 py-10 flex flex-col sm:flex-row items-center justify-between gap-5">
           <KoleexLogo color="white" height={13} className="opacity-25" />
           <p className="text-[12px] text-white/20 tracking-wide">
-            {siteConfig.copyright}
+            © {new Date().getFullYear()} {company?.name ?? siteConfig.companyName}
           </p>
         </div>
       </div>

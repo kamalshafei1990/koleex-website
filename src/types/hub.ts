@@ -77,3 +77,11 @@ export interface HubJob {
   department: string | null;
   [key: string]: unknown;
 }
+
+/** The company as the Hub keeps it (its papers' address, phones and email,
+ *  and the owner-approved facts). */
+export interface HubCompany {
+  name: string; legalName: string; legalNameZh: string; slogan: string;
+  address: string; tel: string; mobile: string; email: string; web: string;
+  base: string; offices: string[]; brandEstablished: string; originsFrom: string;
+}

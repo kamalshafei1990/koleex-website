@@ -32,9 +32,9 @@ const currentYear = new Date().getFullYear();
 export const siteConfig: SiteConfig = {
   companyName: "Koleex International Group",
   shortName: "Koleex",
-  tagline: "Engineering What Matters",
+  tagline: "Shaping the Future",
   description:
-    "Koleex International Group is a global industrial technology company specializing in precision machinery, automation systems, and technology-driven solutions for manufacturing and industrial sectors.",
+    "Koleex International Group is a global manufacturing, international-trade and technology group focused on the garment and textile industry — garment and sewing machinery above all.",
   url: "https://www.koleex.com",
   locale: "en-US",
 

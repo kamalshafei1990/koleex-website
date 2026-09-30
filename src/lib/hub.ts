@@ -16,9 +16,9 @@
    --------------------------------------------------------------------------- */
 
 import { draftMode } from "next/headers";
-import type { HubDivision, HubJob, HubPage, HubPageSummary, HubProduct, HubProductList } from "@/types/hub";
+import type { HubCompany, HubDivision, HubJob, HubPage, HubPageSummary, HubProduct, HubProductList } from "@/types/hub";
 
-export type HubTag = "products" | "taxonomy" | "jobs" | `page:${string}`;
+export type HubTag = "products" | "taxonomy" | "jobs" | "company" | `page:${string}`;
 
 const HUB_URL = (process.env.HUB_URL ?? "https://hub.koleexgroup.com").trim().replace(/\/+$/, "");
 const bridgeKey = () => (process.env.WEBSITE_BRIDGE_KEY ?? "").trim();
@@ -120,4 +120,11 @@ export async function hubProductsBySlugs(slugs: string[]): Promise<HubProductLis
 export async function hubJobs(): Promise<HubJob[]> {
   const r = await hubGet<{ jobs: HubJob[] }>("/jobs", ["jobs"]);
   return Array.isArray(r?.jobs) ? r.jobs : [];
+}
+
+/** The company's details (address, phones, email) and approved facts — the
+ *  same record the Hub prints on its papers. null until the key is set. */
+export async function hubCompany(): Promise<HubCompany | null> {
+  const r = await hubGet<{ company: HubCompany }>("/company", ["company"]);
+  return r?.company ?? null;
 }

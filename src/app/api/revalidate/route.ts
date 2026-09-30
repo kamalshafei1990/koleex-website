@@ -13,7 +13,7 @@ import { NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const TAG_RE = /^(products|taxonomy|jobs|page:[a-z0-9]+(?:-[a-z0-9]+)*)$/;
+const TAG_RE = /^(products|taxonomy|jobs|company|page:[a-z0-9]+(?:-[a-z0-9]+)*)$/;
 
 export async function POST(req: Request) {
   const key = (process.env.WEBSITE_BRIDGE_KEY ?? "").trim();
