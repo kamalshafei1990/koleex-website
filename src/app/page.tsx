@@ -1,16 +1,18 @@
+import type { Metadata } from "next";
 import { StaticHome } from "@/components/home/StaticHome";
+import { DynamicPage, pageMetadata } from "@/components/cms/DynamicPage";
 
 /* ---------------------------------------------------------------------------
-   Homepage — Apple.com-style 11-section static layout.
-
-   Note: the CMS (DynamicPage) integration is temporarily disabled so the
-   new Apple-style design is visible immediately. To re-enable CMS editing,
-   run scripts/seed-home.ts to sync Supabase with the new layout, then
-   swap this file back to:
-
-     <DynamicPage slug="home" fallback={<StaticHome />} />
+   Homepage — the page "home" built in the Hub's Page Builder once it is
+   published there; the built-in page until then.
    --------------------------------------------------------------------------- */
 
+export const revalidate = 3600;
+
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("home", {});
+}
+
 export default function HomePage() {
-  return <StaticHome />;
+  return <DynamicPage slug="home" fallback={<StaticHome />} />;
 }

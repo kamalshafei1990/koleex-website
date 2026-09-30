@@ -1,4 +1,7 @@
+import type { Metadata } from "next";
 import { hubPage } from "@/lib/hub";
+import { PageDocView } from "@/components/page-builder/PageDocView";
+import { textIn } from "@/types/page-doc";
 import { SectionRenderer } from "./SectionRenderer";
 import { ElementRenderer } from "./ElementRenderer";
 import { getSectionSettings } from "@/lib/section-helpers";
@@ -17,8 +20,20 @@ interface DynamicPageProps {
   fallback: React.ReactNode;
 }
 
+/** A page's title and description for search engines: the Page Builder's
+ *  (English), else the page's own, else the given ones. */
+export async function pageMetadata(slug: string, fallback: Metadata): Promise<Metadata> {
+  const data = await hubPage(slug);
+  const title = textIn(data?.doc?.seo.title, "en") || data?.page.title || (fallback.title as string | undefined);
+  const description = textIn(data?.doc?.seo.description, "en") || data?.page.description || (fallback.description as string | undefined);
+  return { ...fallback, title, description };
+}
+
 export async function DynamicPage({ slug, fallback }: DynamicPageProps) {
   const data = await hubPage(slug);
+  /* Built and published in the Hub's Page Builder (or its draft, in the
+     signed preview). */
+  if (data?.doc) return <PageDocView doc={data.doc} />;
   const rows = (data?.sections ?? []).filter((s) => s.visible !== false);
   if (rows.length === 0) return <>{fallback}</>;
   const sections = rows as unknown as SectionRow[];

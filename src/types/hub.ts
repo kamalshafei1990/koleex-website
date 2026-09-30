@@ -6,6 +6,8 @@
    they leave). Kept in step with lib/server/website-catalog.ts in the Hub.
    --------------------------------------------------------------------------- */
 
+import type { PageDoc } from "@/types/page-doc";
+
 export interface HubNames { name: string; zh: string | null; ar: string | null }
 
 export interface HubSubcategory extends HubNames {
@@ -56,9 +58,13 @@ export interface HubProduct {
   preview: { mainImageUrl: string | null; galleryUrls: string[]; brand: string | null };
 }
 
-export interface HubPageSummary { slug: string; name: string; title: string | null; description: string | null; updatedAt: string | null }
+export interface HubPageSummary { slug: string; name: string; title: string | null; description: string | null; updatedAt: string | null; version?: number }
 export interface HubPage {
   page: HubPageSummary;
+  /** The Page Builder's published document (or the draft, in the signed
+   *  preview); null when the page was never published there. */
+  doc?: PageDoc | null;
+  /** The old editor's sections (only when there is no document). */
   sections: Array<Record<string, unknown> & { elements: Array<Record<string, unknown>> }>;
 }
 

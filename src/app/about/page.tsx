@@ -1,6 +1,5 @@
-import { DynamicPage } from "@/components/cms/DynamicPage";
+import { DynamicPage, pageMetadata } from "@/components/cms/DynamicPage";
 import { StaticAbout } from "@/components/about/StaticAbout";
-import { hubPage } from "@/lib/hub";
 import type { Metadata } from "next";
 
 /* ---------------------------------------------------------------------------
@@ -11,10 +10,9 @@ import type { Metadata } from "next";
 
 export const revalidate = 3600;
 
-/* The title and description the Website app gives the page, else plain ones. */
-export async function generateMetadata(): Promise<Metadata> {
-  const page = (await hubPage("about"))?.page;
-  return { title: page?.title || "About", description: page?.description || "Koleex International Group: who we are, what we make and where we work." };
+/* The title and description the Hub gives the page, else plain ones. */
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("about", { title: "About", description: "Koleex International Group: who we are, what we make and where we work." });
 }
 
 export default function AboutPage() {

@@ -1,3 +1,4 @@
+import { DraftBar } from "@/components/page-builder/DraftBar";
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/layout/Header";
@@ -33,6 +34,7 @@ export default async function RootLayout({
       <body className="font-sans antialiased bg-black text-white">
         <Header productsMenu={productsMenu} />
         <main className="min-h-screen pt-[var(--header-height)]">{children}</main>
+        <DraftBar />
         <Footer productsMenu={productsMenu} />
       </body>
     </html>

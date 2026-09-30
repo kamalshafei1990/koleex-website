@@ -15,6 +15,7 @@
    found" for the hour (30/09/2026). Only the Hub's own 404 means "gone".
    --------------------------------------------------------------------------- */
 
+import { draftMode } from "next/headers";
 import type { HubDivision, HubJob, HubPage, HubPageSummary, HubProduct, HubProductList } from "@/types/hub";
 
 export type HubTag = "products" | "taxonomy" | "jobs" | `page:${string}`;
@@ -29,7 +30,7 @@ export const hubConfigured = (): boolean => !!bridgeKey();
 /** A Hub answer, or null when the key is not set or the Hub says 404 (not
  *  there, or no longer shown). A Hub that does not answer, or answers 5xx,
  *  is asked once more (a passing hiccup); anything still wrong throws. */
-async function hubGet<T>(path: string, tags: HubTag[]): Promise<T | null> {
+async function hubGet<T>(path: string, tags: HubTag[], opts: { fresh?: boolean } = {}): Promise<T | null> {
   const key = bridgeKey();
   if (!key) return null;
   const where = path.split("?")[0];
@@ -39,7 +40,8 @@ async function hubGet<T>(path: string, tags: HubTag[]): Promise<T | null> {
     try {
       res = await fetch(`${HUB_URL}/api/website/v1${path}`, {
         headers: { Authorization: `Bearer ${key}` },
-        next: { tags, revalidate: HUB_REVALIDATE },
+        /* A draft (the preview) is read fresh and never kept. */
+        ...(opts.fresh ? { cache: "no-store" as const } : { next: { tags, revalidate: HUB_REVALIDATE } }),
         signal: AbortSignal.timeout(15_000),
       });
     } catch (e) {
@@ -90,9 +92,29 @@ export async function hubPages(): Promise<HubPageSummary[]> {
   return Array.isArray(r?.pages) ? r.pages : [];
 }
 
+/** Whether this request is the Hub's signed draft preview (/api/preview). */
+async function previewing(): Promise<boolean> {
+  try {
+    return (await draftMode()).isEnabled;
+  } catch {
+    return false; // outside a request (a build step)
+  }
+}
+
+/** A page: its published Page Builder document (or the old editor's
+ *  sections) — or, in the Hub's signed preview, its draft. */
 export async function hubPage(slug: string): Promise<HubPage | null> {
   if (!SLUG_RE.test(slug)) return null;
+  if (await previewing()) return hubGet<HubPage>(`/pages/${slug}?draft=1`, [], { fresh: true });
   return hubGet<HubPage>(`/pages/${slug}`, [`page:${slug}`]);
+}
+
+/** These products, in this order (a page's hand-picked products). */
+export async function hubProductsBySlugs(slugs: string[]): Promise<HubProductList> {
+  const picked = slugs.filter((s) => SLUG_RE.test(s)).slice(0, 24);
+  if (!picked.length) return { items: [], total: 0, page: 1, pageSize: 0 };
+  const r = await hubGet<HubProductList>(`/products?slugs=${picked.join(",")}`, ["products"]);
+  return r && Array.isArray(r.items) ? r : { items: [], total: 0, page: 1, pageSize: 0 };
 }
 
 export async function hubJobs(): Promise<HubJob[]> {
