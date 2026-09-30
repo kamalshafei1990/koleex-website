@@ -5,8 +5,9 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { hubTaxonomy } from "@/lib/hub";
 import { productsMenuFrom } from "@/data/navigation";
-import { CONTENT_LANGS, dirOf, isLang } from "@/i18n/config";
+import { CONTENT_LANGS, dirOf, isLang, siteUrl } from "@/i18n/config";
 import { LangProvider } from "@/i18n/LangProvider";
+import { OrganizationJsonLd } from "@/components/seo/JsonLd";
 
 /* ---------------------------------------------------------------------------
    Root Layout — every page, in its language (/en, /ar, /zh … — the
@@ -20,6 +21,7 @@ import { LangProvider } from "@/i18n/LangProvider";
    --------------------------------------------------------------------------- */
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl()),
   title: {
     default: "Koleex International Group",
     template: "%s | Koleex International Group",
@@ -43,6 +45,7 @@ export default async function RootLayout({ children, params }: { children: React
           <Header productsMenu={productsMenu} />
           <main className="min-h-screen pt-[var(--header-height)]">{children}</main>
           <DraftBar lang={lang} />
+          <OrganizationJsonLd />
           <Footer productsMenu={productsMenu} lang={lang} />
         </LangProvider>
       </body>

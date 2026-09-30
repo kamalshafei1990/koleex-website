@@ -10,6 +10,9 @@ import type { Metadata } from "next";
 import { contentLang, localize, nameIn } from "@/i18n/config";
 import { translate } from "@/i18n/words";
 import type { HubProduct } from "@/types/hub";
+import { ProductDetails } from "@/components/products/ProductDetails";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { siteUrl } from "@/i18n/config";
 
 /* ---------------------------------------------------------------------------
    A product's page, as the Koleex Hub builds it for the public: its words,
@@ -146,6 +149,21 @@ export default async function ProductPage({ params }: Props) {
           </div>
         </Container>
       </Section>
+
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: w.name,
+          description: w.excerpt ?? w.tagline ?? undefined,
+          image: uniquePhotos.length ? uniquePhotos : undefined,
+          brand: { "@type": "Brand", name: "Koleex" },
+          category: [cls.division, cls.category, cls.subcategory].filter(Boolean).map((x) => taxName(x!, lang)).join(" > ") || undefined,
+          model: models.find((m) => m.primary)?.code ?? models[0]?.code,
+          url: `${siteUrl()}${L(`/product/${product.slug}`)}`,
+        }}
+      />
+      <ProductDetails product={product} lang={lang} />
 
       {paragraphs(description).length > 0 && (
         <Section>

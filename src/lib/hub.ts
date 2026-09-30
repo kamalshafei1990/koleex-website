@@ -16,9 +16,9 @@
    --------------------------------------------------------------------------- */
 
 import { draftMode } from "next/headers";
-import type { HubCompany, HubDivision, HubJob, HubPage, HubPageSummary, HubProduct, HubProductList } from "@/types/hub";
+import type { HubCatalog, HubCompany, HubDivision, HubJob, HubPage, HubPageSummary, HubProduct, HubProductList } from "@/types/hub";
 
-export type HubTag = "products" | "taxonomy" | "jobs" | "company" | `page:${string}`;
+export type HubTag = "products" | "taxonomy" | "jobs" | "company" | "catalogs" | `page:${string}`;
 
 const HUB_URL = (process.env.HUB_URL ?? "https://hub.koleexgroup.com").trim().replace(/\/+$/, "");
 const bridgeKey = () => (process.env.WEBSITE_BRIDGE_KEY ?? "").trim();
@@ -127,4 +127,11 @@ export async function hubJobs(): Promise<HubJob[]> {
 export async function hubCompany(): Promise<HubCompany | null> {
   const r = await hubGet<{ company: HubCompany }>("/company", ["company"]);
   return r?.company ?? null;
+}
+
+/** Koleex's own catalogs the site offers (the Website app's; suppliers'
+ *  catalogs never reach the bridge). */
+export async function hubCatalogs(): Promise<HubCatalog[]> {
+  const r = await hubGet<{ catalogs: HubCatalog[] }>("/catalogs", ["catalogs"]);
+  return Array.isArray(r?.catalogs) ? r.catalogs : [];
 }

@@ -48,3 +48,13 @@ export function nameIn(item: { name: string; zh?: string | null; ar?: string | n
 
 /** "→" that points the reading way ("←" right to left). */
 export const arrowOf = (lang: string): string => (dirOf(lang) === "rtl" ? "←" : "→");
+
+/** The site's public address (for sitemaps, canonical links and structured
+ *  data): SITE_URL when set (the final domain), else Vercel's production
+ *  domain, else local. */
+export function siteUrl(): string {
+  const explicit = (process.env.SITE_URL ?? "").trim().replace(/\/+$/, "");
+  if (explicit) return explicit;
+  const vercel = (process.env.VERCEL_PROJECT_PRODUCTION_URL ?? "").trim();
+  return vercel ? `https://${vercel}` : "http://localhost:3000";
+}

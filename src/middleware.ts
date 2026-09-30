@@ -10,7 +10,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { countryToLanguage, regions } from "@/data/regions";
-import { DEFAULT_LANG, isLang } from "@/i18n/config";
+import { CONTENT_LANGS, DEFAULT_LANG, isLang, siteUrl } from "@/i18n/config";
 
 const YEAR = 60 * 60 * 24 * 365;
 const cookieOpts = { path: "/", maxAge: YEAR, sameSite: "lax" as const };
@@ -53,6 +53,16 @@ export function middleware(req: NextRequest) {
   }
 
   const res = NextResponse.next();
+  /* Search engines: the page in English, Arabic and Chinese (hreflang), and
+     its canonical address — a language without a translation of its own is
+     the English page, so it points there. */
+  const rest = pathname.slice(first.length + 1);
+  const base = siteUrl();
+  const links = CONTENT_LANGS.map((l) => `<${base}/${l}${rest}>; rel="alternate"; hreflang="${l}"`);
+  links.push(`<${base}/en${rest}>; rel="alternate"; hreflang="x-default"`);
+  const canonicalLang = (CONTENT_LANGS as readonly string[]).includes(first) ? first : "en";
+  links.push(`<${base}/${canonicalLang}${rest}>; rel="canonical"`);
+  res.headers.set("Link", links.join(", "));
   if (req.cookies.get("koleex_lang")?.value !== first) res.cookies.set("koleex_lang", first, cookieOpts);
   const country = req.headers.get("x-vercel-ip-country");
   if (country && req.cookies.get("koleex_geo")?.value !== country) res.cookies.set("koleex_geo", country, { path: "/", maxAge: 60 * 60 * 24, sameSite: "lax" });

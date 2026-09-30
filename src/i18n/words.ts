@@ -89,6 +89,29 @@ const WORDS: Record<string, { ar: string; zh: string }> = {
   "Request a quotation": { ar: "اطلب عرض سعر", zh: "索取报价" },
   "Models": { ar: "الموديلات", zh: "型号" },
 
+  /* Search */
+  "Search products by name or model": { ar: "ابحث عن منتج بالاسم أو الموديل", zh: "按名称或型号搜索产品" },
+  "No product matches “{q}”.": { ar: "لا يوجد منتج يطابق «{q}».", zh: "没有与“{q}”匹配的产品。" },
+  "Results for “{q}”": { ar: "نتائج «{q}»", zh: "“{q}”的搜索结果" },
+  "See all {n} results": { ar: "عرض كل النتائج ({n})", zh: "查看全部 {n} 条结果" },
+  "Type at least two letters.": { ar: "اكتب حرفين على الأقل.", zh: "请至少输入两个字符。" },
+  "Close": { ar: "إغلاق", zh: "关闭" },
+
+  /* Product details */
+  "Specifications": { ar: "المواصفات", zh: "规格参数" },
+  "Videos": { ar: "فيديوهات", zh: "视频" },
+  "Manuals": { ar: "كتيبات التشغيل", zh: "使用手册" },
+  "Manual": { ar: "كتيّب", zh: "手册" },
+  "Download": { ar: "تحميل", zh: "下载" },
+  "Yes": { ar: "نعم", zh: "是" },
+  "No": { ar: "لا", zh: "否" },
+
+  /* Catalogs */
+  "Catalogs": { ar: "الكتالوجات", zh: "产品目录" },
+  "Koleex catalogs to download.": { ar: "كتالوجات Koleex للتحميل.", zh: "可下载的 Koleex 产品目录。" },
+  "Download PDF": { ar: "تحميل PDF", zh: "下载 PDF" },
+  "Our catalogs will appear here shortly.": { ar: "ستظهر كتالوجاتنا هنا قريبًا.", zh: "我们的产品目录即将在此显示。" },
+
   /* Careers */
   "Open positions": { ar: "الوظائف المتاحة", zh: "开放职位" },
   "Apply": { ar: "تقدّم", zh: "申请" },

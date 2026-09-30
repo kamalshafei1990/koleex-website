@@ -55,7 +55,16 @@ export interface HubProduct {
     models: Array<{ id: string; code: string; name: string | null; tagline: string | null; nameI18n?: Record<string, string> | null; taglineI18n?: Record<string, string> | null; primary: boolean; photo: string | null }>;
   };
   seo: { brand: string | null; excerpt: string | null; metaTitle: string | null; metaDescription: string | null; ogImageUrl: string | null };
-  preview: { mainImageUrl: string | null; galleryUrls: string[]; brand: string | null; translations?: Array<{ locale: string; product_name: string | null; tagline: string | null; excerpt: string | null; description: string | null }> };
+  preview: {
+    mainImageUrl: string | null; galleryUrls: string[]; brand: string | null;
+    translations?: Array<{ locale: string; product_name: string | null; tagline: string | null; excerpt: string | null; description: string | null }>;
+    /** The spec sheet: the schema's groups and fields, and the product's values (keyed by field key). */
+    schema?: HubSpecSchema | null;
+    values?: Record<string, unknown>;
+    knowledge?: HubKnowledgeBlock[];
+    videoUrls?: string[];
+    manuals?: Array<{ url: string; label: string | null }>;
+  };
 }
 
 export interface HubPageSummary { slug: string; name: string; title: string | null; description: string | null; updatedAt: string | null; version?: number }
@@ -84,4 +93,29 @@ export interface HubCompany {
   name: string; legalName: string; legalNameZh: string; slogan: string;
   address: string; tel: string; mobile: string; email: string; web: string;
   base: string; offices: string[]; brandEstablished: string; originsFrom: string;
+}
+
+/* The Hub's spec schema (types/product-schema there), as much as the site reads. */
+export interface HubSpecField {
+  key: string; label: string; unit?: string; order: number;
+  dataType?: "string" | "number" | "boolean" | "json";
+  options?: Array<{ value: string; label: string }>;
+  internalOnly?: boolean; publicVisible?: boolean; websiteVisible?: boolean;
+}
+export interface HubSpecGroup { id: string; title: string; order: number; formTab?: "specs" | "logistics"; visibility?: { websiteVisible?: boolean; internalOnly?: boolean }; fields: HubSpecField[] }
+export interface HubSpecSchema { name: string; groups: HubSpecGroup[] }
+export interface HubKnowledgeBlock {
+  id: string; type: string; title: string;
+  content: string | string[] | Record<string, unknown>;
+  visibility?: { websiteVisible?: boolean; publicVisible?: boolean; internalOnly?: boolean };
+  title_i18n?: Record<string, string>;
+  content_i18n?: Record<string, string | string[]>;
+}
+
+/** A Koleex catalog the site offers (never a supplier's). */
+export interface HubCatalog {
+  id: string;
+  title: { en: string; ar: string; zh: string };
+  description: { en: string; ar: string; zh: string };
+  fileUrl: string; fileSize: number | null; coverUrl: string | null; year: number | null;
 }
