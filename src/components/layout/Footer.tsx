@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { footerGroups } from "@/data/navigation";
+import { footerGroups, type FooterGroup, type MegaMenuItem } from "@/data/navigation";
 import { siteConfig } from "@/data/site";
 import { KoleexLogo } from "@/components/ui/KoleexLogo";
 
@@ -7,14 +7,19 @@ import { KoleexLogo } from "@/components/ui/KoleexLogo";
    Footer — Premium dark footer with refined spacing and typography.
    --------------------------------------------------------------------------- */
 
-export default function Footer() {
+export default function Footer({ productsMenu }: { productsMenu: MegaMenuItem[] }) {
+  /* Products first, from the Hub's divisions; then the site's own groups. */
+  const groups: FooterGroup[] = [
+    { title: "Products", links: [...productsMenu.slice(0, 5).map((d) => ({ label: d.division, href: `/products/${d.slug}` })), { label: "All Products", href: "/products" }] },
+    ...footerGroups,
+  ];
   return (
     <footer className="bg-black">
       {/* Nav columns */}
       <div className="border-t border-white/[0.06]">
         <div className="max-w-[980px] mx-auto px-5">
           <div className="py-20 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-10 gap-y-12">
-            {footerGroups.map((group) => (
+            {groups.map((group) => (
               <div key={group.title}>
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/20 mb-6">
                   {group.title}

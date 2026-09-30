@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import type { SectionRow } from "@/types/supabase";
-import { getContentItems } from "@/lib/section-helpers";
+import { getContentItems, resolveBackground } from "@/lib/section-helpers";
 
 export function NumbersSection({ section }: { section: SectionRow }) {
-  const dark = section.background === "dark" || section.background === "black";
+  const { hex: bgHex, isDark: dark } = resolveBackground(section.background);
   const items = getContentItems(section);
 
   return (
-    <section className={`${dark ? "bg-black" : "bg-white"} py-24 md:py-32 text-center overflow-hidden`}>
+    <section style={{ backgroundColor: bgHex }} className="py-24 md:py-32 text-center overflow-hidden">
       <div className="max-w-[900px] mx-auto px-6">
         {section.title && (
           <h2 className={`text-[36px] md:text-[52px] font-bold tracking-[-0.035em] ${dark ? "text-white" : "text-[#1d1d1f]"}`}>

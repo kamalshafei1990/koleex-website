@@ -1,16 +1,15 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { getPageWithSections } from "@/lib/cms";
-import { getElementsBySectionId } from "@/lib/elements";
+import { hubPage } from "@/lib/hub";
 import { SectionRenderer } from "./SectionRenderer";
 import { ElementRenderer } from "./ElementRenderer";
 import { getSectionSettings } from "@/lib/section-helpers";
 import type { SectionRow, ElementRow } from "@/types/supabase";
 
 /* ---------------------------------------------------------------------------
-   DynamicPage — Loads sections + elements from Supabase by page slug.
-   Shows static fallback while loading or if CMS is empty/fails.
+   DynamicPage — a page built in the Koleex Hub's Website app (pages →
+   sections → elements), read on the SERVER through the Hub bridge (lib/hub)
+   and cached under "page:<slug>": visitors get finished HTML and never touch
+   the Hub or its database. Until the page has content there (or the bridge
+   answers nothing), the static fallback shows.
    --------------------------------------------------------------------------- */
 
 interface DynamicPageProps {
@@ -18,47 +17,21 @@ interface DynamicPageProps {
   fallback: React.ReactNode;
 }
 
-export function DynamicPage({ slug, fallback }: DynamicPageProps) {
-  const [sections, setSections] = useState<SectionRow[] | null>(null);
-  const [elements, setElements] = useState<Record<string, ElementRow[]>>({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      try {
-        const { sections: data } = await getPageWithSections(slug);
-        if (!cancelled) {
-          if (data && data.length > 0) {
-            setSections(data);
-            // Load elements for each section
-            const elementsMap: Record<string, ElementRow[]> = {};
-            await Promise.all(
-              data.map(async (section) => {
-                const els = await getElementsBySectionId(section.id);
-                if (els.length > 0) elementsMap[section.id] = els;
-              })
-            );
-            if (!cancelled) setElements(elementsMap);
-          } else {
-            setError(true);
-          }
-        }
-      } catch {
-        if (!cancelled) setError(true);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    load();
-    return () => { cancelled = true; };
-  }, [slug]);
-
-  if (loading) return <>{fallback}</>;
-  if (error || !sections) return <>{fallback}</>;
+export async function DynamicPage({ slug, fallback }: DynamicPageProps) {
+  const data = await hubPage(slug);
+  const rows = (data?.sections ?? []).filter((s) => s.visible !== false);
+  if (rows.length === 0) return <>{fallback}</>;
+  const sections = rows as unknown as SectionRow[];
+  /* Each section's visible elements, in order; the zone comes from their
+     settings, as the builder stores it. */
+  const elements: Record<string, ElementRow[]> = {};
+  for (const row of rows) {
+    const list = (Array.isArray(row.elements) ? row.elements : [])
+      .filter((e) => e.visible !== false)
+      .sort((a, b) => Number(a.order ?? 0) - Number(b.order ?? 0))
+      .map((e) => ({ ...e, zone: ((e.settings as Record<string, unknown> | null)?.zone as string) || "a" })) as unknown as ElementRow[];
+    if (list.length) elements[String(row.id)] = list;
+  }
 
   return (
     <>
@@ -74,10 +47,11 @@ export function DynamicPage({ slug, fallback }: DynamicPageProps) {
           const gap = settings.gap || "24px";
           const pt = settings.paddingTop || "48px";
           const pb = settings.paddingBottom || "48px";
-          const bg = section.background;
-          const bgClass = bg === "dark" ? "bg-[#1d1d1f]" : bg === "black" ? "bg-black" : bg === "light" ? "bg-[#f5f5f7]" : "bg-white";
+          const bg = section.background || "white";
+          const bgPresets: Record<string, string> = { white: "#FFFFFF", light: "#F5F5F7", dark: "#1E1E20", black: "#000000" };
+          const bgHex = bgPresets[bg] || bg;
           return (
-            <section key={section.id} className={bgClass}>
+            <section key={section.id} style={{ backgroundColor: bgHex }}>
               <div className="max-w-[1000px] mx-auto px-6" style={{ paddingTop: pt, paddingBottom: pb }}>
                 <div style={{
                   display: "grid",

@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import type { SectionRow } from "@/types/supabase";
-import { getContentItems } from "@/lib/section-helpers";
+import { getContentItems, resolveBackground } from "@/lib/section-helpers";
 
 export function CardsSection({ section }: { section: SectionRow }) {
-  const dark = section.background === "dark" || section.background === "black";
+  const { hex: bgHex, isDark: dark } = resolveBackground(section.background);
   const items = getContentItems(section);
 
   return (
-    <section className={`${dark ? "bg-black" : section.background === "light" ? "bg-[#f5f5f7]" : "bg-white"} py-24 md:py-32 overflow-hidden`}>
+    <section style={{ backgroundColor: bgHex }} className="py-24 md:py-32 overflow-hidden">
       <div className="max-w-[1000px] mx-auto px-6">
         {(section.title || section.subtitle) && (
           <div className="text-center mb-14">

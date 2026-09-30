@@ -3,12 +3,13 @@
 import { CmsImage } from "../CmsImage";
 import Link from "next/link";
 import type { SectionRow } from "@/types/supabase";
+import { resolveBackground } from "@/lib/section-helpers";
 
 export function ImageLeftSection({ section }: { section: SectionRow }) {
-  const dark = section.background === "dark" || section.background === "black";
+  const { hex: bgHex, isDark: dark } = resolveBackground(section.background);
 
   return (
-    <section className={`${dark ? "bg-black" : section.background === "light" ? "bg-[#f5f5f7]" : "bg-white"} overflow-hidden`}>
+    <section style={{ backgroundColor: bgHex }} className="overflow-hidden">
       <div className="flex flex-col md:flex-row min-h-[420px]">
         {section.image_url && (
           <div className="md:w-[52%] overflow-hidden">

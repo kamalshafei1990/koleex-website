@@ -2,13 +2,14 @@
 
 import { CmsImage } from "../CmsImage";
 import Link from "next/link";
+import { resolveBackground } from "@/lib/section-helpers";
 import type { SectionRow } from "@/types/supabase";
 
 export function HeroSection({ section }: { section: SectionRow }) {
-  const dark = section.background === "dark" || section.background === "black";
+  const { hex: bgHex, isDark: dark } = resolveBackground(section.background);
 
   return (
-    <section className={`${dark ? "bg-black" : "bg-white"} text-center overflow-hidden`}>
+    <section style={{ backgroundColor: bgHex }} className="text-center overflow-hidden">
       <div className="pt-16 md:pt-24 px-6">
         {section.title && (
           <h1 className={`text-[56px] md:text-[80px] font-semibold leading-[1.03] tracking-[-0.045em] ${dark ? "text-white" : "text-[#1d1d1f]"}`}>

@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { resolveBackground } from "@/lib/section-helpers";
 import type { SectionRow } from "@/types/supabase";
 
 export function CTASection({ section }: { section: SectionRow }) {
-  const dark = section.background === "dark" || section.background === "black";
+  const { hex: bgHex, isDark: dark } = resolveBackground(section.background);
 
   return (
-    <section className={`${dark ? "bg-black" : section.background === "light" ? "bg-[#f5f5f7]" : "bg-white"} text-center py-20 md:py-28 overflow-hidden`}>
+    <section style={{ backgroundColor: bgHex }} className="text-center py-20 md:py-28 overflow-hidden">
       <div className="max-w-[680px] mx-auto px-6">
         {section.title && (
           <h2 className={`text-[36px] md:text-[52px] font-bold leading-[1.06] tracking-[-0.035em] ${dark ? "text-white" : "text-[#1d1d1f]"}`}>

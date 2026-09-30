@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X, ChevronDown, Search, Globe, MapPin, Sparkles, User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { mainNav, productsMegaMenu } from "@/data/navigation";
+import { mainNav, type MegaMenuItem } from "@/data/navigation";
 import { KoleexLogo } from "@/components/ui/KoleexLogo";
 
 /* ---------------------------------------------------------------------------
@@ -24,9 +24,11 @@ import { KoleexLogo } from "@/components/ui/KoleexLogo";
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  /** The Hub's divisions (built in the root layout). */
+  items: MegaMenuItem[];
 }
 
-export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
+export default function MobileMenu({ isOpen, onClose, items }: MobileMenuProps) {
   const pathname = usePathname();
   const [productsExpanded, setProductsExpanded] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -132,7 +134,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                       )}
                     >
                       <div className="pl-1 pb-4 space-y-6">
-                        {productsMegaMenu.map((division) => (
+                        {items.map((division) => (
                           <div key={division.slug}>
                             <Link
                               href={`/products/${division.slug}`}

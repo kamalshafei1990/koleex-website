@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { hubJobs } from "@/lib/hub";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -37,40 +38,11 @@ const whyKoleex = [
   },
 ];
 
-const openPositions = [
-  {
-    title: "Senior Robotics Engineer",
-    department: "Industrial Technology",
-    location: "Zurich, Switzerland",
-    type: "Full-time",
-  },
-  {
-    title: "IoT Platform Architect",
-    department: "Digital Solutions",
-    location: "Austin, TX, USA",
-    type: "Full-time",
-  },
-  {
-    title: "Battery Systems Researcher",
-    department: "Energy Systems",
-    location: "Singapore",
-    type: "Full-time",
-  },
-  {
-    title: "Materials Science Engineer",
-    department: "Advanced Materials",
-    location: "Munich, Germany",
-    type: "Full-time",
-  },
-  {
-    title: "Product Design Lead",
-    department: "Corporate Design",
-    location: "London, UK",
-    type: "Full-time",
-  },
-];
+/* Open roles come from the Koleex Hub (HR's job postings), never written here. */
+export const revalidate = 3600;
 
-export default function CareersPage() {
+export default async function CareersPage() {
+  const openPositions = await hubJobs();
   return (
     <>
       <PageHero
@@ -110,28 +82,27 @@ export default function CareersPage() {
           <SectionHeading
             eyebrow="Open Positions"
             title="Current Opportunities"
-            subtitle="Explore roles across our four divisions and corporate teams worldwide."
+            subtitle="The roles open at Koleex right now."
           />
 
           <div className="mx-auto max-w-3xl space-y-4">
-            {openPositions.map((job) => (
-              <AnimatedSection key={job.title}>
+            {openPositions.length === 0 ? (
+              <p className="py-10 text-center text-white/50">No open positions right now — you are welcome to send us your CV.</p>
+            ) : openPositions.map((job) => (
+              <AnimatedSection key={job.id}>
                 <Card variant="dark" className="h-full">
                   <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <h3 className="text-lg font-semibold text-white">
-                        {job.title}
-                      </h3>
+                      <h3 className="text-lg font-semibold text-white">{job.title}</h3>
                       <div className="mt-2 flex flex-wrap items-center gap-2">
-                        <Badge variant="accent">{job.department}</Badge>
-                        <Badge>{job.location}</Badge>
-                        <Badge>{job.type}</Badge>
+                        {job.department ? <Badge variant="accent">{job.department}</Badge> : null}
+                        {job.location ? <Badge>{job.location}</Badge> : null}
+                        {typeof job.employmentType === "string" && job.employmentType ? <Badge>{job.employmentType}</Badge> : null}
                       </div>
+                      {job.description ? <p className="mt-3 line-clamp-3 text-sm text-white/50">{job.description}</p> : null}
                     </div>
                     <div className="shrink-0">
-                      <span className="text-sm font-medium text-white/80">
-                        View Role &rarr;
-                      </span>
+                      <Button href={`/contact?job=${encodeURIComponent(job.id)}`} variant="secondary">Apply</Button>
                     </div>
                   </div>
                 </Card>

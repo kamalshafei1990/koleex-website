@@ -23,6 +23,7 @@ export default function SolutionsPage() {
       {solutions.map((solution, index) => (
         <Section
           key={solution.slug}
+          id={solution.slug}
           background={index % 2 === 0 ? "black" : undefined}
         >
           <Container>

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search, Globe, Menu, X, User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { mainNav } from "@/data/navigation";
+import { mainNav, type MegaMenuItem } from "@/data/navigation";
 import { getDefaultRegion, type Region, type Language } from "@/data/regions";
 import { KoleexLogo } from "@/components/ui/KoleexLogo";
 import MegaMenu from "./MegaMenu";
@@ -21,7 +21,7 @@ import RegionSuggestionModal from "./RegionSuggestionModal";
    No AI icon in header.
    --------------------------------------------------------------------------- */
 
-export default function Header() {
+export default function Header({ productsMenu }: { productsMenu: MegaMenuItem[] }) {
   const pathname = usePathname();
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -189,10 +189,10 @@ export default function Header() {
           </div>
         </nav>
 
-        <MegaMenu isOpen={megaMenuOpen} onClose={closeMegaMenu} />
+        <MegaMenu isOpen={megaMenuOpen} onClose={closeMegaMenu} items={productsMenu} />
       </header>
 
-      <MobileMenu isOpen={mobileMenuOpen} onClose={closeMobileMenu} />
+      <MobileMenu isOpen={mobileMenuOpen} onClose={closeMobileMenu} items={productsMenu} />
       <SearchOverlay isOpen={searchOpen} onClose={closeSearch} />
 
       {showSuggestion && (

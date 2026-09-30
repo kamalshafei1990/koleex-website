@@ -37,132 +37,47 @@ export const mainNav: NavItem[] = [
 ];
 
 // ---- Products mega menu ----
+// Built from the Koleex Hub's taxonomy (lib/hub) in the root layout and handed
+// to the Header and Footer — never a list written here.
 
-export const productsMegaMenu: MegaMenuItem[] = [
-  {
-    division: "Industrial Technology",
-    slug: "industrial-technology",
-    description:
-      "Precision-engineered systems that power manufacturing lines, logistics networks, and critical infrastructure worldwide.",
-    categories: [
-      {
-        name: "Automation & Robotics",
-        slug: "automation-robotics",
-        href: "/products/industrial-technology/automation-robotics",
-      },
-      {
-        name: "Precision Instruments",
-        slug: "precision-instruments",
-        href: "/products/industrial-technology/precision-instruments",
-      },
-      {
-        name: "Process Control",
-        slug: "process-control",
-        href: "/products/industrial-technology/process-control",
-      },
-    ],
-  },
-  {
-    division: "Energy Systems",
-    slug: "energy-systems",
-    description:
-      "Next-generation energy platforms spanning generation, storage, and distribution for a sustainable future.",
-    categories: [
-      {
-        name: "Renewable Generation",
-        slug: "renewable-generation",
-        href: "/products/energy-systems/renewable-generation",
-      },
-      {
-        name: "Grid Infrastructure",
-        slug: "grid-infrastructure",
-        href: "/products/energy-systems/grid-infrastructure",
-      },
-      {
-        name: "Energy Storage",
-        slug: "energy-storage",
-        href: "/products/energy-systems/energy-storage",
-      },
-    ],
-  },
-  {
-    division: "Digital Solutions",
-    slug: "digital-solutions",
-    description:
-      "Enterprise software and connected platforms that turn operational data into decisive action.",
-    categories: [
-      {
-        name: "IoT Platforms",
-        slug: "iot-platforms",
-        href: "/products/digital-solutions/iot-platforms",
-      },
-      {
-        name: "Enterprise Analytics",
-        slug: "enterprise-analytics",
-        href: "/products/digital-solutions/enterprise-analytics",
-      },
-      {
-        name: "Cybersecurity",
-        slug: "cybersecurity",
-        href: "/products/digital-solutions/cybersecurity",
-      },
-    ],
-  },
-  {
-    division: "Advanced Materials",
-    slug: "advanced-materials",
-    description:
-      "High-performance materials engineered at the molecular level for aerospace, medical, and industrial applications.",
-    categories: [
-      {
-        name: "Composite Systems",
-        slug: "composite-systems",
-        href: "/products/advanced-materials/composite-systems",
-      },
-      {
-        name: "Specialty Polymers",
-        slug: "specialty-polymers",
-        href: "/products/advanced-materials/specialty-polymers",
-      },
-      {
-        name: "Ceramic & Thermal",
-        slug: "ceramic-thermal",
-        href: "/products/advanced-materials/ceramic-thermal",
-      },
-    ],
-  },
-];
+/** The Hub's divisions as the mega menu and the footer show them: divisions
+ *  that have products, and their categories that have products. */
+export function productsMenuFrom(divisions: Array<{ slug: string; name: string; tagline: string | null; description: string | null; productCount: number; categories: Array<{ slug: string; name: string; productCount: number }> }>): MegaMenuItem[] {
+  return divisions
+    .filter((d) => d.productCount > 0)
+    .map((d) => ({
+      division: d.name,
+      slug: d.slug,
+      description: d.tagline ?? d.description ?? "",
+      categories: d.categories
+        .filter((c) => c.productCount > 0)
+        .map((c) => ({ name: c.name, slug: c.slug, href: `/products/${d.slug}/${c.slug}` })),
+    }));
+}
 
 // ---- Footer navigation ----
 
+/* The footer's groups after Products (which comes from the Hub). */
 export const footerGroups: FooterGroup[] = [
-  {
-    title: "Products",
-    links: [
-      { label: "Industrial Technology", href: "/products/industrial-technology" },
-      { label: "Energy Systems", href: "/products/energy-systems" },
-      { label: "Digital Solutions", href: "/products/digital-solutions" },
-      { label: "Advanced Materials", href: "/products/advanced-materials" },
-      { label: "All Products", href: "/products" },
-    ],
-  },
   {
     title: "Solutions",
     links: [
-      { label: "Manufacturing", href: "/solutions/smart-manufacturing" },
-      { label: "Energy Transition", href: "/solutions/energy-transition" },
-      { label: "Infrastructure", href: "/solutions/connected-infrastructure" },
-      { label: "Healthcare", href: "/solutions/healthcare-innovation" },
+      // Anchor deep-links into /solutions — there are no per-solution pages.
+      { label: "Manufacturing", href: "/solutions#smart-manufacturing" },
+      { label: "Energy Transition", href: "/solutions#energy-transition" },
+      { label: "Infrastructure", href: "/solutions#connected-infrastructure" },
+      { label: "Healthcare", href: "/solutions#healthcare-innovation" },
       { label: "All Solutions", href: "/solutions" },
     ],
   },
   {
     title: "Company",
     links: [
+      // Only real pages — a footer link that 404s is worse than no link.
       { label: "About Us", href: "/about" },
-      { label: "Leadership", href: "/about/leadership" },
+      { label: "CEO Message", href: "/about/ceo-message" },
       { label: "Sustainability", href: "/about/sustainability" },
-      { label: "Investors", href: "/about/investors" },
+      { label: "History", href: "/about/history" },
       { label: "Careers", href: "/careers" },
     ],
   },
@@ -170,10 +85,9 @@ export const footerGroups: FooterGroup[] = [
     title: "Resources",
     links: [
       { label: "Stories & Insights", href: "/stories" },
-      { label: "Technical Documentation", href: "/resources/docs" },
-      { label: "Support Center", href: "/support" },
+      { label: "Technology", href: "/about/technology" },
+      { label: "Global Presence", href: "/about/global-presence" },
       { label: "Contact Us", href: "/contact" },
-      { label: "Privacy Policy", href: "/privacy" },
     ],
   },
 ];

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { SectionRow } from "@/types/supabase";
-import { getSectionSettings } from "@/lib/section-helpers";
+import { getSectionSettings, resolveBackground } from "@/lib/section-helpers";
 
 /* ---------------------------------------------------------------------------
    VideoSection — Supports:
@@ -16,11 +16,11 @@ function isEmbedUrl(url: string): boolean {
 }
 
 export function VideoSection({ section }: { section: SectionRow }) {
-  const dark = section.background === "dark" || section.background === "black";
+  const { hex: bgHex, isDark: dark } = resolveBackground(section.background);
   const settings = getSectionSettings(section);
 
   return (
-    <section className={`${dark ? "bg-black" : "bg-white"} py-20 md:py-28 overflow-hidden`}>
+    <section style={{ backgroundColor: bgHex }} className="py-20 md:py-28 overflow-hidden">
       <div className="max-w-[1000px] mx-auto px-6">
         {section.title && (
           <div className="text-center mb-10">

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { productsMegaMenu } from "@/data/navigation";
+import type { MegaMenuItem } from "@/data/navigation";
 
 /* ---------------------------------------------------------------------------
    MegaMenu — Guidelines-aligned dark dropdown.
@@ -12,9 +12,11 @@ import { productsMegaMenu } from "@/data/navigation";
 interface MegaMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  /** The Hub's divisions (built in the root layout). */
+  items: MegaMenuItem[];
 }
 
-export default function MegaMenu({ isOpen, onClose }: MegaMenuProps) {
+export default function MegaMenu({ isOpen, onClose, items }: MegaMenuProps) {
   return (
     <>
       <div
@@ -37,7 +39,7 @@ export default function MegaMenu({ isOpen, onClose }: MegaMenuProps) {
         <div className="nav-glass border-b border-white/[0.08]">
           <div className="max-w-[980px] mx-auto px-5 py-10">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-              {productsMegaMenu.map((division) => (
+              {items.map((division) => (
                 <div key={division.slug}>
                   <Link
                     href={`/products/${division.slug}`}

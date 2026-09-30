@@ -111,6 +111,18 @@ export function getButtonClasses(btn: ButtonConfig, dark: boolean): string {
   return `${base} ${sizes[btn.size]} ${shapes[btn.shape]} ${styleClass}`;
 }
 
+/* Resolve background to hex + dark mode flag */
+const BG_PRESETS: Record<string, string> = { white: "#FFFFFF", light: "#F5F5F7", dark: "#1E1E20", black: "#000000" };
+
+export function resolveBackground(bg: string | null | undefined): { hex: string; isDark: boolean } {
+  const val = bg || "white";
+  const hex = BG_PRESETS[val] || val;
+  // Determine if dark: named dark/black, or custom hex with low luminance
+  const isDark = ["dark", "black"].includes(val)
+    || (hex.startsWith("#") && hex.length === 7 && parseInt(hex.slice(1, 3), 16) < 100);
+  return { hex, isDark };
+}
+
 /* Build href with link type */
 export function buildHref(btn: ButtonConfig): string {
   switch (btn.linkType) {
