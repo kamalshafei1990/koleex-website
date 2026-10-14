@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { hubPages, hubProducts, hubTaxonomy } from "@/lib/hub";
 import { CONTENT_LANGS, siteUrl } from "@/i18n/config";
+import { isComingSoon } from "@/lib/coming-soon";
 
 /* ---------------------------------------------------------------------------
    sitemap.xml — every page in the three languages with real translations
@@ -14,6 +15,7 @@ import { CONTENT_LANGS, siteUrl } from "@/i18n/config";
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  if (isComingSoon()) return [];
   const base = siteUrl();
   const entry = (path: string, priority: number, lastModified?: string | null): MetadataRoute.Sitemap =>
     CONTENT_LANGS.map((lang) => ({

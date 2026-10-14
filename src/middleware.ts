@@ -11,6 +11,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { countryToLanguage, regions } from "@/data/regions";
 import { CONTENT_LANGS, DEFAULT_LANG, isLang, siteUrl } from "@/i18n/config";
+import { isComingSoon } from "@/lib/coming-soon";
 
 const YEAR = 60 * 60 * 24 * 365;
 const cookieOpts = { path: "/", maxAge: YEAR, sameSite: "lax" as const };
@@ -32,8 +33,31 @@ function pickLang(req: NextRequest): string {
   return browserLang(req.headers.get("accept-language")) ?? DEFAULT_LANG;
 }
 
+function barePath(pathname: string): string {
+  return pathname.length > 1 && pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+}
+
 export function middleware(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
+
+  /* Temporary public gate. "/" is rewritten to the teaser (the address bar
+     stays "/"). Every other page redirects there. API routes and files are
+     outside the matcher, so the Hub can still refresh and accept leads. */
+  if (isComingSoon()) {
+    const path = barePath(pathname);
+    if (path === "/") {
+      const url = req.nextUrl.clone();
+      url.pathname = "/en/coming-soon";
+      const res = NextResponse.rewrite(url);
+      res.headers.set("X-Robots-Tag", "noindex, nofollow");
+      return res;
+    }
+    const url = req.nextUrl.clone();
+    url.pathname = "/";
+    url.search = "";
+    return NextResponse.redirect(url, 307);
+  }
+
   const first = pathname.split("/")[1] ?? "";
 
   if (!isLang(first)) {
