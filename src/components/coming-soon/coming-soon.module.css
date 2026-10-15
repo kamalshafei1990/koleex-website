@@ -89,8 +89,63 @@
 
 .hero .wrap {
   position: relative;
-  padding-top: 128px;
-  padding-bottom: 96px;
+  padding-top: 96px;
+  padding-bottom: 80px;
+}
+
+.heroGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 420px);
+  grid-template-areas:
+    "copy globe"
+    "cta globe";
+  align-items: center;
+  column-gap: 28px;
+  row-gap: 0;
+}
+
+.heroGrid .cta {
+  grid-area: cta;
+}
+
+.heroCopy {
+  grid-area: copy;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.globeSlot {
+  grid-area: globe;
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 1;
+  justify-self: end;
+  align-self: center;
+  z-index: 0;
+}
+
+.globeSlot > div {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+
+.globeSlot canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.globeSlot[data-static="true"] {
+  display: none;
+}
+
+.globeSlot canvas {
+  touch-action: pan-y;
 }
 
 .eyebrow {
@@ -310,6 +365,7 @@
   border: 1px solid var(--border-subtle);
   border-radius: 16px;
   padding: 24px;
+  scroll-margin-top: 80px;
 }
 
 .card p,
@@ -334,6 +390,11 @@
 .row .ui {
   color: var(--text-subtle);
   margin-top: 4px;
+}
+
+.row > span,
+.row > a {
+  min-width: 0;
 }
 
 .hubs {
@@ -409,6 +470,21 @@
   margin-top: 8px;
 }
 
+.card .row + .row {
+  margin-top: 6px;
+}
+
+.wechat span {
+  color: var(--text-muted);
+}
+
+.card .socialSoon {
+  margin: 16px 0 0;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--text-dim);
+}
+
 .success {
   font-size: 14px;
   line-height: 1.6;
@@ -450,6 +526,17 @@
     animation: none;
   }
 
+  .globeSlot {
+    display: none;
+  }
+
+  .heroGrid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "copy"
+      "cta";
+  }
+
   .btn:active {
     scale: 1;
   }
@@ -466,6 +553,31 @@
 @media (max-width: 1100px) {
   .strip {
     grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .page h1 {
+    font-size: 68px;
+  }
+}
+
+@media (max-width: 960px) {
+  .heroGrid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "copy"
+      "globe"
+      "cta";
+    justify-items: stretch;
+  }
+
+  .globeSlot {
+    width: min(220px, 58vw);
+    margin: 8px auto 0;
+    justify-self: center;
+  }
+
+  .heroGrid .cta {
+    margin-top: 28px;
   }
 }
 

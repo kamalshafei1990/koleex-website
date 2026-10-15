@@ -1,4 +1,5 @@
 import { KoleexLogo } from "@/components/ui/KoleexLogo";
+import { HeroGlobe } from "./HeroGlobe";
 import { NotifyForm } from "./NotifyForm";
 import { productLines } from "./product-lines";
 import styles from "./coming-soon.module.css";
@@ -6,8 +7,10 @@ import styles from "./coming-soon.module.css";
 const EMAIL = "info@koleexgroup.com";
 const PHONE_DISPLAY = "+86 130 7380 0720";
 const PHONE_TEL = "+8613073800720";
-/* No catalog file ships with the site. The button asks the team for it. */
-const CATALOG_HREF = `mailto:${EMAIL}?subject=KOLEEX%20Catalog%202025`;
+const WHATSAPP_HREF = "https://wa.me/8613073800720";
+/* Real file lives at public/catalogs/ — not in git (about 77MB). */
+const CATALOG_HREF = "/catalogs/KOLEEX-Catalog-2025.pdf";
+const CATALOG_FILE = "KOLEEX-Catalog-2025.pdf";
 
 const STATS = [
   { value: "70+", label: "Years of heritage" },
@@ -49,6 +52,14 @@ function GlobeIcon() {
   );
 }
 
+function ChatIcon() {
+  return (
+    <svg aria-hidden="true" className={styles.ui} fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.7-1.2A9 9 0 1 0 12 3Zm-3.2 8.2a1.1 1.1 0 1 1 0-2.2 1.1 1.1 0 0 1 0 2.2Zm3.2 0a1.1 1.1 0 1 1 0-2.2 1.1 1.1 0 0 1 0 2.2Zm3.2 0a1.1 1.1 0 1 1 0-2.2 1.1 1.1 0 0 1 0 2.2Z" />
+    </svg>
+  );
+}
+
 function DownloadIcon() {
   return (
     <svg aria-hidden="true" className={styles.ui} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -73,24 +84,29 @@ export function ComingSoon() {
 
       <section className={styles.hero}>
         <div className={`${styles.wrap} ${styles.reveal}`}>
-          <p className={styles.eyebrow}>
-            <i className={styles.dot} aria-hidden="true" />
-            New website in development
-          </p>
-          <h1>
-            Shaping the <span className={styles.grad}>Future.</span>
-          </h1>
-          <p className={styles.sub}>
-            A new Koleex digital experience is being engineered. Our systems, machines and global team remain fully operational.
-          </p>
-          <div className={styles.cta}>
-            <a className={`${styles.btn} ${styles.primary}`} href={CATALOG_HREF}>
-              <DownloadIcon />
-              Download Catalog 2025
-            </a>
-            <a className={`${styles.btn} ${styles.ghost}`} href={`mailto:${EMAIL}`}>
-              Contact Our Team ›
-            </a>
+          <div className={styles.heroGrid}>
+            <div className={styles.heroCopy}>
+              <p className={styles.eyebrow}>
+                <i className={styles.dot} aria-hidden="true" />
+                KOLEEX
+              </p>
+              <h1>
+                Shaping the <span className={styles.grad}>Future.</span>
+              </h1>
+              <p className={styles.sub}>
+                A new Koleex digital experience is being engineered. Our systems, machines and global team remain fully operational.
+              </p>
+            </div>
+            <HeroGlobe />
+            <div className={styles.cta}>
+              <a className={`${styles.btn} ${styles.primary}`} href={CATALOG_HREF} download={CATALOG_FILE}>
+                <DownloadIcon />
+                Download Catalog 2025
+              </a>
+              <a className={`${styles.btn} ${styles.ghost}`} href="#contact">
+                Contact Our Team ›
+              </a>
+            </div>
           </div>
           <div className={styles.stats}>
             {STATS.map((stat) => (
@@ -119,7 +135,7 @@ export function ComingSoon() {
 
       <section className={styles.info}>
         <div className={`${styles.wrap} ${styles.grid}`}>
-          <div className={styles.card}>
+          <div className={styles.card} id="contact">
             <h3>Contact</h3>
             <p className={styles.row}>
               <MailIcon />
@@ -130,15 +146,20 @@ export function ComingSoon() {
               <span>
                 <a href={`tel:${PHONE_TEL}`}>{PHONE_DISPLAY}</a>
                 {" · "}
-                <a href={`https://wa.me/${PHONE_TEL.replace("+", "")}`} target="_blank" rel="noopener noreferrer">
+                <a href={WHATSAPP_HREF} target="_blank" rel="noopener noreferrer">
                   WhatsApp
                 </a>
               </span>
+            </p>
+            <p className={`${styles.row} ${styles.wechat}`}>
+              <ChatIcon />
+              <span>WeChat — ask via WhatsApp/email</span>
             </p>
             <p className={`${styles.row} ${styles.note} ${styles.address}`}>
               <PinIcon />
               <span>Building 6B, Feiyue Industrial Innovation Park, Jiaojiang, Taizhou, Zhejiang, China</span>
             </p>
+            <p className={styles.socialSoon}>Official social — coming soon</p>
           </div>
 
           <div className={styles.card}>

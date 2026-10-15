@@ -1,0 +1,72 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import type { COBEOptions } from "cobe";
+import { Globe } from "@/components/ui/globe";
+import styles from "./coming-soon.module.css";
+
+/* Koleex hubs: Taizhou, Shanghai, Hangzhou, Hong Kong, Dubai, Cairo. */
+const HUBS: COBEOptions["markers"] = [
+  { location: [28.656, 121.421], size: 0.06 },
+  { location: [31.23, 121.474], size: 0.07 },
+  { location: [30.274, 120.155], size: 0.055 },
+  { location: [22.319, 114.169], size: 0.06 },
+  { location: [25.205, 55.271], size: 0.07 },
+  { location: [30.044, 31.236], size: 0.075 },
+];
+
+const GLOBE_BASE: COBEOptions = {
+  width: 800,
+  height: 800,
+  onRender: () => {},
+  devicePixelRatio: 2,
+  phi: 2.15,
+  theta: 0.28,
+  dark: 1,
+  diffuse: 1.2,
+  mapSamples: 12000,
+  mapBrightness: 9,
+  mapBaseBrightness: 0.24,
+  baseColor: [0.5, 0.6, 0.74],
+  markerColor: [0.86, 0.93, 1],
+  glowColor: [0.28, 0.34, 0.45],
+  opacity: 1,
+  markers: HUBS,
+};
+
+const GLOBE_COMPACT: COBEOptions = {
+  ...GLOBE_BASE,
+  devicePixelRatio: 1.25,
+  mapSamples: 6000,
+  mapBrightness: 7,
+};
+
+type Mode = "pending" | "off" | "full" | "compact";
+
+export function HeroGlobe() {
+  const [mode, setMode] = useState<Mode>("pending");
+
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const narrow = window.matchMedia("(max-width: 960px)");
+    const sync = () => {
+      if (reduce.matches) setMode("off");
+      else setMode(narrow.matches ? "compact" : "full");
+    };
+    sync();
+    reduce.addEventListener("change", sync);
+    narrow.addEventListener("change", sync);
+    return () => {
+      reduce.removeEventListener("change", sync);
+      narrow.removeEventListener("change", sync);
+    };
+  }, []);
+
+  const show = mode === "full" || mode === "compact";
+
+  return (
+    <div className={styles.globeSlot} data-static={mode === "off" ? "true" : undefined} aria-hidden="true">
+      {show ? <Globe config={mode === "compact" ? GLOBE_COMPACT : GLOBE_BASE} /> : null}
+    </div>
+  );
+}
