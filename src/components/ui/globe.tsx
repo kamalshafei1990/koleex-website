@@ -155,7 +155,7 @@ function Globe({ globeConfig, data, globeRef }: GlobeProps) {
       .arcEndLng((item: object) => (item as GlobeArc).endLng)
       .arcColor((item: object) => (item as GlobeArc).color)
       .arcAltitude((item: object) => (item as GlobeArc).arcAlt)
-      .arcStroke(0.32)
+      .arcStroke(0.28)
       .arcDashLength(arcLength)
       .arcDashGap(arcDashGap)
       .arcDashInitialGap((item: object) => (item as GlobeArc).order)

@@ -34,13 +34,15 @@ export type GlobeMarker = {
 
 const STEEL = "#567FB2";
 
-/* three-globe measures dashes in fractions of the whole arc (0–1).
-   A dash of length L stays on that span for 1+L of travel, then the gap
-   must be long enough that the next dash has not entered yet. The official
-   GitHub globe uses a gap of 15 for the same reason. */
-const ARC_LENGTH = 0.55;
+/* three-globe draws a dash of length L on the 0–1 arc, then waits `gap`.
+   The dash stays on that arc for 1+L of travel, so the repeat period has to
+   be (1+L) * routes / 22 or almost every route lights up at once.
+   `order` is the initial gap. It starts at 1, which is the start of the arc
+   after three-globe flips its distance attribute, so each dash is born at
+   Taizhou and runs outward. An order of 0 parks the dash at the destination. */
+const ARC_LENGTH = 0.35;
 const CONCURRENT = 22;
-const ARC_TIME = 4500;
+const ARC_TIME = 2800;
 
 type Dest = GlobeMarker;
 
@@ -94,6 +96,7 @@ destinations.sort(
 const travelWindow = 1 + ARC_LENGTH;
 const period = (travelWindow * destinations.length) / CONCURRENT;
 const dashGap = period - ARC_LENGTH;
+const stride = 17;
 
 export const globeMotion = {
   arcLength: ARC_LENGTH,
@@ -101,15 +104,18 @@ export const globeMotion = {
   arcTime: ARC_TIME,
 };
 
-export const globeArcs: GlobeArc[] = destinations.map((point, index) => ({
-  order: (index / destinations.length) * period,
-  startLat: TAIZHOU.lat,
-  startLng: TAIZHOU.lng,
-  endLat: point.lat,
-  endLng: point.lng,
-  arcAlt: arcAltitude(point.lat, point.lng),
-  color: STEEL,
-}));
+export const globeArcs: GlobeArc[] = destinations.map((point, index) => {
+  const phase = (index * stride) % destinations.length;
+  return {
+    order: 1 + (phase / destinations.length) * period,
+    startLat: TAIZHOU.lat,
+    startLng: TAIZHOU.lng,
+    endLat: point.lat,
+    endLng: point.lng,
+    arcAlt: arcAltitude(point.lat, point.lng),
+    color: STEEL,
+  };
+});
 
 function clusterMarkers(points: Dest[]) {
   const groups: Dest[] = [];
