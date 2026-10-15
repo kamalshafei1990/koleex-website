@@ -11,6 +11,8 @@ import { cn } from "@/lib/utils"
 const createGlobe = createGlobeMarkets as typeof cobeCreateGlobe
 
 const MOVEMENT_DAMPING = 1400
+/* Radians per frame. Magic UI’s default is 0.005; Coming Soon uses half of that. */
+const AUTO_ROTATE = 0.0025
 
 const GLOBE_CONFIG: COBEOptions = {
   width: 800,
@@ -99,7 +101,7 @@ export function Globe({
       width: widthRef.current * dpr,
       height: widthRef.current * dpr,
       onRender: (state) => {
-        if (!pointerInteracting.current) phiRef.current += 0.005
+        if (!pointerInteracting.current) phiRef.current += AUTO_ROTATE
         state.phi = phiRef.current + rs.get()
         state.width = widthRef.current * dpr
         state.height = widthRef.current * dpr
