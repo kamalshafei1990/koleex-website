@@ -638,11 +638,153 @@
   color: var(--text-muted);
 }
 
-.card .socialSoon {
+.social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   margin: 16px 0 0;
-  font-size: 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.social > li {
+  margin: 0;
+  padding: 0;
+}
+
+.wechatSlot {
+  position: relative;
+}
+
+.mark {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-primary);
+  padding: 0;
+  font: inherit;
+  text-decoration: none;
+  transition:
+    color var(--kx-dur-fast) var(--kx-ease-out),
+    background var(--kx-dur-fast) var(--kx-ease-out),
+    border-color var(--kx-dur-fast) var(--kx-ease-out);
+}
+
+a.mark,
+button.mark {
+  cursor: pointer;
+}
+
+span.mark {
+  cursor: default;
+}
+
+.page .social .mark:hover,
+.page .social .mark:focus-visible {
+  color: var(--brand);
+  background: var(--bg-surface);
+}
+
+.page[data-theme="dark"] .social .mark[data-ink="true"]:hover,
+.page[data-theme="dark"] .social .mark[data-ink="true"]:focus-visible {
+  color: #000;
+  background: #fff;
+}
+
+.glyph {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.duo {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.duo svg {
+  position: absolute;
+  inset: 0;
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.duoCyan,
+.duoMagenta {
+  opacity: 0;
+}
+
+.mark:hover .duoCyan,
+.mark:focus-visible .duoCyan {
+  opacity: 1;
+  color: #25f4ee;
+  transform: translate(-1.5px, 1px);
+}
+
+.mark:hover .duoMagenta,
+.mark:focus-visible .duoMagenta {
+  opacity: 1;
+  color: #fe2c55;
+  transform: translate(1.5px, -0.5px);
+}
+
+.popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 6;
+  width: min(260px, 70vw);
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--tip-bg);
+  color: var(--tip-text);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+}
+
+.popover p,
+.card .popover a {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--tip-text);
+}
+
+.popoverLabel {
+  font-size: 11px !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-dim) !important;
+}
+
+.wechatId {
+  margin-top: 4px !important;
+  font-size: 16px !important;
+  font-weight: 600;
   letter-spacing: 0.02em;
-  color: var(--text-dim);
+  user-select: all;
+}
+
+.popoverLinks {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px !important;
+}
+
+.card .popoverLinks a {
+  color: var(--accent);
+  font-size: 13px;
+}
+
+.card .popoverLinks a:hover {
+  color: var(--hub-sky);
 }
 
 .success {
@@ -706,7 +848,10 @@
   .header a,
   .form input,
   .form button,
-  .themeSwitch button {
+  .themeSwitch button,
+  .mark,
+  .duoCyan,
+  .duoMagenta {
     transition: none;
   }
 }
@@ -828,5 +973,10 @@
   .footer .wrap {
     flex-direction: column;
     gap: 8px;
+  }
+
+  .social {
+    display: grid;
+    grid-template-columns: repeat(4, 40px);
   }
 }

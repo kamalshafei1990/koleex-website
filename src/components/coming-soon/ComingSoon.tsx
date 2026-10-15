@@ -1,8 +1,10 @@
 import { KoleexLogo } from "@/components/ui/KoleexLogo";
 import { KOLEEX_MARKETS, KOLEEX_MARKET_COUNT } from "@/data/koleex-markets";
+import { KOLEEX_WHATSAPP_HREF } from "@/data/socials";
 import { HeroGlobe } from "./HeroGlobe";
 import { NotifyForm } from "./NotifyForm";
 import { productLines } from "./product-lines";
+import { SocialRow } from "./SocialRow";
 import { ThemeRoot, ThemeToggle } from "./theme";
 import styles from "./coming-soon.module.css";
 
@@ -11,7 +13,7 @@ const CONTINENTS = ["Asia", "Africa", "Europe", "North America", "South America"
 const EMAIL = "info@koleexgroup.com";
 const PHONE_DISPLAY = "+86 130 7380 0720";
 const PHONE_TEL = "+8613073800720";
-const WHATSAPP_HREF = "https://wa.me/8613073800720";
+const WHATSAPP_HREF = KOLEEX_WHATSAPP_HREF;
 /* Real file lives at public/catalogs/ — not in git (about 77MB). */
 const CATALOG_HREF = "/catalogs/KOLEEX-Catalog-2025.pdf";
 const CATALOG_FILE = "KOLEEX-Catalog-2025.pdf";
@@ -192,7 +194,7 @@ export function ComingSoon() {
               <PinIcon />
               <span>Building 6B, Feiyue Industrial Innovation Park, Jiaojiang, Taizhou, Zhejiang, China</span>
             </p>
-            <p className={styles.socialSoon}>Official social — coming soon</p>
+            <SocialRow email={EMAIL} />
           </div>
 
           <div className={styles.card}>
