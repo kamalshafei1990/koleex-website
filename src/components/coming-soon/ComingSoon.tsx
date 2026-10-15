@@ -3,6 +3,7 @@ import { KOLEEX_MARKETS, KOLEEX_MARKET_COUNT } from "@/data/koleex-markets";
 import { HeroGlobe } from "./HeroGlobe";
 import { NotifyForm } from "./NotifyForm";
 import { productLines } from "./product-lines";
+import { ThemeRoot, ThemeToggle } from "./theme";
 import styles from "./coming-soon.module.css";
 
 const CONTINENTS = ["Asia", "Africa", "Europe", "North America", "South America"] as const;
@@ -77,11 +78,14 @@ export function ComingSoon() {
   const year = new Date().getFullYear();
 
   return (
-    <div className={styles.page}>
+    <ThemeRoot className={styles.page}>
       <header className={styles.header}>
         <div className={styles.wrap}>
-          <KoleexLogo color="white" height={16} className={styles.logo} />
-          <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+          <KoleexLogo color="current" height={16} className={styles.logo} />
+          <div className={styles.headerTools}>
+            <ThemeToggle />
+            <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+          </div>
         </div>
       </header>
 
@@ -212,6 +216,6 @@ export function ComingSoon() {
           <span>KOLEEX – Shaping the Future</span>
         </div>
       </footer>
-    </div>
+    </ThemeRoot>
   );
 }

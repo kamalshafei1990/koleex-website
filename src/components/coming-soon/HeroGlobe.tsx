@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { COBEOptions } from "cobe";
 import { KOLEEX_MARKETS } from "@/data/koleex-markets";
 import { Globe } from "@/components/ui/globe";
 import styles from "./coming-soon.module.css";
+import { useComingSoonTheme } from "./theme";
 
 /* Koleex hubs: Taizhou, Shanghai, Hangzhou, Hong Kong, Dubai, Cairo. */
 const HUBS: { location: [number, number]; size: number; name: string; flag: string }[] = [
@@ -63,7 +64,17 @@ const GLOBE_COMPACT: COBEOptions = {
 
 type Mode = "pending" | "off" | "full" | "compact";
 
+const LIGHT_GLOBE = {
+  dark: 0,
+  diffuse: 1.15,
+  mapBaseBrightness: 0.06,
+  baseColor: [0.93, 0.93, 0.94] as [number, number, number],
+  markerColor: [0.22, 0.38, 0.56] as [number, number, number],
+  glowColor: [0.86, 0.88, 0.9] as [number, number, number],
+};
+
 export function HeroGlobe() {
+  const { theme } = useComingSoonTheme();
   const [mode, setMode] = useState<Mode>("pending");
 
   useEffect(() => {
@@ -83,12 +94,19 @@ export function HeroGlobe() {
   }, []);
 
   const show = mode === "full" || mode === "compact";
+  const config = useMemo(() => {
+    const base = mode === "compact" ? GLOBE_COMPACT : GLOBE_BASE;
+    if (theme !== "light") return base;
+    return {
+      ...base,
+      ...LIGHT_GLOBE,
+      mapBrightness: mode === "compact" ? 5 : 6,
+    };
+  }, [mode, theme]);
 
   return (
     <div className={styles.globeSlot} data-static={mode === "off" ? "true" : undefined}>
-      {show ? (
-        <Globe config={mode === "compact" ? GLOBE_COMPACT : GLOBE_BASE} tipClassName={styles.markerTip} />
-      ) : null}
+      {show ? <Globe config={config} tipClassName={styles.markerTip} /> : null}
     </div>
   );
 }
