@@ -21,7 +21,7 @@ export type KoleexSocial = {
   /** Official brand color, shown on hover. */
   brand: string;
   /**
-   * True when the official mark is black. On the dark theme the hover
+   * True when the official mark is black. On a dark section the hover
    * uses the reversed light mark so the glyph stays visible.
    */
   ink?: boolean;

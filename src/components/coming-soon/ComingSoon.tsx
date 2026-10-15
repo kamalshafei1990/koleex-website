@@ -5,7 +5,6 @@ import { HeroGlobe } from "./HeroGlobe";
 import { NotifyForm } from "./NotifyForm";
 import { productLines } from "./product-lines";
 import { SocialRow } from "./SocialRow";
-import { ThemeRoot, ThemeToggle } from "./theme";
 import styles from "./coming-soon.module.css";
 
 const CONTINENTS = ["Asia", "Africa", "Europe", "North America", "South America"] as const;
@@ -72,12 +71,8 @@ export function ComingSoon() {
   const year = new Date().getFullYear();
 
   return (
-    <ThemeRoot className={styles.page}>
-      <div className={styles.themeFloat}>
-        <ThemeToggle />
-      </div>
-
-      <section className={styles.hero}>
+    <div className={styles.page}>
+      <section className={`${styles.hero} ${styles.toneDark}`}>
         <div className={`${styles.wrap} ${styles.reveal}`}>
           <div className={styles.brand}>
             <KoleexLogo color="current" height={30} className={styles.heroLogo} />
@@ -115,7 +110,7 @@ export function ComingSoon() {
         </div>
       </section>
 
-      <section className={styles.markets} aria-labelledby="markets">
+      <section className={`${styles.markets} ${styles.toneLight}`} aria-labelledby="markets">
         <div className={styles.wrap}>
           <div className={styles.marketsHead}>
             <h2 id="markets">Markets we serve</h2>
@@ -141,7 +136,7 @@ export function ComingSoon() {
         </div>
       </section>
 
-      <section className={styles.lines} aria-labelledby="product-lines">
+      <section className={`${styles.lines} ${styles.toneDark}`} aria-labelledby="product-lines">
         <div className={styles.wrap}>
           <h2 id="product-lines">Product lines</h2>
           <ul className={styles.strip}>
@@ -155,7 +150,7 @@ export function ComingSoon() {
         </div>
       </section>
 
-      <section className={styles.info}>
+      <section className={`${styles.info} ${styles.toneLight}`}>
         <div className={`${styles.wrap} ${styles.grid}`}>
           <div className={styles.card} id="contact">
             <h3>Contact</h3>
@@ -196,12 +191,12 @@ export function ComingSoon() {
         </div>
       </section>
 
-      <footer className={styles.footer}>
+      <footer className={`${styles.footer} ${styles.toneDark}`}>
         <div className={styles.wrap}>
           <span>© {year} KOLEEX INTERNATIONAL GROUP</span>
           <span>KOLEEX – Shaping the Future</span>
         </div>
       </footer>
-    </ThemeRoot>
+    </div>
   );
 }
