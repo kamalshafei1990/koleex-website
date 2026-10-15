@@ -95,12 +95,13 @@
 }
 
 .brand {
-  margin: 0 0 56px;
+  margin: 0 0 28px;
 }
 
 .heroLogo {
   display: block;
-  width: min(840px, 100%);
+  width: 200px;
+  max-width: 100%;
   height: auto;
   color: var(--text-primary);
 }
@@ -916,7 +917,11 @@ span.mark {
   }
 
   .brand {
-    margin-bottom: 32px;
+    margin-bottom: 20px;
+  }
+
+  .heroLogo {
+    width: 160px;
   }
 
   .hero .wrap {

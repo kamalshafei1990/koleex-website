@@ -93,7 +93,7 @@ export function ComingSoon() {
       <section className={styles.hero}>
         <div className={`${styles.wrap} ${styles.reveal}`}>
           <div className={styles.brand}>
-            <KoleexLogo color="current" height={112} className={styles.heroLogo} />
+            <KoleexLogo color="current" height={30} className={styles.heroLogo} />
           </div>
           <div className={styles.heroGrid}>
             <div className={styles.heroCopy}>
