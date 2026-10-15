@@ -73,22 +73,19 @@ export function ComingSoon() {
   return (
     <div className={styles.page}>
       <section className={`${styles.hero} ${styles.toneDark}`}>
-        <div className={`${styles.wrap} ${styles.reveal}`}>
+        <div className={`${styles.wrap} ${styles.heroInner} ${styles.reveal}`}>
           <div className={styles.brand}>
             <KoleexLogo color="current" height={30} className={styles.heroLogo} />
           </div>
-          <div className={styles.heroGrid}>
-            <div className={styles.heroCopy}>
-              <h1>
-                NEW WEBSITE
-                <br />
-                IN DEVELOPMENT
-              </h1>
-              <p className={styles.sub}>
-                A new Koleex digital experience is being engineered. Our systems, machines and global team remain fully operational.
-              </p>
-            </div>
-            <HeroGlobe />
+          <div className={styles.heroCopy}>
+            <h1>
+              NEW WEBSITE
+              <br />
+              IN DEVELOPMENT
+            </h1>
+            <p className={styles.sub}>
+              A new Koleex digital experience is being engineered. Our systems, machines and global team remain fully operational.
+            </p>
             <div className={styles.cta}>
               <a className={`${styles.btn} ${styles.primary}`} href={CATALOG_HREF} download={CATALOG_FILE}>
                 <DownloadIcon />
@@ -99,6 +96,7 @@ export function ComingSoon() {
               </a>
             </div>
           </div>
+          <HeroGlobe />
           <div className={styles.stats}>
             {STATS.map((stat) => (
               <div key={stat.label}>
@@ -113,13 +111,13 @@ export function ComingSoon() {
       <section className={`${styles.markets} ${styles.toneLight}`} aria-labelledby="markets">
         <div className={styles.wrap}>
           <div className={styles.marketsHead}>
-            <h2 id="markets">Markets we serve</h2>
+            <h2 id="markets" className={styles.sectionTitle}>Markets we serve</h2>
             <p className={styles.marketsCount}>{KOLEEX_MARKET_COUNT} markets</p>
           </div>
           <div className={styles.continents}>
             {CONTINENTS.map((continent) => (
               <div key={continent} className={styles.continent}>
-                <h3>{continent}</h3>
+                <h3 className={styles.continentTitle}>{continent}</h3>
                 <ul className={styles.marketGrid}>
                   {KOLEEX_MARKETS.filter((market) => market.continent === continent).map((market) => (
                     <li key={market.code}>
@@ -138,7 +136,7 @@ export function ComingSoon() {
 
       <section className={`${styles.lines} ${styles.toneDark}`} aria-labelledby="product-lines">
         <div className={styles.wrap}>
-          <h2 id="product-lines">Product lines</h2>
+          <h2 id="product-lines" className={styles.sectionTitle}>Product lines</h2>
           <ul className={styles.strip}>
             {productLines.map((line) => (
               <li key={line.name} title={line.name}>
@@ -153,7 +151,7 @@ export function ComingSoon() {
       <section className={`${styles.info} ${styles.toneLight}`}>
         <div className={`${styles.wrap} ${styles.grid}`}>
           <div className={styles.card} id="contact">
-            <h3>Contact</h3>
+            <h3 className={styles.cardTitle}>Contact</h3>
             <p className={styles.row}>
               <MailIcon />
               <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
@@ -179,12 +177,12 @@ export function ComingSoon() {
           </div>
 
           <div className={styles.card}>
-            <h3>Follow us</h3>
+            <h3 className={styles.cardTitle}>Follow us</h3>
             <SocialRow email={EMAIL} />
           </div>
 
           <div className={styles.card}>
-            <h3>Launch notification</h3>
+            <h3 className={styles.cardTitle}>Launch notification</h3>
             <NotifyForm />
             <p className={styles.note}>One email when the new site goes live. No marketing.</p>
           </div>

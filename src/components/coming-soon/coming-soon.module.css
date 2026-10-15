@@ -32,9 +32,9 @@
   min-height: 100vh;
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.47;
   letter-spacing: 0;
   -webkit-font-smoothing: antialiased;
 }
@@ -96,7 +96,7 @@
 }
 
 .brand {
-  margin: 0 0 28px;
+  margin: 0 0 40px;
 }
 
 .heroLogo {
@@ -104,6 +104,7 @@
   width: 200px;
   max-width: 100%;
   height: auto;
+  margin-inline: auto;
   color: var(--text-primary);
 }
 
@@ -115,51 +116,38 @@
 .hero::before {
   content: "";
   position: absolute;
-  inset: -20% -10% auto -10%;
-  height: 120%;
+  inset: auto 0 8% 0;
+  height: 62%;
   pointer-events: none;
   background:
-    radial-gradient(45% 40% at 72% 38%, rgba(86, 127, 178, 0.3), transparent 70%),
-    radial-gradient(35% 30% at 88% 70%, rgba(127, 169, 214, 0.16), transparent 70%),
-    radial-gradient(30% 25% at 20% 90%, rgba(62, 103, 150, 0.18), transparent 70%);
+    radial-gradient(38% 58% at 50% 62%, rgba(86, 127, 178, 0.28), transparent 72%),
+    radial-gradient(24% 36% at 50% 78%, rgba(127, 169, 214, 0.12), transparent 70%);
 }
 
 .hero .wrap {
   position: relative;
-  padding-top: 40px;
-  padding-bottom: 80px;
+  padding-top: 88px;
+  padding-bottom: 104px;
 }
 
-.heroGrid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(220px, 420px);
-  grid-template-areas:
-    "copy globe"
-    "cta globe";
+.heroInner {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  column-gap: 28px;
-  row-gap: 0;
-}
-
-.heroGrid .cta {
-  grid-area: cta;
+  text-align: center;
 }
 
 .heroCopy {
-  grid-area: copy;
-  min-width: 0;
+  width: min(1080px, 100%);
   position: relative;
   z-index: 1;
 }
 
 .globeSlot {
-  grid-area: globe;
   position: relative;
-  width: 100%;
-  max-width: 420px;
+  width: min(460px, 78vw);
   aspect-ratio: 1;
-  justify-self: end;
-  align-self: center;
+  margin: 72px auto 0;
   z-index: 0;
 }
 
@@ -216,31 +204,35 @@
 }
 
 .page h1 {
-  font-size: 56px;
-  line-height: 1.02;
-  font-weight: 300;
-  letter-spacing: 0.04em;
-  margin: 0 0 24px;
+  font-size: 64px;
+  line-height: 1.04;
+  font-weight: 600;
+  letter-spacing: -0.028em;
+  margin: 0 0 18px;
   color: var(--heading);
 }
 
 .sub {
-  font-size: 18px;
-  line-height: 1.55;
+  margin: 0 auto;
+  max-width: 100%;
+  font-size: 19px;
+  line-height: 1.35;
+  font-weight: 400;
+  letter-spacing: -0.016em;
   color: var(--text-muted);
-  max-width: 600px;
 }
 
 .cta {
   display: flex;
-  gap: 16px;
-  margin-top: 40px;
+  gap: 8px 22px;
+  margin-top: 32px;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
 }
 
 .btn {
-  height: 44px;
+  height: 48px;
   padding: 0 22px;
   border-radius: 999px;
   font-size: 14px;
@@ -274,14 +266,15 @@
 }
 
 .ghost {
-  border: 1px solid var(--ghost-border);
-  color: var(--heading);
+  border: 0;
+  color: var(--text-highlight);
   background: transparent;
+  padding: 0 8px;
 }
 
 .ghost:hover {
-  border-color: var(--ghost-hover-border);
-  background: var(--bg-surface);
+  color: var(--heading);
+  background: transparent;
 }
 
 .page a:focus-visible,
@@ -300,77 +293,86 @@
 .stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-  margin-top: 96px;
+  gap: 28px;
+  width: min(880px, 100%);
+  margin-top: 80px;
   border-top: 1px solid var(--border-subtle);
-  padding-top: 32px;
-  max-width: 880px;
+  padding-top: 36px;
 }
 
 .stats b {
   display: block;
-  font-size: 32px;
-  font-weight: 300;
-  letter-spacing: -0.01em;
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
 }
 
 .stats span {
-  font-size: 12px;
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
   color: var(--text-subtle);
 }
 
 .markets {
-  border-top: 1px solid var(--border-subtle);
-  padding: 48px 0 56px;
+  padding: 112px 0 120px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 48px;
+  font-weight: 600;
+  letter-spacing: -0.028em;
+  line-height: 1.08;
+  text-align: center;
+  text-transform: none;
+  color: var(--heading);
 }
 
 .marketsHead {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.marketsHead h2 {
-  margin: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 64px;
+  text-align: center;
 }
 
 .marketsCount {
   margin: 0;
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  white-space: nowrap;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--text-muted);
 }
 
 .continents {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 36px 40px;
+  gap: 56px 48px;
 }
 
 .continent:first-child {
   grid-column: 1 / -1;
 }
 
-.markets .continent h3 {
-  margin: 0 0 12px;
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
+.continentTitle {
+  margin: 0 0 18px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
   text-transform: none;
-  color: var(--text-highlight);
+  color: var(--heading);
 }
 
 .marketGrid {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
-  gap: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .marketGrid li {
@@ -379,13 +381,14 @@
   gap: 8px;
   min-height: 40px;
   margin: 0;
-  padding: 8px 12px;
+  padding: 8px 14px 8px 12px;
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
+  border-radius: 999px;
   background: var(--bg-card);
-  color: var(--text-highlight);
-  font-size: 13px;
-  line-height: 1.3;
+  color: var(--text-primary);
+  font-size: 15px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 .flag {
@@ -399,92 +402,94 @@
 }
 
 .lines {
-  border-top: 1px solid var(--border-subtle);
-  padding: 48px 0;
+  padding: 112px 0 120px;
 }
 
-.page h2,
-.page h3 {
-  font-size: 12px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--text-subtle);
-  font-weight: 500;
-  margin: 0 0 16px;
+.lines .sectionTitle {
+  margin-bottom: 56px;
 }
 
 .strip {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(11, minmax(0, 1fr));
-  gap: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 48px 28px;
 }
 
 .strip li {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 16px;
-  min-height: 96px;
+  width: 148px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  justify-content: flex-start;
+  gap: 14px;
   color: var(--text-highlight);
-  padding: 8px 4px;
-  transition:
-    border-color var(--kx-dur-base) var(--kx-ease-out),
-    color var(--kx-dur-base) var(--kx-ease-out),
-    box-shadow var(--kx-dur-base) var(--kx-ease-out);
+  padding: 0;
+  transition: color var(--kx-dur-base) var(--kx-ease-out);
 }
 
 .strip li:hover {
-  border-color: rgba(86, 127, 178, 0.6);
   color: var(--hub-ice);
-  box-shadow: inset 0 0 24px rgba(86, 127, 178, 0.18);
 }
 
 .ic {
-  width: 30px;
-  height: 30px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .ic svg {
-  width: 30px;
-  height: 30px;
+  width: 44px;
+  height: 44px;
   display: block;
 }
 
 .strip span {
-  font-size: 10px;
-  color: var(--text-dim);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: inherit;
   text-align: center;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .info {
-  border-top: 1px solid var(--border-subtle);
+  padding: 0;
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
-  padding: 48px 0;
+  gap: 28px;
+  padding: 112px 0 120px;
   align-items: stretch;
+}
+
+.cardTitle {
+  margin: 0 0 22px;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.024em;
+  line-height: 1.15;
+  text-transform: none;
+  color: var(--heading);
 }
 
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 16px;
-  padding: 24px;
-  scroll-margin-top: 24px;
+  border-radius: 22px;
+  padding: 32px 28px;
+  scroll-margin-top: 28px;
 }
 
 .card p,
@@ -518,13 +523,16 @@
 
 .form {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
 }
 
 .form input {
   flex: 1;
+  width: 100%;
   min-width: 0;
-  height: 40px;
+  height: 48px;
   background: var(--bg-primary);
   border: 1px solid var(--border-subtle);
   border-radius: 12px;
@@ -548,7 +556,7 @@
 }
 
 .form button {
-  height: 40px;
+  height: 48px;
   padding: 0 18px;
   border-radius: 999px;
   border: 0;
@@ -578,7 +586,7 @@
 }
 
 .card .row + .row {
-  margin-top: 6px;
+  margin-top: 14px;
 }
 
 .wechat span {
@@ -587,8 +595,8 @@
 
 .social {
   display: grid;
-  grid-template-columns: repeat(4, 40px);
-  gap: 8px;
+  grid-template-columns: repeat(4, 44px);
+  gap: 12px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -604,8 +612,8 @@
 }
 
 .mark {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
   border-radius: 10px;
@@ -741,18 +749,15 @@ span.mark {
   margin: 0;
 }
 
-.footer {
-  border-top: 1px solid var(--border-subtle);
-}
-
 .footer .wrap {
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  padding-top: 24px;
-  padding-bottom: 24px;
+  padding-top: 28px;
+  padding-bottom: 32px;
   font-size: 12px;
-  color: var(--text-dim);
+  letter-spacing: 0.01em;
+  color: var(--text-subtle);
 }
 
 .reveal {
@@ -779,13 +784,6 @@ span.mark {
     display: none;
   }
 
-  .heroGrid {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas:
-      "copy"
-      "cta";
-  }
-
   .btn:active {
     scale: 1;
   }
@@ -802,39 +800,20 @@ span.mark {
 }
 
 @media (max-width: 1100px) {
-  .strip {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+  .page h1 {
+    font-size: 48px;
   }
 
-  .page h1 {
+  .sectionTitle {
     font-size: 40px;
   }
-}
 
-@media (max-width: 960px) {
-  .heroGrid {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas:
-      "copy"
-      "globe"
-      "cta";
-    justify-items: stretch;
-  }
-
-  .globeSlot {
-    width: min(220px, 58vw);
-    margin: 8px auto 0;
-    justify-self: center;
-  }
-
-  .heroGrid .cta {
-    margin-top: 28px;
-  }
-}
-
-@media (max-width: 900px) {
   .strip {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 36px 20px;
+  }
+
+  .strip li {
+    width: 132px;
   }
 }
 
@@ -844,16 +823,21 @@ span.mark {
   }
 
   .page h1 {
-    font-size: 32px;
-    letter-spacing: 0.03em;
+    font-size: 34px;
+    letter-spacing: -0.024em;
   }
 
   .sub {
-    font-size: 16px;
+    font-size: 17px;
+    letter-spacing: -0.012em;
+  }
+
+  .sectionTitle {
+    font-size: 32px;
   }
 
   .brand {
-    margin-bottom: 20px;
+    margin-bottom: 28px;
   }
 
   .heroLogo {
@@ -861,58 +845,83 @@ span.mark {
   }
 
   .hero .wrap {
-    padding-top: 28px;
-    padding-bottom: 64px;
+    padding-top: 56px;
+    padding-bottom: 72px;
+  }
+
+  .globeSlot {
+    width: min(240px, 68vw);
+    margin-top: 48px;
   }
 
   .cta {
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
+    gap: 4px;
   }
 
-  .btn {
+  .primary {
+    min-width: 240px;
     justify-content: center;
   }
 
   .stats {
     grid-template-columns: repeat(2, 1fr);
-    margin-top: 64px;
-    row-gap: 32px;
+    margin-top: 56px;
+    row-gap: 28px;
+    text-align: center;
   }
 
   .stats b {
-    font-size: 26px;
+    font-size: 32px;
+  }
+
+  .markets,
+  .lines {
+    padding: 72px 0 80px;
+  }
+
+  .marketsHead {
+    margin-bottom: 40px;
+  }
+
+  .lines .sectionTitle {
+    margin-bottom: 36px;
+  }
+
+  .continents {
+    grid-template-columns: 1fr;
+    gap: 40px;
   }
 
   .strip {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px 12px;
   }
 
-  .lines {
-    padding: 40px 0;
+  .strip li {
+    width: 104px;
+  }
+
+  .ic,
+  .ic svg {
+    width: 36px;
+    height: 36px;
   }
 
   .grid {
     grid-template-columns: 1fr;
     gap: 16px;
-    padding: 40px 0;
+    padding: 72px 0 80px;
   }
 
-  .markets {
-    padding: 40px 0 48px;
-  }
-
-  .continents {
-    grid-template-columns: 1fr;
-    gap: 28px;
-  }
-
-  .marketGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .cardTitle {
+    font-size: 24px;
   }
 
   .footer .wrap {
     flex-direction: column;
+    align-items: center;
+    text-align: center;
     gap: 8px;
   }
 }
