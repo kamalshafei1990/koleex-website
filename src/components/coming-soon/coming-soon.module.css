@@ -640,7 +640,9 @@ span.mark {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mapFrame animate {
+  .mapFrame animate,
+  .mapFrame [data-route-glow],
+  .mapFrame [data-hub-pulse] {
     display: none;
   }
 

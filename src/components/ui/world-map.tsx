@@ -1,7 +1,6 @@
 "use client";
 
 import { useId, useMemo, useState } from "react";
-import { motion } from "motion/react";
 
 /* Port of @aceternity/world-map.
    The registry file calls useTheme() from next-themes, which this app does not
@@ -46,12 +45,50 @@ function hitTargets(points: WorldMapPoint[]) {
   return groups;
 }
 
-function curve(start: { x: number; y: number }, end: { x: number; y: number }) {
+function arc(start: { x: number; y: number }, end: { x: number; y: number }) {
   const dist = Math.hypot(end.x - start.x, end.y - start.y);
   const lift = Math.min(16, Math.max(3.5, dist * 0.22));
   const midX = (start.x + end.x) / 2;
   const midY = Math.min(start.y, end.y) - lift;
-  return `M ${start.x} ${start.y} Q ${midX} ${midY} ${end.x} ${end.y}`;
+  let length = 0;
+  let prevX = start.x;
+  let prevY = start.y;
+  const steps = 32;
+  for (let step = 1; step <= steps; step += 1) {
+    const t = step / steps;
+    const mt = 1 - t;
+    const x = mt * mt * start.x + 2 * mt * t * midX + t * t * end.x;
+    const y = mt * mt * start.y + 2 * mt * t * midY + t * t * end.y;
+    length += Math.hypot(x - prevX, y - prevY);
+    prevX = x;
+    prevY = y;
+  }
+  return {
+    d: `M ${start.x} ${start.y} Q ${midX} ${midY} ${end.x} ${end.y}`,
+    length,
+  };
+}
+
+/* Long cycles with separated delays, so only a couple of lights are moving at once. */
+const ROUTE_TIMING = [
+  { duration: 16.4, delay: 0.2 },
+  { duration: 17.6, delay: 3.1 },
+  { duration: 16.1, delay: 6.0 },
+  { duration: 18.2, delay: 8.8 },
+  { duration: 16.8, delay: 11.6 },
+  { duration: 17.2, delay: 14.2 },
+  { duration: 16.0, delay: 4.6 },
+] as const;
+
+const HUB_DELAY = [0.15, 1.7, 0.9, 2.5, 3.2, 4.0];
+
+function routeTiming(index: number) {
+  return (
+    ROUTE_TIMING[index] ?? {
+      duration: 9.6 + (index % 3) * 0.7,
+      delay: 0.4 + index * 1.35,
+    }
+  );
 }
 
 export function WorldMap({
@@ -62,15 +99,105 @@ export function WorldMap({
   points,
   lineColor = "#567FB2",
 }: WorldMapProps) {
-  const gradientId = `wm-${useId().replace(/:/g, "")}`;
+  const rawId = useId().replace(/:/g, "");
+  const glowFilterId = `wm-glow-${rawId}`;
+  const travelName = `wm-travel-${rawId}`;
+  const haloName = `wm-halo-${rawId}`;
+  const hubName = `wm-hub-${rawId}`;
   const [hover, setHover] = useState<string | null>(null);
   const [pinned, setPinned] = useState<string | null>(null);
   const hits = useMemo(() => hitTargets(points), [points]);
+  const routes = useMemo(
+    () =>
+      lines.map((line, index) => {
+        const { d, length } = arc({ x: line.x1, y: line.y1 }, { x: line.x2, y: line.y2 });
+        const coreDash = Math.min(7.2, Math.max(1.35, length * 0.14));
+        const haloDash = Math.min(13.5, Math.max(2.5, length * 0.3));
+        return {
+          d,
+          ...routeTiming(index),
+          gap: length + haloDash + 4,
+          coreDash,
+          haloDash,
+          coreFrom: coreDash,
+          coreTo: -(length + (haloDash - coreDash)),
+          haloFrom: haloDash,
+          haloTo: -length,
+        };
+      }),
+    [lines],
+  );
   const activeId = pinned ?? hover;
   const active = hits.find((point) => point.id === activeId) ?? null;
+  let hubOrdinal = 0;
 
   return (
-    <div className="relative w-full font-sans" style={{ aspectRatio: `${width} / ${height}` }} role="group" aria-label="KOLEEX hubs and markets">
+    <div
+      className="relative w-full font-sans"
+      style={{ aspectRatio: `${width} / ${height}` }}
+      role="group"
+      aria-label="KOLEEX hubs and markets"
+      data-wm={rawId}
+    >
+      <style>{`
+        @property --wm-p-${rawId} {
+          syntax: "<number>";
+          inherits: false;
+          initial-value: 0;
+        }
+        @keyframes ${travelName} {
+          0% { --wm-p-${rawId}: 0; opacity: 0; }
+          8% { --wm-p-${rawId}: 0; opacity: 0; }
+          16% { --wm-p-${rawId}: 0.05; opacity: 1; }
+          28% { --wm-p-${rawId}: 0.42; opacity: 1; }
+          38% { --wm-p-${rawId}: 0.84; opacity: 1; }
+          46% { --wm-p-${rawId}: 1; opacity: 1; }
+          54% { opacity: 0; }
+          100% { --wm-p-${rawId}: 1; opacity: 0; }
+        }
+        @keyframes ${haloName} {
+          0% { --wm-p-${rawId}: 0; opacity: 0; }
+          8% { --wm-p-${rawId}: 0; opacity: 0; }
+          16% { --wm-p-${rawId}: 0.05; opacity: 0.72; }
+          28% { --wm-p-${rawId}: 0.42; opacity: 0.72; }
+          38% { --wm-p-${rawId}: 0.84; opacity: 0.72; }
+          46% { --wm-p-${rawId}: 1; opacity: 0.72; }
+          54% { opacity: 0; }
+          100% { --wm-p-${rawId}: 1; opacity: 0; }
+        }
+        @keyframes ${hubName} {
+          0% { transform: scale(1); opacity: 0.28; }
+          100% { transform: scale(1.7); opacity: 0; }
+        }
+        [data-wm="${rawId}"] [data-route-core],
+        [data-wm="${rawId}"] [data-route-halo] {
+          stroke-dasharray: var(--dash) var(--gap);
+          stroke-dashoffset: calc(var(--from) + (var(--to) - var(--from)) * var(--wm-p-${rawId}));
+          opacity: 0;
+          animation-duration: var(--route-dur);
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+          animation-delay: var(--route-delay);
+          animation-fill-mode: backwards;
+        }
+        [data-wm="${rawId}"] [data-route-core] { animation-name: ${travelName}; }
+        [data-wm="${rawId}"] [data-route-halo] { animation-name: ${haloName}; }
+        [data-wm="${rawId}"] [data-hub-pulse] {
+          transform-box: fill-box;
+          transform-origin: center;
+          transform: scale(1);
+          opacity: 0.28;
+          animation: ${hubName} 5.2s cubic-bezier(0.22, 0.04, 0.26, 1) infinite;
+          animation-delay: var(--hub-delay);
+        }
+        @media (prefers-reduced-motion: reduce) {
+          [data-wm="${rawId}"] [data-route-glow],
+          [data-wm="${rawId}"] [data-hub-pulse] {
+            animation: none !important;
+            opacity: 0 !important;
+          }
+        }
+      `}</style>
       <div
         className="absolute inset-0"
         style={{
@@ -90,39 +217,73 @@ export function WorldMap({
           aria-hidden="true"
         >
           <defs>
-            <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor={lineColor} stopOpacity="0" />
-              <stop offset="8%" stopColor={lineColor} stopOpacity="1" />
-              <stop offset="92%" stopColor={lineColor} stopOpacity="1" />
-              <stop offset="100%" stopColor={lineColor} stopOpacity="0" />
-            </linearGradient>
+            <filter id={glowFilterId} x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="0.55" />
+            </filter>
           </defs>
-          {lines.map((line, index) => (
-            <motion.path
-              key={`${line.x1}-${line.y1}-${line.x2}-${line.y2}`}
-              d={curve({ x: line.x1, y: line.y1 }, { x: line.x2, y: line.y2 })}
-              fill="none"
-              stroke={`url(#${gradientId})`}
-              strokeWidth="0.45"
-              strokeLinecap="round"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 1.15, delay: 0.28 * index, ease: "easeOut" }}
-            />
+          {routes.map((route) => (
+            <g key={route.d} style={{ ["--route-dur" as string]: `${route.duration}s`, ["--route-delay" as string]: `${route.delay}s` }}>
+              <path
+                d={route.d}
+                fill="none"
+                stroke={lineColor}
+                strokeWidth="0.16"
+                strokeOpacity="0.16"
+                strokeLinecap="round"
+              />
+              <path
+                data-route-glow=""
+                data-route-halo=""
+                d={route.d}
+                fill="none"
+                stroke={lineColor}
+                strokeWidth="0.9"
+                strokeLinecap="round"
+                filter={`url(#${glowFilterId})`}
+                style={{
+                  ["--dash" as string]: `${route.haloDash}px`,
+                  ["--gap" as string]: `${route.gap}px`,
+                  ["--from" as string]: `${route.haloFrom}px`,
+                  ["--to" as string]: `${route.haloTo}px`,
+                }}
+              />
+              <path
+                data-route-glow=""
+                data-route-core=""
+                d={route.d}
+                fill="none"
+                stroke={lineColor}
+                strokeWidth="0.38"
+                strokeLinecap="round"
+                style={{
+                  ["--dash" as string]: `${route.coreDash}px`,
+                  ["--gap" as string]: `${route.gap}px`,
+                  ["--from" as string]: `${route.coreFrom}px`,
+                  ["--to" as string]: `${route.coreTo}px`,
+                }}
+              />
+            </g>
           ))}
-          {points.map((point) =>
-            point.kind === "market" ? (
-              <circle key={point.id} cx={point.x} cy={point.y} r="0.55" fill="#ffffff" />
-            ) : (
+          {points.map((point) => {
+            if (point.kind === "market") {
+              return <circle key={point.id} cx={point.x} cy={point.y} r="0.3" fill="#ffffff" opacity="0.38" />;
+            }
+            const delay = HUB_DELAY[hubOrdinal] ?? hubOrdinal * 0.75;
+            hubOrdinal += 1;
+            return (
               <g key={point.id}>
-                <circle cx={point.x} cy={point.y} r="0.85" fill={lineColor} />
-                <circle cx={point.x} cy={point.y} r="0.85" fill={lineColor} opacity="0.45">
-                  <animate attributeName="r" from="0.85" to="2.6" dur="1.8s" begin="0s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" from="0.45" to="0" dur="1.8s" begin="0s" repeatCount="indefinite" />
-                </circle>
+                <circle
+                  data-hub-pulse=""
+                  cx={point.x}
+                  cy={point.y}
+                  r="0.64"
+                  fill={lineColor}
+                  style={{ ["--hub-delay" as string]: `${delay}s` }}
+                />
+                <circle cx={point.x} cy={point.y} r="0.58" fill={lineColor} />
               </g>
-            ),
-          )}
+            );
+          })}
         </svg>
       </div>
 
