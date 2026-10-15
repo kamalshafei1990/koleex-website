@@ -1,7 +1,8 @@
 import { KoleexLogo } from "@/components/ui/KoleexLogo";
+import { WorldMap } from "@/components/ui/world-map";
 import { KOLEEX_MARKETS, KOLEEX_MARKET_COUNT } from "@/data/koleex-markets";
 import { KOLEEX_WHATSAPP_HREF } from "@/data/socials";
-import { HeroGlobe } from "./HeroGlobe";
+import { worldMapLines, worldMapPoints, worldMapSize, worldMapSrc } from "./map-data";
 import { NotifyForm } from "./NotifyForm";
 import { productLines } from "./product-lines";
 import { SocialRow } from "./SocialRow";
@@ -72,8 +73,8 @@ export function ComingSoon() {
 
   return (
     <div className={styles.page}>
-      <section className={`${styles.hero} ${styles.toneDark}`}>
-        <div className={`${styles.wrap} ${styles.heroInner} ${styles.reveal}`}>
+      <section className={styles.hero}>
+        <div className={`${styles.wrap} ${styles.heroInner}`}>
           <div className={styles.brand}>
             <KoleexLogo color="current" height={30} className={styles.heroLogo} />
           </div>
@@ -96,23 +97,37 @@ export function ComingSoon() {
               </a>
             </div>
           </div>
-          <HeroGlobe />
-          <div className={styles.stats}>
-            {STATS.map((stat) => (
-              <div key={stat.label}>
-                <b>{stat.value}</b>
-                <span>{stat.label}</span>
-              </div>
-            ))}
+          <div className={styles.mapFrame}>
+            <WorldMap
+              mapSrc={worldMapSrc}
+              width={worldMapSize.width}
+              height={worldMapSize.height}
+              lines={worldMapLines}
+              points={worldMapPoints}
+              lineColor="#567FB2"
+            />
           </div>
         </div>
       </section>
 
-      <section className={`${styles.markets} ${styles.toneLight}`} aria-labelledby="markets">
+      <section className={styles.stats} aria-label="KOLEEX at a glance">
+        <div className={`${styles.wrap} ${styles.statRow}`}>
+          {STATS.map((stat) => (
+            <div key={stat.label}>
+              <b>{stat.value}</b>
+              <span>{stat.label}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.markets} aria-labelledby="markets">
         <div className={styles.wrap}>
-          <div className={styles.marketsHead}>
-            <h2 id="markets" className={styles.sectionTitle}>Markets we serve</h2>
-            <p className={styles.marketsCount}>{KOLEEX_MARKET_COUNT} markets</p>
+          <div className={styles.sectionHead}>
+            <h2 id="markets" className={styles.sectionTitle}>
+              Markets we serve
+            </h2>
+            <p className={styles.kicker}>{KOLEEX_MARKET_COUNT} markets</p>
           </div>
           <div className={styles.continents}>
             {CONTINENTS.map((continent) => (
@@ -134,9 +149,11 @@ export function ComingSoon() {
         </div>
       </section>
 
-      <section className={`${styles.lines} ${styles.toneDark}`} aria-labelledby="product-lines">
+      <section className={styles.lines} aria-labelledby="product-lines">
         <div className={styles.wrap}>
-          <h2 id="product-lines" className={styles.sectionTitle}>Product lines</h2>
+          <h2 id="product-lines" className={styles.sectionTitle}>
+            Product lines
+          </h2>
           <ul className={styles.strip}>
             {productLines.map((line) => (
               <li key={line.name} title={line.name}>
@@ -148,7 +165,7 @@ export function ComingSoon() {
         </div>
       </section>
 
-      <section className={`${styles.info} ${styles.toneLight}`}>
+      <section className={styles.info}>
         <div className={`${styles.wrap} ${styles.grid}`}>
           <div className={styles.card} id="contact">
             <h3 className={styles.cardTitle}>Contact</h3>
@@ -189,7 +206,7 @@ export function ComingSoon() {
         </div>
       </section>
 
-      <footer className={`${styles.footer} ${styles.toneDark}`}>
+      <footer className={styles.footer}>
         <div className={styles.wrap}>
           <span>© {year} KOLEEX INTERNATIONAL GROUP</span>
           <span>KOLEEX – Shaping the Future</span>
