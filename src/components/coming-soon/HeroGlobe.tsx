@@ -2,17 +2,35 @@
 
 import { useEffect, useState } from "react";
 import type { COBEOptions } from "cobe";
+import { KOLEEX_MARKETS } from "@/data/koleex-markets";
 import { Globe } from "@/components/ui/globe";
 import styles from "./coming-soon.module.css";
 
 /* Koleex hubs: Taizhou, Shanghai, Hangzhou, Hong Kong, Dubai, Cairo. */
-const HUBS: COBEOptions["markers"] = [
+const HUBS: { location: [number, number]; size: number }[] = [
   { location: [28.656, 121.421], size: 0.06 },
   { location: [31.23, 121.474], size: 0.07 },
   { location: [30.274, 120.155], size: 0.055 },
   { location: [22.319, 114.169], size: 0.06 },
   { location: [25.205, 55.271], size: 0.07 },
   { location: [30.044, 31.236], size: 0.075 },
+];
+
+/* Dubai and Cairo share a hub pin: keep the larger hub dot. */
+function overlapsHub(location: readonly [number, number]) {
+  return HUBS.some((hub) => {
+    const dLat = hub.location[0] - location[0];
+    const dLng = hub.location[1] - location[1];
+    return dLat * dLat + dLng * dLng < 0.4 * 0.4;
+  });
+}
+
+const MARKERS: COBEOptions["markers"] = [
+  ...KOLEEX_MARKETS.filter((market) => !overlapsHub(market.location)).map((market) => ({
+    location: market.location,
+    size: market.size,
+  })),
+  ...HUBS,
 ];
 
 const GLOBE_BASE: COBEOptions = {
@@ -31,7 +49,7 @@ const GLOBE_BASE: COBEOptions = {
   markerColor: [0.86, 0.93, 1],
   glowColor: [0.28, 0.34, 0.45],
   opacity: 1,
-  markers: HUBS,
+  markers: MARKERS,
 };
 
 const GLOBE_COMPACT: COBEOptions = {

@@ -1,8 +1,11 @@
 import { KoleexLogo } from "@/components/ui/KoleexLogo";
+import { KOLEEX_MARKETS, KOLEEX_MARKET_COUNT } from "@/data/koleex-markets";
 import { HeroGlobe } from "./HeroGlobe";
 import { NotifyForm } from "./NotifyForm";
 import { productLines } from "./product-lines";
 import styles from "./coming-soon.module.css";
+
+const CONTINENTS = ["Asia", "Africa", "Europe", "North America", "South America"] as const;
 
 const EMAIL = "info@koleexgroup.com";
 const PHONE_DISPLAY = "+86 130 7380 0720";
@@ -111,6 +114,32 @@ export function ComingSoon() {
               <div key={stat.label}>
                 <b>{stat.value}</b>
                 <span>{stat.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.markets} aria-labelledby="markets">
+        <div className={styles.wrap}>
+          <div className={styles.marketsHead}>
+            <h2 id="markets">Markets we serve</h2>
+            <p className={styles.marketsCount}>{KOLEEX_MARKET_COUNT} markets</p>
+          </div>
+          <div className={styles.continents}>
+            {CONTINENTS.map((continent) => (
+              <div key={continent} className={styles.continent}>
+                <h3>{continent}</h3>
+                <ul className={styles.marketGrid}>
+                  {KOLEEX_MARKETS.filter((market) => market.continent === continent).map((market) => (
+                    <li key={market.code}>
+                      <span className={styles.flag} aria-hidden="true">
+                        {market.flag}
+                      </span>
+                      <span>{market.name}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             ))}
           </div>

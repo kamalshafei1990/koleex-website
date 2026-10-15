@@ -1,10 +1,14 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import createGlobe, { type COBEOptions } from "cobe"
+import cobeCreateGlobe, { type COBEOptions } from "cobe"
 import { useMotionValue, useSpring } from "motion/react"
+/* Stock cobe draws at most 64 markers. Catalog markets plus hubs need more. */
+import createGlobeMarkets from "@/vendor/cobe-markets"
 
 import { cn } from "@/lib/utils"
+
+const createGlobe = createGlobeMarkets as typeof cobeCreateGlobe
 
 const MOVEMENT_DAMPING = 1400
 
