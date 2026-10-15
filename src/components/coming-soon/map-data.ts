@@ -25,16 +25,6 @@ const HUBS = [
   { id: "cairo", name: "Cairo", flag: "🇪🇬", lat: 30.044, lng: 31.236 },
 ] as const;
 
-const LINKS: ReadonlyArray<readonly [string, string]> = [
-  ["shanghai", "hong-kong"],
-  ["shanghai", "dubai"],
-  ["shanghai", "cairo"],
-  ["hangzhou", "dubai"],
-  ["taizhou", "cairo"],
-  ["hong-kong", "dubai"],
-  ["dubai", "cairo"],
-];
-
 function locate(lat: number, lng: number) {
   const pin = map.getPin({ lat, lng });
   if (!pin) return null;
@@ -84,9 +74,22 @@ const marketPoints: WorldMapPoint[] = [...marketGroups.entries()].map(([key, gro
 
 export const worldMapPoints: WorldMapPoint[] = [...marketPoints, ...hubPoints];
 
-export const worldMapLines: WorldMapLine[] = LINKS.flatMap(([from, to]) => {
-  const start = hubById.get(from);
-  const end = hubById.get(to);
-  if (!start || !end) return [];
-  return [{ x1: start.x, y1: start.y, x2: end.x, y2: end.y }];
-});
+/* Every route leaves Taizhou. Destinations are the other hubs, then each
+   market pin, skipping any pin that is already Taizhou itself. */
+const taizhou = hubById.get("taizhou");
+const taizhouKey = taizhou ? keyOf(taizhou) : "";
+const destinations = [...hubPoints.filter((point) => point.id !== "taizhou"), ...marketPoints]
+  .filter((point) => keyOf(point) !== taizhouKey)
+  .sort((a, b) => {
+    if (!taizhou) return 0;
+    return Math.atan2(a.y - taizhou.y, a.x - taizhou.x) - Math.atan2(b.y - taizhou.y, b.x - taizhou.x);
+  });
+
+export const worldMapLines: WorldMapLine[] = taizhou
+  ? destinations.map((point) => ({
+      x1: taizhou.x,
+      y1: taizhou.y,
+      x2: point.x,
+      y2: point.y,
+    }))
+  : [];

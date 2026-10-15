@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 
 /* Port of @aceternity/world-map.
    The registry file calls useTheme() from next-themes, which this app does not
@@ -69,26 +69,17 @@ function arc(start: { x: number; y: number }, end: { x: number; y: number }) {
   };
 }
 
-/* Long cycles with separated delays, so only a couple of lights are moving at once. */
-const ROUTE_TIMING = [
-  { duration: 16.4, delay: 0.2 },
-  { duration: 17.6, delay: 3.1 },
-  { duration: 16.1, delay: 6.0 },
-  { duration: 18.2, delay: 8.8 },
-  { duration: 16.8, delay: 11.6 },
-  { duration: 17.2, delay: 14.2 },
-  { duration: 16.0, delay: 4.6 },
-] as const;
+/* Ten lights, each walking its own list of destinations. */
+const LANES = 10;
+const STAGGER = 1.6;
 
 const HUB_DELAY = [0.15, 1.7, 0.9, 2.5, 3.2, 4.0];
 
-function routeTiming(index: number) {
-  return (
-    ROUTE_TIMING[index] ?? {
-      duration: 9.6 + (index % 3) * 0.7,
-      delay: 0.4 + index * 1.35,
-    }
-  );
+function routeTiming(lane: number) {
+  return {
+    duration: 16.2 + (lane % 5) * 0.75,
+    delay: lane * STAGGER,
+  };
 }
 
 export function WorldMap({
@@ -109,13 +100,19 @@ export function WorldMap({
   const hits = useMemo(() => hitTargets(points), [points]);
   const routes = useMemo(
     () =>
-      lines.map((line, index) => {
+      lines.map((line) => {
         const { d, length } = arc({ x: line.x1, y: line.y1 }, { x: line.x2, y: line.y2 });
-        const coreDash = Math.min(7.2, Math.max(1.35, length * 0.14));
-        const haloDash = Math.min(13.5, Math.max(2.5, length * 0.3));
+        const coreDash = Math.min(7.2, Math.max(1.15, length * 0.14));
+        const haloDash = Math.min(13.5, Math.max(2.1, length * 0.3));
+        const tail = Math.min(length * 0.22, 8);
         return {
           d,
-          ...routeTiming(index),
+          length,
+          tail,
+          x1: line.x1,
+          y1: line.y1,
+          x2: line.x2,
+          y2: line.y2,
           gap: length + haloDash + 4,
           coreDash,
           haloDash,
@@ -127,6 +124,46 @@ export function WorldMap({
       }),
     [lines],
   );
+  const lanes = useMemo(() => {
+    const groups: (typeof routes)[] = Array.from({ length: LANES }, () => []);
+    routes.forEach((route, index) => {
+      groups[index % LANES].push(route);
+    });
+    return groups.filter((group) => group.length > 0);
+  }, [routes]);
+  const [cursor, setCursor] = useState<number[]>(() => Array.from({ length: LANES }, () => 0));
+  const visible = lanes.map((lane, laneIndex) => {
+    const step = cursor[laneIndex] ?? 0;
+    return {
+      ...lane[step % lane.length],
+      ...routeTiming(laneIndex),
+      delay: step === 0 ? laneIndex * STAGGER : 0,
+      laneIndex,
+      step,
+    };
+  });
+
+  useEffect(() => {
+    if (lanes.every((lane) => lane.length < 2)) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timers: number[] = [];
+    lanes.forEach((lane, laneIndex) => {
+      if (lane.length < 2) return;
+      const duration = routeTiming(laneIndex).duration;
+      const tick = () => {
+        setCursor((current) => {
+          const next = current.slice();
+          next[laneIndex] = (next[laneIndex] ?? 0) + 1;
+          return next;
+        });
+        timers[laneIndex] = window.setTimeout(tick, duration * 1000);
+      };
+      timers[laneIndex] = window.setTimeout(tick, (laneIndex * STAGGER + duration) * 1000);
+    });
+    return () => {
+      for (const timer of timers) window.clearTimeout(timer);
+    };
+  }, [lanes]);
   const activeId = pinned ?? hover;
   const active = hits.find((point) => point.id === activeId) ?? null;
   let hubOrdinal = 0;
@@ -176,9 +213,9 @@ export function WorldMap({
           opacity: 0;
           animation-duration: var(--route-dur);
           animation-timing-function: linear;
-          animation-iteration-count: infinite;
+          animation-iteration-count: 1;
           animation-delay: var(--route-delay);
-          animation-fill-mode: backwards;
+          animation-fill-mode: both;
         }
         [data-wm="${rawId}"] [data-route-core] { animation-name: ${travelName}; }
         [data-wm="${rawId}"] [data-route-halo] { animation-name: ${haloName}; }
@@ -215,6 +252,7 @@ export function WorldMap({
           viewBox={`0 0 ${width} ${height}`}
           className="pointer-events-none absolute inset-0 h-full w-full select-none"
           aria-hidden="true"
+          data-route-total={routes.length}
         >
           <defs>
             <filter id={glowFilterId} x="-40%" y="-40%" width="180%" height="180%">
@@ -222,7 +260,24 @@ export function WorldMap({
             </filter>
           </defs>
           {routes.map((route) => (
-            <g key={route.d} style={{ ["--route-dur" as string]: `${route.duration}s`, ["--route-delay" as string]: `${route.delay}s` }}>
+            <path
+              key={`tail-${route.x2}-${route.y2}`}
+              d={route.d}
+              fill="none"
+              stroke={lineColor}
+              strokeWidth="0.14"
+              strokeOpacity="0.2"
+              strokeLinecap="round"
+              strokeDasharray={`${route.tail} ${route.length + 2}`}
+              strokeDashoffset={-(route.length - route.tail)}
+            />
+          ))}
+          {visible.map((route) => (
+            <g
+              key={`${route.laneIndex}-${route.step}-${route.x2}-${route.y2}`}
+              data-route-lane={route.laneIndex}
+              style={{ ["--route-dur" as string]: `${route.duration}s`, ["--route-delay" as string]: `${route.delay}s` }}
+            >
               <path
                 d={route.d}
                 fill="none"
