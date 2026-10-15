@@ -150,8 +150,11 @@
 }
 
 .mapFrame {
-  width: min(1080px, 100%);
-  margin-top: 28px;
+  position: relative;
+  width: min(760px, 100%);
+  aspect-ratio: 1;
+  margin: 28px auto 0;
+  overflow: hidden;
 }
 
 .stats {

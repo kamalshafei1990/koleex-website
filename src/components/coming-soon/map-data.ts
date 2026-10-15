@@ -1,20 +1,11 @@
 import DottedMap from "dotted-map";
 import { KOLEEX_MARKETS } from "@/data/koleex-markets";
-import type { WorldMapLine, WorldMapPoint } from "@/components/ui/world-map";
 
-/* Built once on the server. The client map only receives the SVG and pins. */
+/* Pin grouping matches the previous dotted map, so the globe keeps the same
+   72 destinations: the other hubs plus every market that does not sit on
+   Taizhou or on another hub. */
 
 const map = new DottedMap({ height: 100, grid: "diagonal" });
-
-/* SVG is public/maps/koleex-world.svg, generated with the same settings:
-   height 100, diagonal grid, radius 0.22, #FFFFFF40 on #0A0A0A. */
-
-export const worldMapSrc = "/maps/koleex-world.svg";
-
-export const worldMapSize = {
-  width: map.image.width,
-  height: map.image.height,
-};
 
 const HUBS = [
   { id: "taizhou", name: "Taizhou", flag: "🇨🇳", lat: 28.656, lng: 121.421 },
@@ -25,71 +16,120 @@ const HUBS = [
   { id: "cairo", name: "Cairo", flag: "🇪🇬", lat: 30.044, lng: 31.236 },
 ] as const;
 
+export const TAIZHOU = { lat: HUBS[0].lat, lng: HUBS[0].lng };
+
+export type GlobeArc = {
+  order: number;
+  startLat: number;
+  startLng: number;
+  endLat: number;
+  endLng: number;
+  arcAlt: number;
+  color: string;
+};
+
+export type GlobeMarker = {
+  id: string;
+  lat: number;
+  lng: number;
+  label: string;
+  kind: "hub" | "market";
+};
+
+const STEEL = "#567FB2";
+const ARC_LENGTH = 0.4;
+const CONCURRENT = 22;
+
 function locate(lat: number, lng: number) {
   const pin = map.getPin({ lat, lng });
   if (!pin) return null;
-  return { x: pin.x, y: pin.y };
+  return `${pin.x},${pin.y}`;
 }
 
-function keyOf(point: { x: number; y: number }) {
-  return `${point.x},${point.y}`;
+function angular(lat: number, lng: number) {
+  const dLat = ((lat - TAIZHOU.lat) * Math.PI) / 180;
+  const dLng = ((lng - TAIZHOU.lng) * Math.PI) / 180;
+  const lat1 = (TAIZHOU.lat * Math.PI) / 180;
+  const lat2 = (lat * Math.PI) / 180;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+  return 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
 }
 
-const hubById = new Map<string, { x: number; y: number }>();
-const hubPoints: WorldMapPoint[] = [];
+type Dest = GlobeMarker;
+
+const hubPoints: Dest[] = [];
+const hubKeys = new Set<string>();
 
 for (const hub of HUBS) {
-  const pos = locate(hub.lat, hub.lng);
-  if (!pos) continue;
-  hubById.set(hub.id, pos);
+  const key = locate(hub.lat, hub.lng);
+  if (!key) continue;
+  hubKeys.add(key);
   hubPoints.push({
     id: hub.id,
-    x: pos.x,
-    y: pos.y,
+    lat: hub.lat,
+    lng: hub.lng,
     label: `${hub.flag} ${hub.name}`,
     kind: "hub",
   });
 }
 
-const hubKeys = new Set(hubPoints.map(keyOf));
-const marketGroups = new Map<string, { x: number; y: number; labels: string[] }>();
+const taizhou = hubPoints.find((point) => point.id === "taizhou");
+const taizhouKey = taizhou ? locate(taizhou.lat, taizhou.lng) : "";
+
+const marketGroups = new Map<string, Dest>();
 
 for (const market of KOLEEX_MARKETS) {
-  const pos = locate(market.location[0], market.location[1]);
-  if (!pos) continue;
-  const key = keyOf(pos);
-  if (hubKeys.has(key)) continue;
-  const group = marketGroups.get(key) ?? { x: pos.x, y: pos.y, labels: [] };
-  group.labels.push(`${market.flag} ${market.name}`);
+  const key = locate(market.location[0], market.location[1]);
+  if (!key || key === taizhouKey || hubKeys.has(key)) continue;
+  const group = marketGroups.get(key) ?? {
+    id: `market-${key}`,
+    lat: market.location[0],
+    lng: market.location[1],
+    label: "",
+    kind: "market" as const,
+  };
+  group.label = group.label ? `${group.label} · ${market.flag} ${market.name}` : `${market.flag} ${market.name}`;
   marketGroups.set(key, group);
 }
 
-const marketPoints: WorldMapPoint[] = [...marketGroups.entries()].map(([key, group]) => ({
-  id: `market-${key}`,
-  x: group.x,
-  y: group.y,
-  label: group.labels.join(" · "),
-  kind: "market",
+const destinations = [...hubPoints.filter((point) => point.id !== "taizhou"), ...marketGroups.values()].sort(
+  (a, b) => Math.atan2(a.lat - TAIZHOU.lat, a.lng - TAIZHOU.lng) - Math.atan2(b.lat - TAIZHOU.lat, b.lng - TAIZHOU.lng),
+);
+
+const dashGap = ARC_LENGTH * (destinations.length / CONCURRENT - 1);
+const period = ARC_LENGTH + dashGap;
+
+export const globeMotion = {
+  arcLength: ARC_LENGTH,
+  arcDashGap: dashGap,
+  arcTime: 52000,
+};
+
+export const globeArcs: GlobeArc[] = destinations.map((point, index) => ({
+  order: (index / destinations.length) * period,
+  startLat: TAIZHOU.lat,
+  startLng: TAIZHOU.lng,
+  endLat: point.lat,
+  endLng: point.lng,
+  arcAlt: Math.min(0.42, Math.max(0.08, (angular(point.lat, point.lng) / Math.PI) * 0.5)),
+  color: STEEL,
 }));
 
-export const worldMapPoints: WorldMapPoint[] = [...marketPoints, ...hubPoints];
+function clusterMarkers(points: Dest[]) {
+  const groups: Dest[] = [];
+  for (const point of points) {
+    const found = groups.find((group) => Math.hypot(group.lat - point.lat, group.lng - point.lng) < 3);
+    if (!found) {
+      groups.push({ ...point });
+      continue;
+    }
+    found.label = `${found.label} · ${point.label}`;
+    if (point.kind === "hub") found.kind = "hub";
+  }
+  return groups;
+}
 
-/* Every route leaves Taizhou. Destinations are the other hubs, then each
-   market pin, skipping any pin that is already Taizhou itself. */
-const taizhou = hubById.get("taizhou");
-const taizhouKey = taizhou ? keyOf(taizhou) : "";
-const destinations = [...hubPoints.filter((point) => point.id !== "taizhou"), ...marketPoints]
-  .filter((point) => keyOf(point) !== taizhouKey)
-  .sort((a, b) => {
-    if (!taizhou) return 0;
-    return Math.atan2(a.y - taizhou.y, a.x - taizhou.x) - Math.atan2(b.y - taizhou.y, b.x - taizhou.x);
-  });
-
-export const worldMapLines: WorldMapLine[] = taizhou
-  ? destinations.map((point) => ({
-      x1: taizhou.x,
-      y1: taizhou.y,
-      x2: point.x,
-      y2: point.y,
-    }))
-  : [];
+export const globeMarkers: GlobeMarker[] = clusterMarkers([
+  ...hubPoints.filter((point) => point.id === "taizhou"),
+  ...destinations,
+]);

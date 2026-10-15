@@ -1,8 +1,8 @@
 import { KoleexLogo } from "@/components/ui/KoleexLogo";
-import { WorldMap } from "@/components/ui/world-map";
 import { KOLEEX_MARKETS, KOLEEX_MARKET_COUNT } from "@/data/koleex-markets";
 import { KOLEEX_WHATSAPP_HREF } from "@/data/socials";
-import { worldMapLines, worldMapPoints, worldMapSize, worldMapSrc } from "./map-data";
+import { globeArcs, globeMarkers, globeMotion } from "./map-data";
+import { GlobeFrame } from "./GlobeFrame";
 import { NotifyForm } from "./NotifyForm";
 import { productLines } from "./product-lines";
 import { SocialRow } from "./SocialRow";
@@ -98,13 +98,12 @@ export function ComingSoon() {
             </div>
           </div>
           <div className={styles.mapFrame}>
-            <WorldMap
-              mapSrc={worldMapSrc}
-              width={worldMapSize.width}
-              height={worldMapSize.height}
-              lines={worldMapLines}
-              points={worldMapPoints}
-              lineColor="#567FB2"
+            <GlobeFrame
+              arcs={globeArcs}
+              markers={globeMarkers}
+              arcLength={globeMotion.arcLength}
+              arcDashGap={globeMotion.arcDashGap}
+              arcTime={globeMotion.arcTime}
             />
           </div>
         </div>
