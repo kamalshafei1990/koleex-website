@@ -69,9 +69,9 @@ function arc(start: { x: number; y: number }, end: { x: number; y: number }) {
   };
 }
 
-/* Ten lights, each walking its own list of destinations. */
-const LANES = 10;
-const STAGGER = 1.6;
+/* About twenty lights in the air at once, each walking its own list. */
+const LANES = 22;
+const STAGGER = 0.42;
 
 const HUB_DELAY = [0.15, 1.7, 0.9, 2.5, 3.2, 4.0];
 
@@ -184,22 +184,22 @@ export function WorldMap({
         }
         @keyframes ${travelName} {
           0% { --wm-p-${rawId}: 0; opacity: 0; }
-          8% { --wm-p-${rawId}: 0; opacity: 0; }
-          16% { --wm-p-${rawId}: 0.05; opacity: 1; }
-          28% { --wm-p-${rawId}: 0.42; opacity: 1; }
-          38% { --wm-p-${rawId}: 0.84; opacity: 1; }
-          46% { --wm-p-${rawId}: 1; opacity: 1; }
-          54% { opacity: 0; }
+          4% { --wm-p-${rawId}: 0; opacity: 0; }
+          14% { --wm-p-${rawId}: 0.08; opacity: 1; }
+          42% { --wm-p-${rawId}: 0.46; opacity: 1; }
+          74% { --wm-p-${rawId}: 0.86; opacity: 1; }
+          90% { --wm-p-${rawId}: 1; opacity: 1; }
+          97% { opacity: 0; }
           100% { --wm-p-${rawId}: 1; opacity: 0; }
         }
         @keyframes ${haloName} {
           0% { --wm-p-${rawId}: 0; opacity: 0; }
-          8% { --wm-p-${rawId}: 0; opacity: 0; }
-          16% { --wm-p-${rawId}: 0.05; opacity: 0.72; }
-          28% { --wm-p-${rawId}: 0.42; opacity: 0.72; }
-          38% { --wm-p-${rawId}: 0.84; opacity: 0.72; }
-          46% { --wm-p-${rawId}: 1; opacity: 0.72; }
-          54% { opacity: 0; }
+          4% { --wm-p-${rawId}: 0; opacity: 0; }
+          14% { --wm-p-${rawId}: 0.08; opacity: 0.62; }
+          42% { --wm-p-${rawId}: 0.46; opacity: 0.62; }
+          74% { --wm-p-${rawId}: 0.86; opacity: 0.62; }
+          90% { --wm-p-${rawId}: 1; opacity: 0.62; }
+          97% { opacity: 0; }
           100% { --wm-p-${rawId}: 1; opacity: 0; }
         }
         @keyframes ${hubName} {
