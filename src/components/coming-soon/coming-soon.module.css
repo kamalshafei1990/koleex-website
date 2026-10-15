@@ -91,13 +91,17 @@
   height: 56px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 
-.logo {
+.brand {
+  margin: 0 0 56px;
+}
+
+.heroLogo {
   display: block;
-  height: 16px;
-  width: auto;
+  width: min(840px, 100%);
+  height: auto;
   color: var(--text-primary);
 }
 
@@ -164,7 +168,7 @@
 
 .hero .wrap {
   position: relative;
-  padding-top: 96px;
+  padding-top: 40px;
   padding-bottom: 80px;
 }
 
@@ -766,8 +770,12 @@
     font-size: 16px;
   }
 
+  .brand {
+    margin-bottom: 32px;
+  }
+
   .hero .wrap {
-    padding-top: 64px;
+    padding-top: 28px;
     padding-bottom: 64px;
   }
 

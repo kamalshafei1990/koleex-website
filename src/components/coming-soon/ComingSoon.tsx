@@ -81,7 +81,6 @@ export function ComingSoon() {
     <ThemeRoot className={styles.page}>
       <header className={styles.header}>
         <div className={styles.wrap}>
-          <KoleexLogo color="current" height={16} className={styles.logo} />
           <div className={styles.headerTools}>
             <ThemeToggle />
             <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
@@ -91,6 +90,9 @@ export function ComingSoon() {
 
       <section className={styles.hero}>
         <div className={`${styles.wrap} ${styles.reveal}`}>
+          <div className={styles.brand}>
+            <KoleexLogo color="current" height={112} className={styles.heroLogo} />
+          </div>
           <div className={styles.heroGrid}>
             <div className={styles.heroCopy}>
               <h1>
