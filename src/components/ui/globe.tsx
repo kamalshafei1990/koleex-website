@@ -145,6 +145,8 @@ function Globe({ globeConfig, data, globeRef }: GlobeProps) {
       .atmosphereAltitude(atmosphereAltitude)
       .hexPolygonColor(() => polygonColor);
 
+    globe.arcCurveResolution(72).arcsTransitionDuration(0);
+
     globe
       .arcsData(data)
       .arcStartLat((item: object) => (item as GlobeArc).startLat)
@@ -153,7 +155,7 @@ function Globe({ globeConfig, data, globeRef }: GlobeProps) {
       .arcEndLng((item: object) => (item as GlobeArc).endLng)
       .arcColor((item: object) => (item as GlobeArc).color)
       .arcAltitude((item: object) => (item as GlobeArc).arcAlt)
-      .arcStroke(0.5)
+      .arcStroke(0.32)
       .arcDashLength(arcLength)
       .arcDashGap(arcDashGap)
       .arcDashInitialGap((item: object) => (item as GlobeArc).order)

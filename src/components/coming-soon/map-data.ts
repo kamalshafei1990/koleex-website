@@ -1,11 +1,7 @@
-import DottedMap from "dotted-map";
 import { KOLEEX_MARKETS } from "@/data/koleex-markets";
 
-/* Pin grouping matches the previous dotted map, so the globe keeps the same
-   72 destinations: the other hubs plus every market that does not sit on
-   Taizhou or on another hub. */
-
-const map = new DottedMap({ height: 100, grid: "diagonal" });
+/* Every arc starts at Taizhou and ends on a real market or hub coordinate.
+   Places that share a city (Dubai/UAE, Cairo/Egypt) keep one arc. */
 
 const HUBS = [
   { id: "taizhou", name: "Taizhou", flag: "🇨🇳", lat: 28.656, lng: 121.421 },
@@ -37,13 +33,19 @@ export type GlobeMarker = {
 };
 
 const STEEL = "#567FB2";
-const ARC_LENGTH = 0.4;
-const CONCURRENT = 22;
 
-function locate(lat: number, lng: number) {
-  const pin = map.getPin({ lat, lng });
-  if (!pin) return null;
-  return `${pin.x},${pin.y}`;
+/* three-globe measures dashes in fractions of the whole arc (0–1).
+   A dash of length L stays on that span for 1+L of travel, then the gap
+   must be long enough that the next dash has not entered yet. The official
+   GitHub globe uses a gap of 15 for the same reason. */
+const ARC_LENGTH = 0.55;
+const CONCURRENT = 22;
+const ARC_TIME = 4500;
+
+type Dest = GlobeMarker;
+
+function samePlace(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
+  return Math.hypot(a.lat - b.lat, a.lng - b.lng) < 0.05;
 }
 
 function angular(lat: number, lng: number) {
@@ -55,16 +57,16 @@ function angular(lat: number, lng: number) {
   return 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
 }
 
-type Dest = GlobeMarker;
+function arcAltitude(lat: number, lng: number) {
+  const lift = angular(lat, lng) / Math.PI;
+  return Math.min(0.36, Math.max(0.02, lift * 0.4));
+}
 
-const hubPoints: Dest[] = [];
-const hubKeys = new Set<string>();
+const destinations: Dest[] = [];
 
 for (const hub of HUBS) {
-  const key = locate(hub.lat, hub.lng);
-  if (!key) continue;
-  hubKeys.add(key);
-  hubPoints.push({
+  if (hub.id === "taizhou") continue;
+  destinations.push({
     id: hub.id,
     lat: hub.lat,
     lng: hub.lng,
@@ -73,36 +75,30 @@ for (const hub of HUBS) {
   });
 }
 
-const taizhou = hubPoints.find((point) => point.id === "taizhou");
-const taizhouKey = taizhou ? locate(taizhou.lat, taizhou.lng) : "";
-
-const marketGroups = new Map<string, Dest>();
-
 for (const market of KOLEEX_MARKETS) {
-  const key = locate(market.location[0], market.location[1]);
-  if (!key || key === taizhouKey || hubKeys.has(key)) continue;
-  const group = marketGroups.get(key) ?? {
-    id: `market-${key}`,
-    lat: market.location[0],
-    lng: market.location[1],
-    label: "",
-    kind: "market" as const,
-  };
-  group.label = group.label ? `${group.label} · ${market.flag} ${market.name}` : `${market.flag} ${market.name}`;
-  marketGroups.set(key, group);
+  const point = { lat: market.location[0], lng: market.location[1] };
+  if (samePlace(point, TAIZHOU) || destinations.some((dest) => samePlace(dest, point))) continue;
+  destinations.push({
+    id: market.code,
+    lat: point.lat,
+    lng: point.lng,
+    label: `${market.flag} ${market.name}`,
+    kind: "market",
+  });
 }
 
-const destinations = [...hubPoints.filter((point) => point.id !== "taizhou"), ...marketGroups.values()].sort(
+destinations.sort(
   (a, b) => Math.atan2(a.lat - TAIZHOU.lat, a.lng - TAIZHOU.lng) - Math.atan2(b.lat - TAIZHOU.lat, b.lng - TAIZHOU.lng),
 );
 
-const dashGap = ARC_LENGTH * (destinations.length / CONCURRENT - 1);
-const period = ARC_LENGTH + dashGap;
+const travelWindow = 1 + ARC_LENGTH;
+const period = (travelWindow * destinations.length) / CONCURRENT;
+const dashGap = period - ARC_LENGTH;
 
 export const globeMotion = {
   arcLength: ARC_LENGTH,
   arcDashGap: dashGap,
-  arcTime: 52000,
+  arcTime: ARC_TIME,
 };
 
 export const globeArcs: GlobeArc[] = destinations.map((point, index) => ({
@@ -111,7 +107,7 @@ export const globeArcs: GlobeArc[] = destinations.map((point, index) => ({
   startLng: TAIZHOU.lng,
   endLat: point.lat,
   endLng: point.lng,
-  arcAlt: Math.min(0.42, Math.max(0.08, (angular(point.lat, point.lng) / Math.PI) * 0.5)),
+  arcAlt: arcAltitude(point.lat, point.lng),
   color: STEEL,
 }));
 
@@ -129,7 +125,12 @@ function clusterMarkers(points: Dest[]) {
   return groups;
 }
 
-export const globeMarkers: GlobeMarker[] = clusterMarkers([
-  ...hubPoints.filter((point) => point.id === "taizhou"),
-  ...destinations,
-]);
+const taizhouMarker: Dest = {
+  id: "taizhou",
+  lat: TAIZHOU.lat,
+  lng: TAIZHOU.lng,
+  label: `${HUBS[0].flag} ${HUBS[0].name}`,
+  kind: "hub",
+};
+
+export const globeMarkers: GlobeMarker[] = clusterMarkers([taizhouMarker, ...destinations]);
