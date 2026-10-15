@@ -148,6 +148,36 @@
   touch-action: pan-y;
 }
 
+.markerTip {
+  position: absolute;
+  z-index: 3;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: rgba(10, 10, 10, 0.94);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 10px 28px -16px rgba(0, 0, 0, 0.85);
+}
+
+.markerTip[data-open="true"] {
+  display: inline-flex;
+}
+
+.markerTip [data-flag] {
+  font-size: 15px;
+  line-height: 1;
+}
+
 .page h1 {
   font-size: 56px;
   line-height: 1.02;

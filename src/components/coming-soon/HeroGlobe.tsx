@@ -7,13 +7,13 @@ import { Globe } from "@/components/ui/globe";
 import styles from "./coming-soon.module.css";
 
 /* Koleex hubs: Taizhou, Shanghai, Hangzhou, Hong Kong, Dubai, Cairo. */
-const HUBS: { location: [number, number]; size: number }[] = [
-  { location: [28.656, 121.421], size: 0.06 },
-  { location: [31.23, 121.474], size: 0.07 },
-  { location: [30.274, 120.155], size: 0.055 },
-  { location: [22.319, 114.169], size: 0.06 },
-  { location: [25.205, 55.271], size: 0.07 },
-  { location: [30.044, 31.236], size: 0.075 },
+const HUBS: { location: [number, number]; size: number; name: string; flag: string }[] = [
+  { location: [28.656, 121.421], size: 0.06, name: "Taizhou", flag: "🇨🇳" },
+  { location: [31.23, 121.474], size: 0.07, name: "Shanghai", flag: "🇨🇳" },
+  { location: [30.274, 120.155], size: 0.055, name: "Hangzhou", flag: "🇨🇳" },
+  { location: [22.319, 114.169], size: 0.06, name: "Hong Kong", flag: "🇭🇰" },
+  { location: [25.205, 55.271], size: 0.07, name: "Dubai", flag: "🇦🇪" },
+  { location: [30.044, 31.236], size: 0.075, name: "Cairo", flag: "🇪🇬" },
 ];
 
 /* Dubai and Cairo share a hub pin: keep the larger hub dot. */
@@ -29,6 +29,8 @@ const MARKERS: COBEOptions["markers"] = [
   ...KOLEEX_MARKETS.filter((market) => !overlapsHub(market.location)).map((market) => ({
     location: market.location,
     size: market.size,
+    name: market.name,
+    flag: market.flag,
   })),
   ...HUBS,
 ];
@@ -83,8 +85,10 @@ export function HeroGlobe() {
   const show = mode === "full" || mode === "compact";
 
   return (
-    <div className={styles.globeSlot} data-static={mode === "off" ? "true" : undefined} aria-hidden="true">
-      {show ? <Globe config={mode === "compact" ? GLOBE_COMPACT : GLOBE_BASE} /> : null}
+    <div className={styles.globeSlot} data-static={mode === "off" ? "true" : undefined}>
+      {show ? (
+        <Globe config={mode === "compact" ? GLOBE_COMPACT : GLOBE_BASE} tipClassName={styles.markerTip} />
+      ) : null}
     </div>
   );
 }
