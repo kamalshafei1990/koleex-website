@@ -86,12 +86,10 @@ export function ComingSoon() {
         <div className={`${styles.wrap} ${styles.reveal}`}>
           <div className={styles.heroGrid}>
             <div className={styles.heroCopy}>
-              <p className={styles.eyebrow}>
-                <i className={styles.dot} aria-hidden="true" />
-                KOLEEX
-              </p>
               <h1>
-                Shaping the <span className={styles.grad}>Future.</span>
+                NEW WEBSITE
+                <br />
+                IN DEVELOPMENT
               </h1>
               <p className={styles.sub}>
                 A new Koleex digital experience is being engineered. Our systems, machines and global team remain fully operational.
