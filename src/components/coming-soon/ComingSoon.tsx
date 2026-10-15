@@ -1,13 +1,22 @@
 import { KoleexLogo } from "@/components/ui/KoleexLogo";
+import { KOLEEX_MARKETS, KOLEEX_MARKET_COUNT } from "@/data/koleex-markets";
+import { KOLEEX_WHATSAPP_HREF } from "@/data/socials";
+import { globeArcs, globeMarkers, globeMotion } from "./map-data";
+import { GlobeFrame } from "./GlobeFrame";
 import { NotifyForm } from "./NotifyForm";
 import { productLines } from "./product-lines";
+import { SocialRow } from "./SocialRow";
 import styles from "./coming-soon.module.css";
+
+const CONTINENTS = ["Asia", "Africa", "Europe", "North America", "South America"] as const;
 
 const EMAIL = "info@koleexgroup.com";
 const PHONE_DISPLAY = "+86 130 7380 0720";
 const PHONE_TEL = "+8613073800720";
-/* No catalog file ships with the site. The button asks the team for it. */
-const CATALOG_HREF = `mailto:${EMAIL}?subject=KOLEEX%20Catalog%202025`;
+const WHATSAPP_HREF = KOLEEX_WHATSAPP_HREF;
+/* Real file lives at public/catalogs/ — not in git (about 77MB). */
+const CATALOG_HREF = "/catalogs/KOLEEX-Catalog-2025.pdf";
+const CATALOG_FILE = "KOLEEX-Catalog-2025.pdf";
 
 const STATS = [
   { value: "70+", label: "Years of heritage" },
@@ -41,10 +50,10 @@ function PinIcon() {
   );
 }
 
-function GlobeIcon() {
+function ChatIcon() {
   return (
     <svg aria-hidden="true" className={styles.ui} fill="currentColor" viewBox="0 0 24 24">
-      <path d="M12,0A12,12,0,1,0,24,12,12.013,12.013,0,0,0,12,0Zm8.647,7H17.426a19.676,19.676,0,0,0-2.821-4.644A10.031,10.031,0,0,1,20.647,7ZM16.5,12a10.211,10.211,0,0,1-.476,3H7.976A10.211,10.211,0,0,1,7.5,12a10.211,10.211,0,0,1,.476-3h8.048A10.211,10.211,0,0,1,16.5,12ZM8.778,17h6.444A19.614,19.614,0,0,1,12,21.588,19.57,19.57,0,0,1,8.778,17Zm0-10A19.614,19.614,0,0,1,12,2.412,19.57,19.57,0,0,1,15.222,7ZM9.4,2.356A19.676,19.676,0,0,0,6.574,7H3.353A10.031,10.031,0,0,1,9.4,2.356ZM2.461,9H5.9a12.016,12.016,0,0,0-.4,3,12.016,12.016,0,0,0,.4,3H2.461a9.992,9.992,0,0,1,0-6Zm.892,8H6.574A19.676,19.676,0,0,0,9.4,21.644,10.031,10.031,0,0,1,3.353,17Zm11.252,4.644A19.676,19.676,0,0,0,17.426,17h3.221A10.031,10.031,0,0,1,14.605,21.644ZM21.539,15H18.1a12.016,12.016,0,0,0,.4-3,12.016,12.016,0,0,0-.4-3h3.437a9.992,9.992,0,0,1,0,6Z" />
+      <path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.7-1.2A9 9 0 1 0 12 3Zm-3.2 8.2a1.1 1.1 0 1 1 0-2.2 1.1 1.1 0 0 1 0 2.2Zm3.2 0a1.1 1.1 0 1 1 0-2.2 1.1 1.1 0 0 1 0 2.2Zm3.2 0a1.1 1.1 0 1 1 0-2.2 1.1 1.1 0 0 1 0 2.2Z" />
     </svg>
   );
 }
@@ -64,39 +73,75 @@ export function ComingSoon() {
 
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
-        <div className={styles.wrap}>
-          <KoleexLogo color="white" height={16} className={styles.logo} />
-          <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
-        </div>
-      </header>
-
       <section className={styles.hero}>
-        <div className={`${styles.wrap} ${styles.reveal}`}>
-          <p className={styles.eyebrow}>
-            <i className={styles.dot} aria-hidden="true" />
-            New website in development
-          </p>
-          <h1>
-            Shaping the <span className={styles.grad}>Future.</span>
-          </h1>
-          <p className={styles.sub}>
-            A new Koleex digital experience is being engineered. Our systems, machines and global team remain fully operational.
-          </p>
-          <div className={styles.cta}>
-            <a className={`${styles.btn} ${styles.primary}`} href={CATALOG_HREF}>
-              <DownloadIcon />
-              Download Catalog 2025
-            </a>
-            <a className={`${styles.btn} ${styles.ghost}`} href={`mailto:${EMAIL}`}>
-              Contact Our Team ›
-            </a>
+        <div className={`${styles.wrap} ${styles.heroInner}`}>
+          <div className={styles.brand}>
+            <KoleexLogo color="current" height={30} className={styles.heroLogo} />
           </div>
-          <div className={styles.stats}>
-            {STATS.map((stat) => (
-              <div key={stat.label}>
-                <b>{stat.value}</b>
-                <span>{stat.label}</span>
+          <div className={styles.heroCopy}>
+            <h1>
+              NEW WEBSITE
+              <br />
+              IN DEVELOPMENT
+            </h1>
+            <p className={styles.sub}>
+              A new Koleex digital experience is being engineered. Our systems, machines and global team remain fully operational.
+            </p>
+            <div className={styles.cta}>
+              <a className={`${styles.btn} ${styles.primary}`} href={CATALOG_HREF} download={CATALOG_FILE}>
+                <DownloadIcon />
+                Download Catalog 2025
+              </a>
+              <a className={`${styles.btn} ${styles.ghost}`} href="#contact">
+                Contact Our Team ›
+              </a>
+            </div>
+          </div>
+          <div className={styles.mapFrame}>
+            <GlobeFrame
+              arcs={globeArcs}
+              markers={globeMarkers}
+              arcLength={globeMotion.arcLength}
+              arcDashGap={globeMotion.arcDashGap}
+              arcTime={globeMotion.arcTime}
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.stats} aria-label="KOLEEX at a glance">
+        <div className={`${styles.wrap} ${styles.statRow}`}>
+          {STATS.map((stat) => (
+            <div key={stat.label}>
+              <b>{stat.value}</b>
+              <span>{stat.label}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.markets} aria-labelledby="markets">
+        <div className={styles.wrap}>
+          <div className={styles.sectionHead}>
+            <h2 id="markets" className={styles.sectionTitle}>
+              Markets we serve
+            </h2>
+            <p className={styles.kicker}>{KOLEEX_MARKET_COUNT} markets</p>
+          </div>
+          <div className={styles.continents}>
+            {CONTINENTS.map((continent) => (
+              <div key={continent} className={styles.continent}>
+                <h3 className={styles.continentTitle}>{continent}</h3>
+                <ul className={styles.marketGrid}>
+                  {KOLEEX_MARKETS.filter((market) => market.continent === continent).map((market) => (
+                    <li key={market.code}>
+                      <span className={styles.flag} aria-hidden="true">
+                        {market.flag}
+                      </span>
+                      <span>{market.name}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             ))}
           </div>
@@ -105,7 +150,9 @@ export function ComingSoon() {
 
       <section className={styles.lines} aria-labelledby="product-lines">
         <div className={styles.wrap}>
-          <h2 id="product-lines">Product lines</h2>
+          <h2 id="product-lines" className={styles.sectionTitle}>
+            Product lines
+          </h2>
           <ul className={styles.strip}>
             {productLines.map((line) => (
               <li key={line.name} title={line.name}>
@@ -119,8 +166,8 @@ export function ComingSoon() {
 
       <section className={styles.info}>
         <div className={`${styles.wrap} ${styles.grid}`}>
-          <div className={styles.card}>
-            <h3>Contact</h3>
+          <div className={styles.card} id="contact">
+            <h3 className={styles.cardTitle}>Contact</h3>
             <p className={styles.row}>
               <MailIcon />
               <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
@@ -130,10 +177,14 @@ export function ComingSoon() {
               <span>
                 <a href={`tel:${PHONE_TEL}`}>{PHONE_DISPLAY}</a>
                 {" · "}
-                <a href={`https://wa.me/${PHONE_TEL.replace("+", "")}`} target="_blank" rel="noopener noreferrer">
+                <a href={WHATSAPP_HREF} target="_blank" rel="noopener noreferrer">
                   WhatsApp
                 </a>
               </span>
+            </p>
+            <p className={`${styles.row} ${styles.wechat}`}>
+              <ChatIcon />
+              <span>WeChat — ask via WhatsApp/email</span>
             </p>
             <p className={`${styles.row} ${styles.note} ${styles.address}`}>
               <PinIcon />
@@ -142,16 +193,12 @@ export function ComingSoon() {
           </div>
 
           <div className={styles.card}>
-            <h3>Global hubs</h3>
-            <p className={`${styles.hubs} ${styles.row}`}>
-              <GlobeIcon />
-              <span>Taizhou · Shanghai · Hangzhou</span>
-            </p>
-            <p className={styles.hubsSecond}>Hong Kong · Dubai · Cairo</p>
+            <h3 className={styles.cardTitle}>Follow us</h3>
+            <SocialRow email={EMAIL} />
           </div>
 
           <div className={styles.card}>
-            <h3>Launch notification</h3>
+            <h3 className={styles.cardTitle}>Launch notification</h3>
             <NotifyForm />
             <p className={styles.note}>One email when the new site goes live. No marketing.</p>
           </div>
