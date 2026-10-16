@@ -14,9 +14,9 @@ const EMAIL = "info@koleexgroup.com";
 const PHONE_DISPLAY = "+86 130 7380 0720";
 const PHONE_TEL = "+8613073800720";
 const WHATSAPP_HREF = KOLEEX_WHATSAPP_HREF;
-/* Real file lives at public/catalogs/ — not in git (about 77MB). */
-const CATALOG_HREF = "/catalogs/KOLEEX-Catalog-2025.pdf";
-const CATALOG_FILE = "KOLEEX-Catalog-2025.pdf";
+/* Public GitHub Release asset (~77MB). Not stored in git or public/catalogs/. */
+const CATALOG_HREF =
+  "https://github.com/kamalshafei1990/koleex-website/releases/download/catalog-2025/KOLEEX-Catalog-2025.pdf";
 
 const STATS = [
   { value: "70+", label: "Years of heritage" },
@@ -88,7 +88,7 @@ export function ComingSoon() {
               A new Koleex digital experience is being engineered. Our systems, machines and global team remain fully operational.
             </p>
             <div className={styles.cta}>
-              <a className={`${styles.btn} ${styles.primary}`} href={CATALOG_HREF} download={CATALOG_FILE}>
+              <a className={`${styles.btn} ${styles.primary}`} href={CATALOG_HREF}>
                 <DownloadIcon />
                 Download Catalog 2025
               </a>
