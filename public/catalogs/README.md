@@ -1,13 +1,13 @@
 # KOLEEX Catalog 2025
 
-The Coming Soon page button **Download Catalog 2025** points at:
+The Coming Soon page button **Download Catalog 2025** points at the published GitHub Release asset:
 
-`/catalogs/KOLEEX-Catalog-2025.pdf`
+https://github.com/kamalshafei1990/koleex-website/releases/download/catalog-2025/KOLEEX-Catalog-2025.pdf
 
-Put the real file here, with that exact name:
+(tag `catalog-2025`, file `KOLEEX-Catalog-2025.pdf`, 138 pages, about 76.5MB). The release already sends `Content-Disposition: attachment`, so the button does not use an HTML `download` attribute.
+
+The PDF is not stored in git. If you need a local copy for development, place it here with that exact name:
 
 `public/catalogs/KOLEEX-Catalog-2025.pdf`
 
-The PDF is about 77MB, so it is not stored in git. This folder only holds the path the site expects.
-
-Checked 15 Oct 2026: this repository has no GitHub Release (including `catalog-2025`) and no catalog asset to link. When a release asset is published, the button can be switched to that URL. Until the file is placed here, the link has nothing to download.
+Do not commit the PDF.
