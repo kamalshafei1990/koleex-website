@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X, ChevronDown, Search, Globe, MapPin, Sparkles, User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { mainNav, type MegaMenuItem } from "@/data/navigation";
+import { mainNav, type MegaMenuItem, type NavItem } from "@/data/navigation";
 import { KoleexLogo } from "@/components/ui/KoleexLogo";
 import { useLang } from "@/i18n/LangProvider";
 import { arrowOf, isLang } from "@/i18n/config";
@@ -28,9 +28,10 @@ interface MobileMenuProps {
   onClose: () => void;
   /** The Hub's divisions (built in the root layout). */
   items: MegaMenuItem[];
+  navItems?: NavItem[];
 }
 
-export default function MobileMenu({ isOpen, onClose, items }: MobileMenuProps) {
+export default function MobileMenu({ isOpen, onClose, items, navItems = mainNav }: MobileMenuProps) {
   const pathname = usePathname() || "/";
   const { lang, t, L } = useLang();
   const [productsExpanded, setProductsExpanded] = useState(false);
@@ -98,7 +99,7 @@ export default function MobileMenu({ isOpen, onClose, items }: MobileMenuProps) 
         {/* ── Navigation links ── */}
         <nav className="flex-1 overflow-y-auto px-6 pt-6 pb-8">
           <div className="space-y-0">
-            {mainNav.map((item, idx) => {
+            {navItems.map((item, idx) => {
               const active = isActive(item.href);
 
               if (item.label === "Products") {

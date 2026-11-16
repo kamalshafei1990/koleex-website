@@ -19,7 +19,25 @@ import { createHmac } from "node:crypto";
 import { draftMode } from "next/headers";
 import type { HubCatalog, HubCompany, HubDivision, HubJob, HubPage, HubPageSummary, HubProduct, HubProductList } from "@/types/hub";
 
-export type HubTag = "products" | "taxonomy" | "jobs" | "company" | "catalogs" | `page:${string}`;
+export type HubTag = "products" | "taxonomy" | "jobs" | "company" | "catalogs" | "site" | `page:${string}`;
+
+export type HubSiteChromeNav = {
+  id: string;
+  href: string;
+  label: { en: string; zh: string; ar: string };
+  visible: boolean;
+};
+
+export type HubSiteSettings = {
+  comingSoon: boolean;
+  publicBaseUrl: string;
+  targetHostname?: string;
+  designDirection?: string;
+  chrome?: {
+    nav: HubSiteChromeNav[];
+    tagline?: { en: string; zh: string; ar: string };
+  };
+};
 
 const HUB_URL = (process.env.HUB_URL ?? "https://hub.koleexgroup.com").trim().replace(/\/+$/, "");
 const bridgeKey = () => (process.env.WEBSITE_BRIDGE_KEY ?? "").trim();
@@ -166,4 +184,9 @@ export async function hubCompany(): Promise<HubCompany | null> {
 export async function hubCatalogs(): Promise<HubCatalog[]> {
   const r = await hubGet<{ catalogs: HubCatalog[] }>("/catalogs", ["catalogs"]);
   return Array.isArray(r?.catalogs) ? r.catalogs : [];
+}
+
+/** Public gate + chrome from the Hub Website control center. */
+export async function hubSite(): Promise<HubSiteSettings | null> {
+  return hubGet<HubSiteSettings>("/site", ["site"]);
 }

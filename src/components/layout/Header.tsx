@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search, Globe, Menu, X, User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { mainNav, type MegaMenuItem } from "@/data/navigation";
+import { mainNav, type MegaMenuItem, type NavItem } from "@/data/navigation";
 import { getDefaultRegion, getRegionBySlug, type Region } from "@/data/regions";
 import { useLang } from "@/i18n/LangProvider";
 import { isLang } from "@/i18n/config";
@@ -24,7 +24,13 @@ import RegionSuggestionModal from "./RegionSuggestionModal";
    No AI icon in header.
    --------------------------------------------------------------------------- */
 
-export default function Header({ productsMenu }: { productsMenu: MegaMenuItem[] }) {
+export default function Header({
+  productsMenu,
+  navItems = mainNav,
+}: {
+  productsMenu: MegaMenuItem[];
+  navItems?: NavItem[];
+}) {
   const pathname = usePathname() || "/";
   const { t, L } = useLang();
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
@@ -86,7 +92,7 @@ export default function Header({ productsMenu }: { productsMenu: MegaMenuItem[] 
 
           {/* ── Desktop Navigation (centered, with right margin to not overlap tools) ── */}
           <div className="hidden lg:flex items-center flex-1 justify-center gap-1 mx-8">
-            {mainNav.map((item) => {
+            {navItems.map((item) => {
               const active = isActive(item.href);
 
               if (item.label === "Products") {
@@ -197,7 +203,7 @@ export default function Header({ productsMenu }: { productsMenu: MegaMenuItem[] 
         <MegaMenu isOpen={megaMenuOpen} onClose={closeMegaMenu} items={productsMenu} />
       </header>
 
-      <MobileMenu isOpen={mobileMenuOpen} onClose={closeMobileMenu} items={productsMenu} />
+      <MobileMenu isOpen={mobileMenuOpen} onClose={closeMobileMenu} items={productsMenu} navItems={navItems} />
       <SearchOverlay isOpen={searchOpen} onClose={closeSearch} />
 
       <RegionSuggestionModal currentRegion={currentRegion} />

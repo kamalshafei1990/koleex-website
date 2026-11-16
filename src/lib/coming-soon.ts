@@ -1,21 +1,53 @@
 /* ---------------------------------------------------------------------------
-   Coming-soon gate. While this is on, the public site shows only the teaser
-   (see middleware). The real pages stay in the repo under app/[lang]/(site).
+   Coming-soon gate. Prefer the Hub's /api/website/v1/site (Website control
+   center). Fall back to COMING_SOON env when the bridge is unset or the Hub
+   does not answer — fail closed (stay on teaser) so a bad deploy cannot
+   open the unfinished site.
 
-   Default is ON when COMING_SOON is unset, so a deploy without the variable
-   does not publish the unfinished site. To launch the real site, set
-   COMING_SOON=false and redeploy. Middleware reads the variable on each
-   request. robots.txt follows it too. The sitemap is generated at build
-   time, so the redeploy is what publishes the real URL list.
+   No process-level cache: Edge middleware and Node RSC are separate isolates,
+   so a shared TTL cache caused / ↔ /coming-soon redirect loops when the gate
+   flipped off.
 
-   Anything other than an explicit off stays on, so a typo cannot publish
-   the unfinished site.
-   Accepted off: 0, false, no, off
+   Env still accepted for emergency override:
+     COMING_SOON=false|0|no|off  → force open when Hub is unreachable
+     unset / anything else       → teaser (fail closed)
    --------------------------------------------------------------------------- */
 
-export function isComingSoon(): boolean {
+const OFF = new Set(["0", "false", "no", "off"]);
+
+export function isComingSoonFromEnv(): boolean {
   const raw = process.env.COMING_SOON;
   if (raw === undefined || raw.trim() === "") return true;
-  const v = raw.trim().toLowerCase();
-  return !(v === "0" || v === "false" || v === "no" || v === "off");
+  return !OFF.has(raw.trim().toLowerCase());
+}
+
+/** Sync helper for places that cannot await (build-time robots fallback). */
+export function isComingSoon(): boolean {
+  return isComingSoonFromEnv();
+}
+
+/**
+ * Resolve Coming Soon for middleware / request path.
+ * Hub wins when the bridge answers; otherwise env.
+ */
+export async function resolveComingSoon(): Promise<boolean> {
+  const key = (process.env.WEBSITE_BRIDGE_KEY ?? "").trim();
+  const hub = (process.env.HUB_URL ?? "https://hub.koleexgroup.com").trim().replace(/\/+$/, "");
+  if (key && hub) {
+    try {
+      const res = await fetch(`${hub}/api/website/v1/site`, {
+        headers: { Authorization: `Bearer ${key}` },
+        cache: "no-store",
+        signal: AbortSignal.timeout(2500),
+      });
+      if (res.ok) {
+        const data = (await res.json()) as { comingSoon?: unknown };
+        if (typeof data.comingSoon === "boolean") return data.comingSoon;
+      }
+    } catch {
+      /* fall through to env */
+    }
+  }
+
+  return isComingSoonFromEnv();
 }

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { ComingSoon } from "@/components/coming-soon/ComingSoon";
-import { isComingSoon } from "@/lib/coming-soon";
+import { resolveComingSoon } from "@/lib/coming-soon";
 
 /* connection() opts this route into per-request rendering so the flag is
    read live. A cached teaser would keep showing after COMING_SOON=false. */
@@ -23,6 +23,6 @@ export const metadata: Metadata = {
    leaves so the real homepage can answer. */
 export default async function ComingSoonPage() {
   await connection();
-  if (!isComingSoon()) redirect("/");
+  if (!(await resolveComingSoon())) redirect("/en");
   return <ComingSoon />;
 }

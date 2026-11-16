@@ -11,7 +11,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { countryToLanguage, regions } from "@/data/regions";
 import { CONTENT_LANGS, DEFAULT_LANG, isLang, siteUrl } from "@/i18n/config";
-import { isComingSoon } from "@/lib/coming-soon";
+import { resolveComingSoon } from "@/lib/coming-soon";
 
 const YEAR = 60 * 60 * 24 * 365;
 const cookieOpts = { path: "/", maxAge: YEAR, sameSite: "lax" as const };
@@ -37,14 +37,22 @@ function barePath(pathname: string): string {
   return pathname.length > 1 && pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
 }
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
 
   /* Temporary public gate. "/" is rewritten to the teaser (the address bar
      stays "/"). Every other page redirects there. API routes and files are
-     outside the matcher, so the Hub can still refresh and accept leads. */
-  if (isComingSoon()) {
+     outside the matcher, so the Hub can still refresh and accept leads.
+     Source of truth: Hub site settings when the bridge is configured. */
+  if (await resolveComingSoon()) {
     const path = barePath(pathname);
+    /* Keep the teaser route reachable (rewrite target / direct visits).
+       Redirecting it to "/" caused loops when the page resolved gate-off. */
+    if (/^\/[a-z]{2}\/coming-soon$/.test(path)) {
+      const res = NextResponse.next();
+      res.headers.set("X-Robots-Tag", "noindex, nofollow");
+      return res;
+    }
     if (path === "/") {
       const url = req.nextUrl.clone();
       url.pathname = "/en/coming-soon";
