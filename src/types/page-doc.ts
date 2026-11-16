@@ -22,8 +22,33 @@ export interface ProductsSection extends SectionBase { type: "products"; title: 
 export interface GallerySection extends SectionBase { type: "gallery"; title: I18nText; images: PageImage[] }
 export interface FaqSection extends SectionBase { type: "faq"; title: I18nText; items: Array<{ id: string; q: I18nText; a: I18nText }> }
 export interface CtaSection extends SectionBase { type: "cta"; title: I18nText; body: I18nText; button: PageButton | null }
+/** Quiet Theater dark product theater — machine on a cinematic stage. */
+export interface ProductStageSection extends SectionBase {
+  type: "productStage";
+  eyebrow: I18nText;
+  badge: I18nText;
+  caption: I18nText;
+  image: PageImage | null;
+}
+export interface SeriesStripItem { id: string; label: I18nText; title: I18nText }
+/** Quiet Theater series strip — short product-energy cards under the stage. */
+export interface SeriesStripSection extends SectionBase {
+  type: "seriesStrip";
+  items: SeriesStripItem[];
+}
 
-export type PageSection = HeroSection | TextSection | ImageTextSection | FeaturesSection | NumbersSection | ProductsSection | GallerySection | FaqSection | CtaSection;
+export type PageSection =
+  | HeroSection
+  | TextSection
+  | ImageTextSection
+  | FeaturesSection
+  | NumbersSection
+  | ProductsSection
+  | GallerySection
+  | FaqSection
+  | CtaSection
+  | ProductStageSection
+  | SeriesStripSection;
 
 export interface PageDoc { v: 1; sections: PageSection[]; seo: { title: I18nText; description: I18nText } }
 

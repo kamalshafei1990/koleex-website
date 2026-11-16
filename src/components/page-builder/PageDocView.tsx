@@ -203,6 +203,69 @@ function SectionView({ s, lang }: { s: PageSection; lang: PageLang }) {
           </Container>
         </Section>
       );
+    case "productStage": {
+      const img = s.image;
+      const eyebrow = textIn(s.eyebrow, lang);
+      const badge = textIn(s.badge, lang);
+      const caption = textIn(s.caption, lang);
+      return (
+        <Section background={light ? "light" : "black"} className="!py-10 md:!py-14">
+          <Container>
+            <div
+              className={cn(
+                "relative grid min-h-[min(66vh,700px)] items-end overflow-hidden rounded-[28px] border p-5 md:p-7",
+                light
+                  ? "border-black/10 bg-[linear-gradient(180deg,#171C26,#090B10_72%)]"
+                  : "border-[#1b2029] bg-[radial-gradient(ellipse_at_50%_28%,rgba(255,255,255,0.10),transparent_42%),radial-gradient(ellipse_at_70%_80%,rgba(140,160,190,0.12),transparent_40%),linear-gradient(180deg,#171C26,#090B10_72%)]",
+              )}
+            >
+              {(eyebrow || badge) ? (
+                <div className="absolute inset-x-5 top-5 z-10 flex justify-between gap-3 text-[11px] uppercase tracking-[0.16em] text-white/58 md:inset-x-7 md:top-7">
+                  <span>{eyebrow}</span>
+                  <span>{badge}</span>
+                </div>
+              ) : null}
+              <div className="pointer-events-none absolute left-1/2 top-[42%] z-0 aspect-[1.45/1] w-[min(560px,72vw)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[22px]">
+                {img ? (
+                  <Image src={img.url} alt={textIn(img.alt, lang)} fill sizes="(min-width: 768px) 560px, 72vw" className="object-contain" />
+                ) : (
+                  <div className="h-full w-full bg-[linear-gradient(135deg,rgba(255,255,255,0.12),transparent_42%),linear-gradient(180deg,#2A3344,#12161F)]" />
+                )}
+              </div>
+              {caption ? <p className="relative z-10 max-w-[36ch] text-[14px] leading-relaxed text-white/58">{caption}</p> : null}
+            </div>
+          </Container>
+        </Section>
+      );
+    }
+    case "seriesStrip":
+      if (!s.items.length) return null;
+      return (
+        <Section background={bg} className="!pt-0">
+          <Container>
+            <div className={cn("grid gap-3.5", s.items.length >= 3 ? "md:grid-cols-3" : s.items.length === 2 ? "md:grid-cols-2" : "grid-cols-1")}>
+              {s.items.map((it) => (
+                <div
+                  key={it.id}
+                  className={cn(
+                    "flex min-h-[150px] flex-col justify-between rounded-[20px] border p-[22px]",
+                    light ? "border-black/10 bg-white" : "border-white/10 bg-white/[0.03]",
+                  )}
+                >
+                  {textIn(it.label, lang) ? (
+                    <span className={cn("text-[12px] uppercase tracking-[0.14em]", light ? "text-[#6e6e73]" : "text-white/55")}>
+                      {textIn(it.label, lang)}
+                    </span>
+                  ) : <span />}
+                  <strong className={cn("text-[26px] font-semibold tracking-[-0.03em]", light ? "text-[#1d1d1f]" : "text-white")}>
+                    {textIn(it.title, lang)}
+                  </strong>
+                </div>
+              ))}
+            </div>
+          </Container>
+        </Section>
+      );
     default:
       return null;
   }

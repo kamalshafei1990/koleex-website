@@ -43,8 +43,11 @@ export async function middleware(req: NextRequest) {
   /* Temporary public gate. "/" is rewritten to the teaser (the address bar
      stays "/"). Every other page redirects there. API routes and files are
      outside the matcher, so the Hub can still refresh and accept leads.
-     Source of truth: Hub site settings when the bridge is configured. */
-  if (await resolveComingSoon()) {
+     Source of truth: Hub site settings when the bridge is configured.
+     Draft Mode (__prerender_bypass from /api/preview) skips the gate so Hub
+     Page Builder can preview drafts while Coming Soon stays on for visitors. */
+  const draftPreview = Boolean(req.cookies.get("__prerender_bypass")?.value);
+  if (!draftPreview && (await resolveComingSoon())) {
     const path = barePath(pathname);
     /* Keep the teaser route reachable (rewrite target / direct visits).
        Redirecting it to "/" caused loops when the page resolved gate-off. */
