@@ -1,22 +1,21 @@
 import { KoleexLogo } from "@/components/ui/KoleexLogo";
-import { KOLEEX_MARKETS, KOLEEX_MARKET_COUNT } from "@/data/koleex-markets";
+import { KOLEEX_MARKET_COUNT } from "@/data/koleex-markets";
 import { KOLEEX_WHATSAPP_HREF } from "@/data/socials";
+import { ContactCard } from "./ContactCard";
 import { globeArcs, globeMarkers, globeMotion } from "./map-data";
 import { GlobeFrame } from "./GlobeFrame";
+import { MarketsBrowser } from "./MarketsBrowser";
 import { NotifyForm } from "./NotifyForm";
 import { productLines } from "./product-lines";
 import { SocialRow } from "./SocialRow";
 import styles from "./coming-soon.module.css";
 
-const CONTINENTS = ["Asia", "Africa", "Europe", "North America", "South America"] as const;
-
 const EMAIL = "info@koleexgroup.com";
 const PHONE_DISPLAY = "+86 130 7380 0720";
 const PHONE_TEL = "+8613073800720";
 const WHATSAPP_HREF = KOLEEX_WHATSAPP_HREF;
-/* Real file lives at public/catalogs/ — not in git (about 77MB). */
-const CATALOG_HREF = "/catalogs/KOLEEX-Catalog-2025.pdf";
-const CATALOG_FILE = "KOLEEX-Catalog-2025.pdf";
+/* Official Catalog 2025 lives on the catalog-2025 GitHub Release (not in git). */
+const CATALOG_HREF = "https://github.com/kamalshafei1990/koleex-website/releases/download/catalog-2025/KOLEEX-Catalog-2025.pdf";
 
 const STATS = [
   { value: "70+", label: "Years of heritage" },
@@ -88,7 +87,7 @@ export function ComingSoon() {
               A new Koleex digital experience is being engineered. Our systems, machines and global team remain fully operational.
             </p>
             <div className={styles.cta}>
-              <a className={`${styles.btn} ${styles.primary}`} href={CATALOG_HREF} download={CATALOG_FILE}>
+              <a className={`${styles.btn} ${styles.primary}`} href={CATALOG_HREF}>
                 <DownloadIcon />
                 Download Catalog 2025
               </a>
@@ -128,23 +127,7 @@ export function ComingSoon() {
             </h2>
             <p className={styles.kicker}>{KOLEEX_MARKET_COUNT} markets</p>
           </div>
-          <div className={styles.continents}>
-            {CONTINENTS.map((continent) => (
-              <div key={continent} className={styles.continent}>
-                <h3 className={styles.continentTitle}>{continent}</h3>
-                <ul className={styles.marketGrid}>
-                  {KOLEEX_MARKETS.filter((market) => market.continent === continent).map((market) => (
-                    <li key={market.code}>
-                      <span className={styles.flag} aria-hidden="true">
-                        {market.flag}
-                      </span>
-                      <span>{market.name}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+          <MarketsBrowser />
         </div>
       </section>
 
@@ -166,8 +149,7 @@ export function ComingSoon() {
 
       <section className={styles.info}>
         <div className={`${styles.wrap} ${styles.grid}`}>
-          <div className={styles.card} id="contact">
-            <h3 className={styles.cardTitle}>Contact</h3>
+          <ContactCard companyEmail={EMAIL}>
             <p className={styles.row}>
               <MailIcon />
               <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
@@ -190,7 +172,7 @@ export function ComingSoon() {
               <PinIcon />
               <span>Building 6B, Feiyue Industrial Innovation Park, Jiaojiang, Taizhou, Zhejiang, China</span>
             </p>
-          </div>
+          </ContactCard>
 
           <div className={styles.card}>
             <h3 className={styles.cardTitle}>Follow us</h3>

@@ -138,7 +138,9 @@
 
 .page a:focus-visible,
 .page button:focus-visible,
-.page input:focus-visible {
+.page input:focus-visible,
+.page select:focus-visible,
+.page [role="tab"]:focus-visible {
   outline: none;
   box-shadow: 0 0 0 4px rgba(86, 127, 178, 0.4);
 }
@@ -241,22 +243,86 @@
   color: rgba(255, 255, 255, 0.58);
 }
 
-.continents {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px 48px;
+.marketsBrowser {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
 }
 
-.continent:first-child {
-  grid-column: 1 / -1;
+.segments {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.segment {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.78);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.011em;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.segment[aria-selected="true"] {
+  background: #fff;
+  color: #0a0a0a;
+  border-color: #fff;
+}
+
+.segmentCount {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.62;
+}
+
+.panelHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  margin-bottom: 18px;
 }
 
 .continentTitle {
-  margin: 0 0 18px;
+  margin: 0;
   font-size: 22px;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: #fff;
+}
+
+.marketSearch {
+  width: min(280px, 100%);
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+  letter-spacing: -0.011em;
+}
+
+.marketSearch::placeholder {
+  color: rgba(255, 255, 255, 0.44);
+}
+
+.marketEmpty {
+  margin: 0;
+  font-size: 15px;
+  letter-spacing: -0.011em;
+  color: rgba(255, 255, 255, 0.58);
 }
 
 .marketGrid {
@@ -360,10 +426,10 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
   gap: 28px;
   padding: 112px 0 120px;
-  align-items: stretch;
+  align-items: start;
 }
 
 .cardTitle {
@@ -383,15 +449,20 @@
   scroll-margin-top: 28px;
 }
 
-.card p,
-.card a {
+.card > p,
+.card > a,
+.channels p,
+.channels a,
+.row a {
   font-size: 15px;
   line-height: 1.6;
   color: #141414;
   text-decoration: none;
 }
 
-.card a:hover {
+.card > a:hover,
+.channels a:hover,
+.row a:hover {
   color: #3e6796;
 }
 
@@ -476,6 +547,43 @@
 
 .address {
   margin-top: 8px;
+}
+
+.contactCard {
+  grid-row: 1 / span 2;
+  background: #0a0a0a;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.contactCard .cardTitle {
+  color: #fff;
+}
+
+.contactCard .channels p,
+.contactCard .channels a,
+.contactCard .row a {
+  color: #fff;
+}
+
+.contactCard .channels a:hover,
+.contactCard .row a:hover {
+  color: #bcd8f0;
+}
+
+.contactCard .row .ui {
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.contactCard .wechat span,
+.contactCard .note {
+  color: rgba(255, 255, 255, 0.56) !important;
+}
+
+.channels {
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .social {
@@ -657,6 +765,7 @@ span.mark {
   .duoCyan,
   .duoMagenta,
   .btn,
+  .segment,
   .form input,
   .form button {
     transition: none;
@@ -672,9 +781,18 @@ span.mark {
     font-size: 36px;
   }
 
-  .continents {
-    grid-template-columns: 1fr;
-    gap: 48px;
+  .segments {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding-bottom: 2px;
+  }
+
+  .segment {
+    flex: none;
   }
 
   .statRow b {
@@ -780,6 +898,10 @@ span.mark {
     grid-template-columns: 1fr;
     gap: 16px;
     padding: 72px 0 80px;
+  }
+
+  .contactCard {
+    grid-row: auto;
   }
 
   .cardTitle {

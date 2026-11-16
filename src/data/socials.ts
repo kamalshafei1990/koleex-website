@@ -1,5 +1,5 @@
 // KOLEEX social profiles for the Coming Soon page.
-// Only URLs that already exist in this repository are filled in.
+// Official URLs are those published on koleexgroup.com/contact-us-koleex.
 // Do not invent handles. `href: "#"` entries in src/data/site.ts are
 // placeholders, not published profiles.
 
@@ -33,7 +33,7 @@ export type KoleexSocial = {
  * Unlinked icons stay on the page and are not anchors.
  * Set this to false to hide every icon that has no href (WeChat still shows).
  */
-export const SHOW_UNLINKED_SOCIALS = true;
+export const SHOW_UNLINKED_SOCIALS = false;
 
 /**
  * Phone already published on the Coming Soon contact card:
@@ -45,28 +45,25 @@ export const KOLEEX_SOCIALS: readonly KoleexSocial[] = [
   {
     id: "facebook",
     label: "Facebook",
-    // TODO: official KOLEEX Facebook page URL.
-    href: null,
+    href: "https://www.facebook.com/koleexgroup",
     brand: "#0866FF",
   },
   {
     id: "instagram",
     label: "Instagram",
-    // TODO: official KOLEEX Instagram profile URL.
-    href: null,
+    href: "https://www.instagram.com/koleexgroup",
     brand: "#FF0069",
   },
   {
     id: "linkedin",
     label: "LinkedIn",
-    // TODO: official KOLEEX LinkedIn page URL.
-    href: null,
+    href: "https://www.linkedin.com/company/koleex",
     brand: "#0A66C2",
   },
   {
     id: "x",
     label: "X",
-    // TODO: official KOLEEX X profile URL.
+    // x.com/koleex and x.com/koleexgroup are 404. No official handle.
     href: null,
     brand: "#000000",
     ink: true,
@@ -74,14 +71,13 @@ export const KOLEEX_SOCIALS: readonly KoleexSocial[] = [
   {
     id: "youtube",
     label: "YouTube",
-    // TODO: official KOLEEX YouTube channel URL.
-    href: null,
+    href: "https://www.youtube.com/@Koleex",
     brand: "#FF0000",
   },
   {
     id: "tiktok",
     label: "TikTok",
-    // TODO: official KOLEEX TikTok profile URL.
+    // Wix leftover @wix is not an official account. No official handle.
     href: null,
     brand: "#000000",
     ink: true,
@@ -89,7 +85,7 @@ export const KOLEEX_SOCIALS: readonly KoleexSocial[] = [
   {
     id: "wechat",
     label: "WeChat",
-    // TODO: official KOLEEX WeChat ID. No ID or QR asset is in this repo.
+    // No official ID or QR is published.
     href: null,
     brand: "#07C160",
     wechatId: null,

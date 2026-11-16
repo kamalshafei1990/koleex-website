@@ -55,11 +55,19 @@ const EMPTY = { name: "", email: "", phone: "", company: "", website: "" };
 const inputCls =
   "w-full rounded-2xl border bg-white/5 px-5 py-3.5 text-[15px] text-white outline-none transition-colors placeholder:text-white/35 focus:border-white/30";
 
-export function ContactForm({ companyEmail }: { companyEmail: string | null }) {
+export function ContactForm({
+  companyEmail,
+  mode = "auto",
+}: {
+  companyEmail: string | null;
+  /** "contact" keeps this form in contact mode (no quote CTA, no job apply). */
+  mode?: "auto" | "contact";
+}) {
   const { lang, t } = useLang();
   const productSlug = useBrowserValue(readProduct);
   const geo = useBrowserValue(readGeo);
   const jobId = useBrowserValue(readJob);
+  const contactOnly = mode === "contact";
   const onClient = useOnClient();
   const openedAt = useRef(0);
   const [fields, setFields] = useState(EMPTY);
@@ -77,7 +85,7 @@ export function ContactForm({ companyEmail }: { companyEmail: string | null }) {
 
   /* The product's name, in the page's language. */
   useEffect(() => {
-    if (!productSlug) return;
+    if (contactOnly || !productSlug) return;
     let live = true;
     fetch(`/api/products?slug=${encodeURIComponent(productSlug)}&lang=${lang}`)
       .then((r) => (r.ok ? r.json() : { items: [] }))
@@ -87,9 +95,9 @@ export function ContactForm({ companyEmail }: { companyEmail: string | null }) {
       })
       .catch(() => {});
     return () => { live = false; };
-  }, [productSlug, lang]);
+  }, [contactOnly, productSlug, lang]);
 
-  const quote = !!productSlug;
+  const quote = contactOnly ? false : !!productSlug;
   const product = productName?.slug === productSlug ? productName.name : null;
   const chosenCountry = country ?? (COUNTRY_CODES.includes(geo) ? geo : "");
   const text = message ?? (product ? translate("I would like a quotation for {product}.", lang, { product }) : "");
@@ -117,7 +125,7 @@ export function ContactForm({ companyEmail }: { companyEmail: string | null }) {
         body: JSON.stringify({
           kind: quote ? "quote" : "contact",
           name: fields.name, email: fields.email.trim(), phone: fields.phone, company: fields.company,
-          country: chosenCountry, message: text, product: productSlug || undefined,
+          country: chosenCountry, message: text, product: contactOnly ? undefined : productSlug || undefined,
           lang, page: `${window.location.pathname}${window.location.search}`,
           website: fields.website, elapsed: Date.now() - openedAt.current,
         }),
@@ -144,7 +152,7 @@ export function ContactForm({ companyEmail }: { companyEmail: string | null }) {
     openedAt.current = Date.now();
   };
 
-  if (jobId) {
+  if (!contactOnly && jobId) {
     return (
       <div className="flex flex-col gap-4 rounded-3xl border border-white/10 bg-white/[0.03] p-8">
         <h2 className="text-title text-white">{t("Apply for this position")}</h2>
