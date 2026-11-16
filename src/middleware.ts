@@ -46,6 +46,13 @@ export async function middleware(req: NextRequest) {
      Source of truth: Hub site settings when the bridge is configured. */
   if (await resolveComingSoon()) {
     const path = barePath(pathname);
+    /* Keep the teaser route reachable (rewrite target / direct visits).
+       Redirecting it to "/" caused loops when the page resolved gate-off. */
+    if (/^\/[a-z]{2}\/coming-soon$/.test(path)) {
+      const res = NextResponse.next();
+      res.headers.set("X-Robots-Tag", "noindex, nofollow");
+      return res;
+    }
     if (path === "/") {
       const url = req.nextUrl.clone();
       url.pathname = "/en/coming-soon";

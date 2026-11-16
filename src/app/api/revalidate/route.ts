@@ -1,6 +1,6 @@
 /* ---------------------------------------------------------------------------
    POST /api/revalidate — the Koleex Hub tells this site that something it
-   shows changed: { tags: ["products", "taxonomy", "jobs", "page:<slug>"] }
+   shows changed: { tags: ["products", "taxonomy", "jobs", "site", "page:<slug>"] }
    with the shared key (Authorization: Bearer WEBSITE_BRIDGE_KEY). Each known
    tag's cached pages are rebuilt on their next visit. Nobody else may call
    it: no key configured → 503; a wrong key → 401 (compared in constant time).
@@ -13,7 +13,7 @@ import { NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const TAG_RE = /^(products|taxonomy|jobs|company|catalogs|page:[a-z0-9]+(?:-[a-z0-9]+)*)$/;
+const TAG_RE = /^(products|taxonomy|jobs|company|catalogs|site|page:[a-z0-9]+(?:-[a-z0-9]+)*)$/;
 
 export async function POST(req: Request) {
   const key = (process.env.WEBSITE_BRIDGE_KEY ?? "").trim();

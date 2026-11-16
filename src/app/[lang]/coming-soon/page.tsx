@@ -23,6 +23,6 @@ export const metadata: Metadata = {
    leaves so the real homepage can answer. */
 export default async function ComingSoonPage() {
   await connection();
-  if (!(await resolveComingSoon())) redirect("/");
+  if (!(await resolveComingSoon())) redirect("/en");
   return <ComingSoon />;
 }
