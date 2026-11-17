@@ -4,7 +4,7 @@ import { KOLEEX_WHATSAPP_HREF } from "@/data/socials";
 import { ContactCard } from "./ContactCard";
 import { globeArcs, globeMarkers, globeMotion } from "./map-data";
 import { GlobeFrame } from "./GlobeFrame";
-import { MarketsBrowser } from "./MarketsBrowser";
+import { MarketsDirectory } from "./MarketsDirectory";
 import { NotifyForm } from "./NotifyForm";
 import { productLines } from "./product-lines";
 import { SocialRow } from "./SocialRow";
@@ -127,7 +127,7 @@ export function ComingSoon() {
             </h2>
             <p className={styles.kicker}>{KOLEEX_MARKET_COUNT} markets</p>
           </div>
-          <MarketsBrowser />
+          <MarketsDirectory />
         </div>
       </section>
 
