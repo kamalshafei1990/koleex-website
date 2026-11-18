@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect } from "react";
 import { ContactForm } from "@/components/contact/ContactForm";
 import styles from "./coming-soon.module.css";
 
@@ -9,13 +9,7 @@ function focusFirstField() {
   document.getElementById("cf-name")?.focus();
 }
 
-export function ContactCard({
-  companyEmail,
-  children,
-}: {
-  companyEmail: string;
-  children: ReactNode;
-}) {
+export function ContactCard({ companyEmail }: { companyEmail: string }) {
   useEffect(() => {
     focusFirstField();
 
@@ -40,10 +34,8 @@ export function ContactCard({
   }, []);
 
   return (
-    <div className={`${styles.card} ${styles.contactCard}`} id="contact">
-      <h3 className={styles.cardTitle}>Contact</h3>
+    <div className={`${styles.card} ${styles.contactCard}`}>
       <ContactForm companyEmail={companyEmail} mode="contact" />
-      <div className={styles.channels}>{children}</div>
     </div>
   );
 }

@@ -49,14 +49,6 @@ function PinIcon() {
   );
 }
 
-function ChatIcon() {
-  return (
-    <svg aria-hidden="true" className={styles.ui} fill="currentColor" viewBox="0 0 24 24">
-      <path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.7-1.2A9 9 0 1 0 12 3Zm-3.2 8.2a1.1 1.1 0 1 1 0-2.2 1.1 1.1 0 0 1 0 2.2Zm3.2 0a1.1 1.1 0 1 1 0-2.2 1.1 1.1 0 0 1 0 2.2Zm3.2 0a1.1 1.1 0 1 1 0-2.2 1.1 1.1 0 0 1 0 2.2Z" />
-    </svg>
-  );
-}
-
 function DownloadIcon() {
   return (
     <svg aria-hidden="true" className={styles.ui} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -147,42 +139,47 @@ export function ComingSoon() {
         </div>
       </section>
 
-      <section className={styles.info}>
-        <div className={`${styles.wrap} ${styles.grid}`}>
-          <ContactCard companyEmail={EMAIL}>
-            <p className={styles.row}>
-              <MailIcon />
-              <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
-            </p>
-            <p className={styles.row}>
-              <PhoneIcon />
-              <span>
-                <a href={`tel:${PHONE_TEL}`}>{PHONE_DISPLAY}</a>
-                {" · "}
-                <a href={WHATSAPP_HREF} target="_blank" rel="noopener noreferrer">
-                  WhatsApp
-                </a>
-              </span>
-            </p>
-            <p className={`${styles.row} ${styles.wechat}`}>
-              <ChatIcon />
-              <span>WeChat — ask via WhatsApp/email</span>
-            </p>
-            <p className={`${styles.row} ${styles.note} ${styles.address}`}>
-              <PinIcon />
-              <span>Building 6B, Feiyue Industrial Innovation Park, Jiaojiang, Taizhou, Zhejiang, China</span>
-            </p>
-          </ContactCard>
+      <section className={styles.info} id="contact" aria-labelledby="contact-heading">
+        <div className={styles.wrap}>
+          <h2 id="contact-heading" className={styles.sectionTitle}>
+            Contact our team
+          </h2>
+          <div className={styles.grid}>
+            <ContactCard companyEmail={EMAIL} />
 
-          <div className={styles.card}>
-            <h3 className={styles.cardTitle}>Follow us</h3>
-            <SocialRow email={EMAIL} />
-          </div>
+            <div className={styles.card}>
+              <div className={styles.detailsBlock}>
+                <p className={styles.row}>
+                  <MailIcon />
+                  <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+                </p>
+                <p className={styles.row}>
+                  <PhoneIcon />
+                  <span>
+                    <a href={`tel:${PHONE_TEL}`}>{PHONE_DISPLAY}</a>
+                    {" · "}
+                    <a href={WHATSAPP_HREF} target="_blank" rel="noopener noreferrer">
+                      WhatsApp
+                    </a>
+                  </span>
+                </p>
+                <p className={styles.row}>
+                  <PinIcon />
+                  <span>Building 6B, Feiyue Industrial Innovation Park, Jiaojiang, Taizhou, Zhejiang, China</span>
+                </p>
+              </div>
 
-          <div className={styles.card}>
-            <h3 className={styles.cardTitle}>Launch notification</h3>
-            <NotifyForm />
-            <p className={styles.note}>One email when the new site goes live. No marketing.</p>
+              <div className={styles.detailsBlock}>
+                <h3 className={styles.blockTitle}>Follow us</h3>
+                <SocialRow email={EMAIL} />
+              </div>
+
+              <div className={styles.detailsBlock}>
+                <h3 className={styles.blockTitle}>Launch notification</h3>
+                <NotifyForm />
+                <p className={styles.note}>One email when the new site goes live. No marketing.</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>

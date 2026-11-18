@@ -420,13 +420,19 @@
   background: #f5f5f5;
   color: #141414;
   border-top: 1px solid #e0e0e0;
+  padding: 112px 0 120px;
+  scroll-margin-top: 28px;
+}
+
+.info .sectionTitle {
+  color: #141414;
+  margin-bottom: 48px;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
   gap: 28px;
-  padding: 112px 0 120px;
   align-items: start;
 }
 
@@ -449,8 +455,8 @@
 
 .card > p,
 .card > a,
-.channels p,
-.channels a,
+.detailsBlock p,
+.detailsBlock a,
 .row a {
   font-size: 15px;
   line-height: 1.6;
@@ -459,7 +465,7 @@
 }
 
 .card > a:hover,
-.channels a:hover,
+.detailsBlock a:hover,
 .row a:hover {
   color: #3e6796;
 }
@@ -483,10 +489,6 @@
 
 .card .row + .row {
   margin-top: 14px;
-}
-
-.wechat span {
-  color: rgba(0, 0, 0, 0.72);
 }
 
 .form {
@@ -543,50 +545,36 @@
   line-height: 1.5 !important;
 }
 
-.address {
-  margin-top: 8px;
-}
-
 .contactCard {
-  grid-row: 1 / span 2;
   background: #0a0a0a;
   border-color: rgba(255, 255, 255, 0.1);
   color: #fff;
 }
 
-.contactCard .cardTitle {
-  color: #fff;
+/* Hide ContactForm’s “Send us a message” heading on this page only.
+   The thank-you state is rendered outside the <form>, so it stays visible. */
+.contactCard form > div:first-child {
+  display: none;
 }
 
-.contactCard .channels p,
-.contactCard .channels a,
-.contactCard .row a {
-  color: #fff;
+.detailsBlock + .detailsBlock {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e0e0e0;
 }
 
-.contactCard .channels a:hover,
-.contactCard .row a:hover {
-  color: #bcd8f0;
-}
-
-.contactCard .row .ui {
-  color: rgba(255, 255, 255, 0.56);
-}
-
-.contactCard .wechat span,
-.contactCard .note {
-  color: rgba(255, 255, 255, 0.56) !important;
-}
-
-.channels {
-  margin-top: 28px;
-  padding-top: 22px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+.blockTitle {
+  margin: 0 0 16px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #141414;
 }
 
 .social {
-  display: grid;
-  grid-template-columns: repeat(4, 44px);
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   margin: 0;
   padding: 0;
@@ -910,14 +898,22 @@ span.mark {
     height: 36px;
   }
 
-  .grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
+  .info {
     padding: 72px 0 80px;
   }
 
-  .contactCard {
-    grid-row: auto;
+  .info .sectionTitle {
+    margin-bottom: 36px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .social {
+    /* Even flex wrap: two rows of three when six icons do not fit on one row. */
+    max-width: calc(44px * 3 + 12px * 2);
   }
 
   .cardTitle {
