@@ -1,4 +1,5 @@
 import { KOLEEX_MARKETS } from "@/data/koleex-markets";
+import { MarketFlag } from "./MarketFlag";
 import styles from "./coming-soon.module.css";
 
 const CONTINENTS = ["Asia", "Africa", "Europe", "North America", "South America"] as const;
@@ -24,7 +25,10 @@ function MarketRegion({ continent }: { continent: Continent }) {
       </h3>
       <ul className={styles.marketNames}>
         {markets.map((market) => (
-          <li key={market.code}>{market.name}</li>
+          <li key={market.code}>
+            <MarketFlag code={market.code} flag={market.flag} />
+            <span>{market.name}</span>
+          </li>
         ))}
       </ul>
     </section>
