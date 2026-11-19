@@ -1,18 +1,18 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { KOLEEX_WHATSAPP_HREF } from "@/data/socials";
 import { BrandIcon } from "./BrandIcon";
 import styles from "./coming-soon.module.css";
 
+const WECHAT_QR_SRC = "/coming-soon/wechat-qr.png";
+
 export function WeChatButton({
   path,
   email,
-  wechatId,
 }: {
   path: string;
   email: string;
-  wechatId: string | null;
 }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -42,25 +42,26 @@ export function WeChatButton({
       <button
         type="button"
         className={styles.mark}
-        style={{ "--brand": "#07C160" } as CSSProperties}
         data-brand="wechat"
         aria-expanded={open}
         aria-controls={panelId}
-        aria-label={wechatId ? `WeChat, ID ${wechatId}` : "WeChat, ID not published"}
+        aria-label="WeChat, scan to add"
         onClick={() => setOpen((value) => !value)}
       >
         <BrandIcon path={path} />
       </button>
       {open ? (
         <div id={panelId} className={styles.popover} role="region" aria-label="WeChat">
-          {wechatId ? (
-            <>
-              <p className={styles.popoverLabel}>WeChat ID</p>
-              <p className={styles.wechatId}>{wechatId}</p>
-            </>
-          ) : (
-            <p>WeChat ID is not published yet. Ask via WhatsApp or email.</p>
-          )}
+          {/* Official QR is a static public asset; plain img avoids next/image recompression. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            className={styles.popoverQr}
+            src={WECHAT_QR_SRC}
+            width={240}
+            height={243}
+            alt="WeChat QR code"
+          />
+          <p className={styles.popoverCaption}>Scan to add on WeChat.</p>
           <p className={styles.popoverLinks}>
             <a href={KOLEEX_WHATSAPP_HREF} target="_blank" rel="noopener noreferrer">
               WhatsApp

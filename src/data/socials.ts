@@ -85,7 +85,8 @@ export const KOLEEX_SOCIALS: readonly KoleexSocial[] = [
   {
     id: "wechat",
     label: "WeChat",
-    // No official ID or QR is published.
+    // Official add-friend QR is shown in the Coming Soon popover.
+    // No WeChat ID or handle is published.
     href: null,
     brand: "#07C160",
     wechatId: null,
