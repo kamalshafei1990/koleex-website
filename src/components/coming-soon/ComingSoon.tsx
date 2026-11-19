@@ -111,6 +111,17 @@ export function ComingSoon() {
         </div>
       </section>
 
+      <section className={styles.about} aria-labelledby="about-heading">
+        <div className={`${styles.wrap} ${styles.aboutGrid}`}>
+          <h2 id="about-heading" className={styles.sectionTitle}>
+            Who we are
+          </h2>
+          <p>
+            Koleex International Group, established in 1960, is a trading and manufacturing company headquartered in Taizhou, Zhejiang, China. We design, manufacture, and distribute sewing machines, printing machines, garment materials, and related equipment, and work with clients from concept through production and logistics.
+          </p>
+        </div>
+      </section>
+
       <section className={styles.markets} aria-labelledby="markets">
         <div className={styles.wrap}>
           <div className={styles.sectionHead}>
@@ -136,6 +147,21 @@ export function ComingSoon() {
               </li>
             ))}
           </ul>
+        </div>
+      </section>
+
+      <section className={styles.catalog} aria-labelledby="catalog-heading">
+        <div className={`${styles.wrap} ${styles.catalogRow}`}>
+          <div>
+            <h2 id="catalog-heading" className={styles.sectionTitle}>
+              Catalog 2025
+            </h2>
+            <p className={styles.catalogSub}>The latest machinery for the garment industry.</p>
+          </div>
+          <a className={`${styles.btn} ${styles.primary}`} href={CATALOG_HREF}>
+            <DownloadIcon />
+            Download Catalog 2025
+          </a>
         </div>
       </section>
 

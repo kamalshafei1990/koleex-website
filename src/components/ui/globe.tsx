@@ -340,7 +340,7 @@ export function World({ globeConfig, data, markers }: WorldProps) {
         ref={tipRef}
         id={labelId}
         role="status"
-        className="pointer-events-none absolute left-0 top-0 z-10 whitespace-nowrap rounded-full border border-[#567FB2] bg-[#0A0A0A]/95 px-2.5 py-1 text-[13px] font-medium text-white"
+        className="pointer-events-none absolute left-0 top-0 z-10 whitespace-nowrap rounded-full border border-[rgba(255,255,255,0.35)] bg-[#0A0A0A]/95 px-2.5 py-1 text-[13px] font-medium text-white"
         style={{ visibility: active ? "visible" : "hidden" }}
       >
         {active?.label}

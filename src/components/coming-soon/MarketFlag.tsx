@@ -15,8 +15,8 @@ export function MarketFlag({ code, flag }: { code: string; flag: string }) {
       ) : (
         <Image
           src={`https://flagcdn.com/w80/${code.toLowerCase()}.png`}
-          width={24}
-          height={16}
+          width={20}
+          height={13}
           alt=""
           aria-hidden="true"
           unoptimized
