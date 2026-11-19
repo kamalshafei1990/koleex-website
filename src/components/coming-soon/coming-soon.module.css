@@ -46,7 +46,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding-top: 88px;
+  padding-top: 96px;
   padding-bottom: 28px;
 }
 
@@ -56,7 +56,7 @@
 
 .heroLogo {
   display: block;
-  width: 200px;
+  width: 360px;
   max-width: 100%;
   height: auto;
   margin-inline: auto;
@@ -69,16 +69,16 @@
 
 .page h1 {
   margin: 0;
-  font-size: 80px;
+  font-size: 44px;
   font-weight: 600;
-  letter-spacing: -0.032em;
-  line-height: 0.98;
+  letter-spacing: -0.022em;
+  line-height: 1.15;
   color: #fff;
 }
 
 .sub {
-  margin: 22px auto 0;
-  max-width: 1080px;
+  margin: 16px auto 0;
+  max-width: 640px;
   font-size: 19px;
   font-weight: 400;
   letter-spacing: -0.016em;
@@ -92,7 +92,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px 22px;
-  margin-top: 32px;
+  margin-top: 28px;
 }
 
 .btn {
@@ -153,9 +153,9 @@
 
 .mapFrame {
   position: relative;
-  width: min(760px, 100%);
+  width: min(440px, 80%);
   aspect-ratio: 1;
-  margin: 28px auto 0;
+  margin: 48px auto 0;
   overflow: hidden;
 }
 
@@ -263,7 +263,8 @@
 }
 
 .marketRegion:nth-child(1) .marketNames {
-  column-count: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   column-gap: 28px;
 }
 
@@ -321,13 +322,36 @@
 
 .marketNames li {
   margin: 0;
-  padding: 0;
-  break-inside: avoid;
+  padding: 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 15px;
   font-weight: 400;
   letter-spacing: -0.011em;
-  line-height: 1.55;
+  line-height: 1.3;
   color: rgba(255, 255, 255, 0.86);
+}
+
+.marketFlag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 16px;
+  flex: none;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 2px;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.marketFlag img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .strip {
@@ -396,13 +420,19 @@
   background: #f5f5f5;
   color: #141414;
   border-top: 1px solid #e0e0e0;
+  padding: 112px 0 120px;
+  scroll-margin-top: 28px;
+}
+
+.info .sectionTitle {
+  color: #141414;
+  margin-bottom: 48px;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
   gap: 28px;
-  padding: 112px 0 120px;
   align-items: start;
 }
 
@@ -425,8 +455,8 @@
 
 .card > p,
 .card > a,
-.channels p,
-.channels a,
+.detailsBlock p,
+.detailsBlock a,
 .row a {
   font-size: 15px;
   line-height: 1.6;
@@ -435,7 +465,7 @@
 }
 
 .card > a:hover,
-.channels a:hover,
+.detailsBlock a:hover,
 .row a:hover {
   color: #3e6796;
 }
@@ -459,10 +489,6 @@
 
 .card .row + .row {
   margin-top: 14px;
-}
-
-.wechat span {
-  color: rgba(0, 0, 0, 0.72);
 }
 
 .form {
@@ -519,50 +545,36 @@
   line-height: 1.5 !important;
 }
 
-.address {
-  margin-top: 8px;
-}
-
 .contactCard {
-  grid-row: 1 / span 2;
   background: #0a0a0a;
   border-color: rgba(255, 255, 255, 0.1);
   color: #fff;
 }
 
-.contactCard .cardTitle {
-  color: #fff;
+/* Hide ContactForm’s “Send us a message” heading on this page only.
+   The thank-you state is rendered outside the <form>, so it stays visible. */
+.contactCard form > div:first-child {
+  display: none;
 }
 
-.contactCard .channels p,
-.contactCard .channels a,
-.contactCard .row a {
-  color: #fff;
+.detailsBlock + .detailsBlock {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e0e0e0;
 }
 
-.contactCard .channels a:hover,
-.contactCard .row a:hover {
-  color: #bcd8f0;
-}
-
-.contactCard .row .ui {
-  color: rgba(255, 255, 255, 0.56);
-}
-
-.contactCard .wechat span,
-.contactCard .note {
-  color: rgba(255, 255, 255, 0.56) !important;
-}
-
-.channels {
-  margin-top: 28px;
-  padding-top: 22px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+.blockTitle {
+  margin: 0 0 16px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #141414;
 }
 
 .social {
-  display: grid;
-  grid-template-columns: repeat(4, 44px);
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   margin: 0;
   padding: 0;
@@ -746,10 +758,6 @@ span.mark {
 }
 
 @media (max-width: 900px) {
-  .page h1 {
-    font-size: 52px;
-  }
-
   .sectionTitle {
     font-size: 36px;
   }
@@ -777,8 +785,10 @@ span.mark {
     border-bottom: 0;
   }
 
-  .marketNames {
-    column-count: 2;
+  .marketNames,
+  .marketRegion:nth-child(1) .marketNames {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     column-gap: 24px;
   }
 
@@ -787,9 +797,10 @@ span.mark {
   }
 }
 
-@media (max-width: 400px) {
-  .marketNames {
-    column-count: 1;
+@media (max-width: 600px) {
+  .marketNames,
+  .marketRegion:nth-child(1) .marketNames {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -799,7 +810,7 @@ span.mark {
   }
 
   .heroInner {
-    padding-top: 56px;
+    padding-top: 64px;
     padding-bottom: 8px;
   }
 
@@ -808,12 +819,12 @@ span.mark {
   }
 
   .heroLogo {
-    width: 160px;
+    width: 240px;
   }
 
   .page h1 {
-    font-size: 36px;
-    letter-spacing: -0.028em;
+    font-size: 26px;
+    letter-spacing: -0.02em;
   }
 
   .sub {
@@ -831,7 +842,7 @@ span.mark {
   }
 
   .mapFrame {
-    margin-top: 12px;
+    margin-top: 32px;
   }
 
   .statRow {
@@ -887,14 +898,22 @@ span.mark {
     height: 36px;
   }
 
-  .grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
+  .info {
     padding: 72px 0 80px;
   }
 
-  .contactCard {
-    grid-row: auto;
+  .info .sectionTitle {
+    margin-bottom: 36px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .social {
+    /* Even flex wrap: two rows of three when six icons do not fit on one row. */
+    max-width: calc(44px * 3 + 12px * 2);
   }
 
   .cardTitle {
