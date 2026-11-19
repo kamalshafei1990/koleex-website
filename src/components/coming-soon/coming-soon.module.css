@@ -777,15 +777,35 @@ span.mark {
 .popover {
   position: absolute;
   top: calc(100% + 8px);
-  left: 0;
+  right: 0;
+  left: auto;
   z-index: 6;
-  width: min(260px, 70vw);
-  padding: 12px 14px;
+  width: min(288px, 78vw);
+  padding: 14px 14px 12px;
   border-radius: 12px;
   background: #fff;
   color: #141414;
   border: 1px solid #e0e0e0;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.popoverQr {
+  display: block;
+  width: 240px;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 8px;
+  filter: none;
+}
+
+.popoverCaption {
+  margin: 10px 0 0 !important;
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: center;
+  color: #141414;
 }
 
 .popover p,
@@ -813,8 +833,9 @@ span.mark {
 
 .popoverLinks {
   display: flex;
-  gap: 12px;
-  margin-top: 8px !important;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 10px !important;
 }
 
 .card .popoverLinks a {

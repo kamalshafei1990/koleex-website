@@ -20,7 +20,7 @@ export function SocialRow({ email }: { email: string }) {
         if (item.id === "wechat") {
           return (
             <li key={item.id}>
-              <WeChatButton path={path} email={email} wechatId={item.wechatId ?? null} />
+              <WeChatButton path={path} email={email} />
             </li>
           );
         }
