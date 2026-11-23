@@ -81,7 +81,7 @@ export function ComingSoon() {
             <div className={styles.cta}>
               <a className={`${styles.btn} ${styles.primary}`} href={CATALOG_HREF}>
                 <DownloadIcon />
-                Download Catalog 2025
+                Download Catalog
               </a>
               <a className={`${styles.btn} ${styles.ghost}`} href="#contact">
                 Contact Our Team ›
@@ -154,13 +154,13 @@ export function ComingSoon() {
         <div className={`${styles.wrap} ${styles.catalogRow}`}>
           <div>
             <h2 id="catalog-heading" className={styles.sectionTitle}>
-              Catalog 2025
+              Catalog
             </h2>
             <p className={styles.catalogSub}>The latest machinery for the garment industry.</p>
           </div>
           <a className={`${styles.btn} ${styles.primary}`} href={CATALOG_HREF}>
             <DownloadIcon />
-            Download Catalog 2025
+            Download Catalog
           </a>
         </div>
       </section>
