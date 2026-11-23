@@ -353,6 +353,25 @@
   }
 }
 
+/* Progressive enhancement: native, instant disclosure remains the fallback.
+   All three capabilities are required so collapse can finish before UA hiding. */
+@supports selector(details::details-content) and (interpolate-size: allow-keywords) and (transition-behavior: allow-discrete) {
+  @media (prefers-reduced-motion: no-preference) {
+    .marketRegion::details-content {
+      interpolate-size: allow-keywords;
+      block-size: 0;
+      overflow: clip;
+      transition:
+        block-size 240ms cubic-bezier(.22, 1, .36, 1),
+        content-visibility 240ms allow-discrete;
+    }
+
+    .marketRegion[open]::details-content {
+      block-size: auto;
+    }
+  }
+}
+
 .marketNames {
   list-style: none;
   margin: 0;
