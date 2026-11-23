@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/prepare-catalog.mjs && next build",
     "start": "next start",
     "lint": "next lint",
-    "test:china-readiness": "node --test tests/china-readiness.test.cjs"
+    "test:china-readiness": "node --test tests/china-readiness.test.cjs",
+    "test:catalog": "node --test tests/catalog-download.test.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

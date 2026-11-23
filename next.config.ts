@@ -15,9 +15,10 @@ const nextConfig: NextConfig = {
       {
         source: "/catalogs/KOLEEX-Catalog-2025.pdf",
         headers: [
+          { key: "Content-Type", value: "application/pdf" },
           {
             key: "Content-Disposition",
-            value: 'attachment; filename="KOLEEX-Catalog-2025.pdf"',
+            value: 'attachment; filename="KOLEEX-Catalog.pdf"',
           },
         ],
       },
