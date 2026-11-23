@@ -21,13 +21,13 @@ function MarketRegion({ continent }: { continent: Continent }) {
   return (
     <details className={styles.marketRegion}>
       <summary className={styles.marketRegionToggle}>
-        <h3 id={headingId} className={styles.marketRegionTitle}>
-          <span>{continent}</span>
-          <span className={styles.marketRegionCount} aria-label={`${markets.length} markets`}>{markets.length}</span>
-          <svg className={styles.marketRegionChevron} width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
-            <path d="m5 7.5 5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </h3>
+        <span className={styles.marketRegionCopy}>
+          <h3 id={headingId} className={styles.marketRegionTitle}>{continent}</h3>
+          <span className={styles.marketRegionCount}>{markets.length} markets</span>
+        </span>
+        <svg className={styles.marketRegionChevron} width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+          <path d="m4 6 4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
       </summary>
       <ul className={styles.marketNames} aria-labelledby={headingId}>
         {markets.map((market) => (

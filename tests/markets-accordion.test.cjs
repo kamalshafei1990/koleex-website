@@ -48,15 +48,18 @@ test('native summary keyboard/focus semantics retained; heading, count and decor
     const content = panels[i][2];
     const [continent, count] = expected[i];
     const id = `markets-${continent.toLowerCase().replaceAll(' ', '-')}`;
-    assert.match(content, new RegExp(`<h3 id="${id}"`));
-    assert.ok(content.includes(`<span>${continent}</span>`));
-    assert.ok(content.includes(`aria-label="${count} markets">${count}</span>`));
+    assert.match(content, new RegExp(`<h3 id="${id}" class="marketRegionTitle">${continent}</h3>`));
+    assert.ok(content.includes(`<span class="marketRegionCount">${count} markets</span>`));
     assert.ok(content.includes(`aria-labelledby="${id}"`));
-    assert.match(content, /<svg[^>]*aria-hidden="true"[^>]*focusable="false"/);
+    assert.match(content, /<svg[^>]*width="16"[^>]*height="16"[^>]*aria-hidden="true"[^>]*focusable="false"/);
     assert.doesNotMatch(content, /tabindex|role="button"|aria-expanded|<button|<a\b/);
   }
   const css = read('src/components/coming-soon/coming-soon.module.css');
-  assert.match(css, /\.marketRegionToggle\s*\{[^}]*min-height: 64px;/);
+  assert.match(css, /\.marketRegionToggle\s*\{[^}]*display: flex;[^}]*justify-content: space-between;[^}]*width: 100%;[^}]*min-height: 44px;[^}]*padding: 14px 0;/);
+  assert.match(css, /\.marketRegionCopy\s*\{[^}]*display: flex;[^}]*flex-direction: column;[^}]*gap: 2px;/);
+  assert.match(css, /\.marketRegionTitle\s*\{[^}]*font-size: 22px;[^}]*font-weight: 600;[^}]*letter-spacing: -0.022em;[^}]*line-height: 1\.1;/);
+  assert.match(css, /\.marketRegionCount\s*\{[^}]*font-size: 13px;[^}]*font-weight: 400;[^}]*line-height: 1\.23;/);
+  assert.doesNotMatch(css, /\.marketRegion\[open\]\s*>\s*\.marketRegionToggle|\.marketRegionToggle:hover|\.marketRegionToggle:active\s*\{[^}]*background|rgba\(255,\s*255,\s*255,\s*0\.035\)/);
   assert.match(css, /\.marketRegionToggle:focus-visible\s*\{[^}]*outline: 2px solid #fff;/);
 });
 
@@ -118,7 +121,7 @@ test('every changed stylesheet rule is markets-scoped; global rules and all othe
     if (before.get(key)?.declarations === after.get(key)?.declarations) continue;
     const rule = after.get(key) || before.get(key);
     for (const selector of rule.selector.split(',')) {
-      assert.match(selector.trim(), /^\.market(?:Region|Names|Flag)\b|^\.marketRegion(?:Title|Count|Toggle|Chevron)\b/);
+      assert.match(selector.trim(), /^\.market(?:Region|Names|Flag)\b|^\.marketRegion(?:Copy|Title|Count|Toggle|Chevron)\b/);
     }
   }
 });

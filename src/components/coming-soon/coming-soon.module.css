@@ -286,13 +286,16 @@
 }
 
 .marketRegionToggle {
-  display: block;
-  min-height: 64px;
-  padding: 20px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 14px 0;
   box-sizing: border-box;
   cursor: pointer;
   list-style: none;
-  border-radius: 4px;
 }
 
 .marketRegionToggle::-webkit-details-marker {
@@ -304,41 +307,40 @@
   outline-offset: 3px;
 }
 
-.marketRegion[open] > .marketRegionToggle,
-.marketRegionToggle:active {
-  background: rgba(255, 255, 255, 0.035);
+.marketRegionCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
 .marketRegionTitle {
-  display: flex;
-  align-items: center;
-  gap: 12px;
   margin: 0;
-  font-size: 17px;
-  font-weight: 500;
-  letter-spacing: -0.015em;
-  line-height: 1.4;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  line-height: 1.1;
   color: #fff;
-}
-
-.marketRegionTitle > span:first-child {
-  min-width: 0;
   overflow-wrap: anywhere;
 }
 
 .marketRegionCount {
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0;
-  color: rgba(255, 255, 255, 0.64);
+  line-height: 1.23;
+  color: rgba(255, 255, 255, 0.56);
 }
 
 .marketRegionChevron {
   flex: none;
-  margin-left: auto;
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(255, 255, 255, 0.56);
   transition: transform 160ms ease;
+}
+
+.marketRegionToggle:active .marketRegionChevron {
+  opacity: 0.72;
 }
 
 .marketRegion[open] .marketRegionChevron {
@@ -889,9 +891,6 @@ span.mark {
     padding-inline: 4px;
   }
 
-  .marketRegionToggle {
-    padding-inline: 4px;
-  }
 }
 
 @media (max-width: 359px) {
