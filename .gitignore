@@ -41,3 +41,6 @@ next-env.d.ts
 
 # Catalog PDFs are large binaries (~77MB). Keep them out of git.
 /public/catalogs/*.pdf
+
+# Build-time catalog download temporary files
+/public/catalogs/*.part

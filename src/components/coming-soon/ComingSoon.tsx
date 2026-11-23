@@ -14,8 +14,8 @@ const EMAIL = "info@koleexgroup.com";
 const PHONE_DISPLAY = "+86 130 7380 0720";
 const PHONE_TEL = "+8613073800720";
 const WHATSAPP_HREF = KOLEEX_WHATSAPP_HREF;
-/* Official Catalog 2025 lives on the catalog-2025 GitHub Release (not in git). */
-const CATALOG_HREF = "https://github.com/kamalshafei1990/koleex-website/releases/download/catalog-2025/KOLEEX-Catalog-2025.pdf";
+/* Original release PDF is verified and staged as a static file at build time. */
+const CATALOG_HREF = "/catalogs/KOLEEX-Catalog-2025.pdf";
 
 const STATS = [
   { value: "70+", label: "Years of heritage" },
@@ -79,9 +79,9 @@ export function ComingSoon() {
               A new Koleex digital experience is being engineered. Our systems, machines and global team remain fully operational.
             </p>
             <div className={styles.cta}>
-              <a className={`${styles.btn} ${styles.primary}`} href={CATALOG_HREF}>
+              <a className={`${styles.btn} ${styles.primary}`} href={CATALOG_HREF} download="KOLEEX-Catalog.pdf">
                 <DownloadIcon />
-                Download Catalog 2025
+                Download Catalog
               </a>
               <a className={`${styles.btn} ${styles.ghost}`} href="#contact">
                 Contact Our Team ›
@@ -154,13 +154,13 @@ export function ComingSoon() {
         <div className={`${styles.wrap} ${styles.catalogRow}`}>
           <div>
             <h2 id="catalog-heading" className={styles.sectionTitle}>
-              Catalog 2025
+              Catalog
             </h2>
             <p className={styles.catalogSub}>The latest machinery for the garment industry.</p>
           </div>
-          <a className={`${styles.btn} ${styles.primary}`} href={CATALOG_HREF}>
+          <a className={`${styles.btn} ${styles.primary}`} href={CATALOG_HREF} download="KOLEEX-Catalog.pdf">
             <DownloadIcon />
-            Download Catalog 2025
+            Download Catalog
           </a>
         </div>
       </section>

@@ -1,13 +1,17 @@
-# KOLEEX Catalog 2025
+# KOLEEX Catalog 2025 (original source edition)
 
-The Coming Soon page button **Download Catalog 2025** points at the published GitHub Release asset:
+The Coming Soon **Download Catalog** buttons use the same-origin static file
+`/catalogs/KOLEEX-Catalog-2025.pdf` with attachment filename `KOLEEX-Catalog.pdf`.
 
+The original PDF is not stored in git. `npm run build` downloads and verifies it
+before Next builds; for local development run `node scripts/prepare-catalog.mjs`
+first. Do not commit the PDF or partial downloads.
+
+Official provenance (unchanged):
 https://github.com/kamalshafei1990/koleex-website/releases/download/catalog-2025/KOLEEX-Catalog-2025.pdf
 
-(tag `catalog-2025`, file `KOLEEX-Catalog-2025.pdf`, 138 pages, about 76.5MB). The release already sends `Content-Disposition: attachment`, so the button does not use an HTML `download` attribute.
+80,247,243 bytes; SHA-256:
+`c500080c3bad0dbd192eb4f80bf87ecaa876ff6b2adcdf879f7538092c7d1a43`.
 
-The PDF is not stored in git. If you need a local copy for development, place it here with that exact name:
-
-`public/catalogs/KOLEEX-Catalog-2025.pdf`
-
-Do not commit the PDF.
+See `docs/CATALOG-DOWNLOAD.md` for integrity/failure behavior, hosting/cost
+constraints and required preview/iOS checks. No PDF content is transformed.
