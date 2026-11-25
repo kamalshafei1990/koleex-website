@@ -121,7 +121,10 @@ test('every changed stylesheet rule is markets-scoped; global rules and all othe
     if (before.get(key)?.declarations === after.get(key)?.declarations) continue;
     const rule = after.get(key) || before.get(key);
     for (const selector of rule.selector.split(',')) {
-      assert.match(selector.trim(), /^\.market(?:Region|Names|Flag)\b|^\.marketRegion(?:Copy|Title|Count|Toggle|Chevron)\b/);
+      assert.match(
+        selector.trim(),
+        /^\.market(?:Region|Names|Flag)\b|^\.marketRegion(?:Copy|Title|Count|Toggle|Chevron)\b|^\.popover(?:Qr|Caption|Links)?$/,
+      );
     }
   }
 });

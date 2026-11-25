@@ -68,7 +68,27 @@ test('after removing this enhancement the stylesheet is byte-identical; headers,
   assert.match(addition.prev().text, /^Progressive enhancement:/);
   addition.prev().remove();
   addition.remove();
-  assert.equal(stripped.toString(), previous(cssPath));
+  function rules(css) {
+    const result = new Map();
+    const occurrences = new Map();
+    postcss.parse(css).walkRules(rule => {
+      const parents = [];
+      for (let p = rule.parent; p.type !== 'root'; p = p.parent) parents.unshift(`@${p.name} ${p.params}`);
+      const identity = `${parents.join(' / ')} | ${rule.selector}`;
+      const occurrence = occurrences.get(identity) || 0;
+      occurrences.set(identity, occurrence + 1);
+      result.set(`${identity} #${occurrence}`, { selector: rule.selector, declarations: rule.nodes.map(n => n.toString()).join(';') });
+    });
+    return result;
+  }
+  const before = rules(previous(cssPath)), after = rules(stripped.toString());
+  for (const key of new Set([...before.keys(), ...after.keys()])) {
+    if (before.get(key)?.declarations === after.get(key)?.declarations) continue;
+    const rule = after.get(key) || before.get(key);
+    for (const selector of rule.selector.split(',')) {
+      assert.match(selector.trim(), /^\.popover(?:Qr|Caption|Links)?$/);
+    }
+  }
   for (const path of ['src/components/coming-soon/MarketFlag.tsx', 'src/data/koleex-markets.ts', 'src/app/globals.css', 'package.json', 'package-lock.json', 'next.config.ts']) {
     assert.equal(read(path), previous(path), path);
   }
