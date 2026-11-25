@@ -1066,6 +1066,19 @@ span.mark {
     max-width: calc(44px * 3 + 12px * 2);
   }
 
+  /* Keep the desktop popover right-aligned to the WeChat button when it already
+     fits. On this single-column contact layout a 288px content-box (318px outer)
+     panel extends past the viewport: the button’s right edge sits 151px from
+     the left (22px wrap padding + 1px card border + 28px card padding + second
+     44px icon in the 3-wide row). Clamp the border-box to 16px gutters and
+     shift it right so the full QR, caption, and WhatsApp/Email labels stay
+     on-screen at 390×844 and 320×844. */
+  .popover {
+    box-sizing: border-box;
+    width: min(318px, calc(100vw - 32px));
+    right: min(0px, calc(151px - 16px - min(318px, 100vw - 32px)));
+  }
+
   .cardTitle {
     font-size: 24px;
   }
